@@ -179,6 +179,31 @@ contract(OracleProviderRole, async (accounts) => {
     }
   });
 
+  // READ PROVIDERS PSEUDO RANDOM INDEXES
+
+  it("As an authorized caller fetch oracle providers indexes", async () => {
+    let contract = await OracleProviderRole.deployed();
+    const indexes = await contract.getOracleProviderIndexes(userOne, {
+      from: authorizedCaller,
+    });
+    assert.equal(indexes.length, 3);
+  });
+
+  it("As an unauthorized caller should fail to fetch oracle providers indexes", async () => {
+    let contract = await OracleProviderRole.deployed();
+    try {
+      await contract.getOracleProviderIndexes(userOne, {
+        from: unauthorizedCaller,
+      });
+      assert.fail();
+    } catch (error) {
+      assert.equal(
+        error.message,
+        "Returned error: VM Exception while processing transaction: revert caller must be authorized"
+      );
+    }
+  });
+
   // VOTE PROVIDER MEMBERSHIP
 
   it("As an authorized caller  vote for an oracle provider activation and membership", async () => {

@@ -28,10 +28,10 @@
 */
 const BigNumber = require("bignumber.js");
 const assert = require("chai").assert;
-const should = require("chai").should;
 const FlightSuretyApp = artifacts.require("FlightSuretyApp");
 
-// contract(FlightSuretyApp, async (accounts) => {
-//   const owner = accounts[0];
-// });
-
+contract(FlightSuretyApp, async (accounts) => {
+  const owner = accounts[0];
+  const userOne = accounts[1];
+  const userTwo = accounts[2];
+});

@@ -14,4 +14,10 @@ interface IOracleProviderRoleOracle {
 
     // check if an oracle provider is activated
     function isActivatedOracleProvider(address _caller) external returns (bool);
+
+    // fetch oracle providers indexes
+    function getOracleProviderIndexes(address _caller)
+        external
+        view
+        returns (uint256[3] memory);
 }

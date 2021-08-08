@@ -12,7 +12,7 @@ contract FlightSuretyOracle is Ownable, Random {
     struct Request {
         uint256 flightID;
         string flightRef;
-        uint256[3] activatedIndexes;
+        uint256 activatedIndex;
         uint256 responseCount;
     }
 
@@ -64,6 +64,38 @@ contract FlightSuretyOracle is Ownable, Random {
         _;
     }
 
+    modifier onlySelectedOracleProvider(uint256 _requestID) {
+        uint256[3] memory oracleProvidersIndexes = oracleProviderRole
+            .getOracleProviderIndexes(msg.sender);
+        require(
+            oracleProvidersIndexes[0] == requests[_requestID].activatedIndex ||
+                oracleProvidersIndexes[1] ==
+                requests[_requestID].activatedIndex ||
+                oracleProvidersIndexes[2] ==
+                requests[_requestID].activatedIndex,
+            "oracle provider indexes must match request indexes"
+        );
+        _;
+    }
+
+    modifier requireFlightExists(uint256 _flightID) {
+        (
+            ,
+            uint64 estimatedDeparture,
+            uint64 estimatedArrival,
+            ,
+            ,
+            ,
+            ,
+
+        ) = flightSuretyData.getFlight(_flightID);
+        require(
+            estimatedDeparture > 0 && estimatedArrival > 0,
+            "flight must exists"
+        );
+        _;
+    }
+
     // constructor setting owner and initial authorized caller address aka appAddress
     constructor() Ownable() {}
 
@@ -81,13 +113,14 @@ contract FlightSuretyOracle is Ownable, Random {
     function createRequest(uint256 _flightID, string calldata _flightRef)
         external
         onlyActivatedOracleProvider(msg.sender)
+        requireFlightExists(_flightID)
     {
-        uint256[3] memory _randomIndexes = _generateRandomIndexes();
+        uint256 _randomIndex = _rand(20);
         currentRequestID++;
         requests[currentRequestID] = Request({
             flightID: _flightID,
             flightRef: _flightRef,
-            activatedIndexes: _randomIndexes,
+            activatedIndex: _randomIndex,
             responseCount: 0
         });
         emit NewRequest(currentRequestID, _flightID, _flightRef);
@@ -100,7 +133,11 @@ contract FlightSuretyOracle is Ownable, Random {
         uint256 _realDeparture,
         uint256 _realArrival,
         uint256 _isLate
-    ) external onlyActivatedOracleProvider(msg.sender) {
+    )
+        external
+        onlyActivatedOracleProvider(msg.sender)
+        requireFlightExists(requests[_requestID].flightID)
+    {
         _updateResponses(
             _caller,
             _requestID,

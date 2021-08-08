@@ -157,6 +157,16 @@ contract OracleProviderRole is Ownable, CallerAuditable, Random {
         _activateOracleProvider(_account);
     }
 
+    // fetch oracle providers indexes
+    function getOracleProviderIndexes(address _caller)
+        external
+        view
+        onlyAuthorizedCaller
+        returns (uint256[3] memory)
+    {
+        return oracleProvidersIndexes[_caller];
+    }
+
     function _isRegisteredOracleProvider(address _caller)
         internal
         view
