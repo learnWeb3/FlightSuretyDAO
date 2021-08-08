@@ -71,6 +71,14 @@ contract MembershipFeeAmendmentProposal is
         _activateMembershipFeeAmendmentProposal(_proposalID);
     }
 
+    // check wether a voter as already voted for a specific proposal
+    function hasVotedMembershipFeeAmendmentProposal(
+        address _caller,
+        uint256 _proposalID
+    ) external view onlyAuthorizedCaller returns (bool _hasVoted) {
+        return _hasVotedProposal(_caller, _proposalID);
+    }
+
     // fetch the current vote count for a membership fee amendment proposal
     function getVoteCountMembershipFeeAmendmentProposal(
         uint256 _proposalID,

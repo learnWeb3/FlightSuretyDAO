@@ -1,0 +1,1203 @@
+{
+  "contractName": "FlightSuretyDataBase",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/FlightSuretyData/FlightSuretyDataBase.sol\":\"FlightSuretyDataBase\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/FlightSuretyData/FlightSuretyDataBase.sol\":{\"keccak256\":\"0x50a3b523cdddff7d1f1c1edec7240d28cc3f9c2ba0fe59e9a5f8ec075191ce4e\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://cf348eacefe4772a3e7d88dbb8e2d6afee22082eddccfa523346292598ed5293\",\"dweb:/ipfs/QmTTxGgQpeyvuBKbqZfKABZmMg111QJHbjSL7skpsicdLB\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220d721ba831509e1eae92fd1cc9dcde0bdb72475fb0990fd55a2231721a7c56d2a64736f6c63430008000033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220d721ba831509e1eae92fd1cc9dcde0bdb72475fb0990fd55a2231721a7c56d2a64736f6c63430008000033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "65:630:6:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "65:630:6:-:0;;;;;",
+  "source": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.00;\n\ncontract FlightSuretyDataBase {\n    struct Insurance {\n        uint256 flightID;\n        uint256 insuredValue;\n        address owner;\n        bool claimed;\n    }\n\n    struct Flight {\n        string flightRef;\n        uint64 estimatedDeparture;\n        uint64 estimatedArrival;\n        uint64 realDeparture;\n        uint64 realArrival;\n        bool isLate;\n        address insuranceProvider;\n        uint256 insuredValue;\n        uint256 rate;\n    }\n\n    uint256 currentFlightID;\n    mapping(uint256 => Flight) flights;\n    uint256 currentInsuranceID;\n    mapping(uint256 => Insurance) insurances;\n    uint256 totalInsuredValue;\n\n}\n",
+  "sourcePath": "/home/bender/Documents/FlightInsurance/contracts/FlightSuretyData/FlightSuretyDataBase.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/FlightSuretyData/FlightSuretyDataBase.sol",
+    "exportedSymbols": {
+      "FlightSuretyDataBase": [
+        1101
+      ]
+    },
+    "id": 1102,
+    "license": "UNLICENSED",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1056,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".00"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "39:24:6"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 1101,
+        "linearizedBaseContracts": [
+          1101
+        ],
+        "name": "FlightSuretyDataBase",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "FlightSuretyDataBase.Insurance",
+            "id": 1065,
+            "members": [
+              {
+                "constant": false,
+                "id": 1058,
+                "mutability": "mutable",
+                "name": "flightID",
+                "nodeType": "VariableDeclaration",
+                "scope": 1065,
+                "src": "128:16:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 1057,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "128:7:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1060,
+                "mutability": "mutable",
+                "name": "insuredValue",
+                "nodeType": "VariableDeclaration",
+                "scope": 1065,
+                "src": "154:20:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 1059,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "154:7:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1062,
+                "mutability": "mutable",
+                "name": "owner",
+                "nodeType": "VariableDeclaration",
+                "scope": 1065,
+                "src": "184:13:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 1061,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "184:7:6",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1064,
+                "mutability": "mutable",
+                "name": "claimed",
+                "nodeType": "VariableDeclaration",
+                "scope": 1065,
+                "src": "207:12:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bool",
+                  "typeString": "bool"
+                },
+                "typeName": {
+                  "id": 1063,
+                  "name": "bool",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "207:4:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "Insurance",
+            "nodeType": "StructDefinition",
+            "scope": 1101,
+            "src": "101:125:6",
+            "visibility": "public"
+          },
+          {
+            "canonicalName": "FlightSuretyDataBase.Flight",
+            "id": 1084,
+            "members": [
+              {
+                "constant": false,
+                "id": 1067,
+                "mutability": "mutable",
+                "name": "flightRef",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "256:16:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 1066,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "256:6:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1069,
+                "mutability": "mutable",
+                "name": "estimatedDeparture",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "282:25:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint64",
+                  "typeString": "uint64"
+                },
+                "typeName": {
+                  "id": 1068,
+                  "name": "uint64",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "282:6:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1071,
+                "mutability": "mutable",
+                "name": "estimatedArrival",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "317:23:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint64",
+                  "typeString": "uint64"
+                },
+                "typeName": {
+                  "id": 1070,
+                  "name": "uint64",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "317:6:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1073,
+                "mutability": "mutable",
+                "name": "realDeparture",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "350:20:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint64",
+                  "typeString": "uint64"
+                },
+                "typeName": {
+                  "id": 1072,
+                  "name": "uint64",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "350:6:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1075,
+                "mutability": "mutable",
+                "name": "realArrival",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "380:18:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint64",
+                  "typeString": "uint64"
+                },
+                "typeName": {
+                  "id": 1074,
+                  "name": "uint64",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "380:6:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1077,
+                "mutability": "mutable",
+                "name": "isLate",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "408:11:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bool",
+                  "typeString": "bool"
+                },
+                "typeName": {
+                  "id": 1076,
+                  "name": "bool",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "408:4:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1079,
+                "mutability": "mutable",
+                "name": "insuranceProvider",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "429:25:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 1078,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "429:7:6",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1081,
+                "mutability": "mutable",
+                "name": "insuredValue",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "464:20:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 1080,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "464:7:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1083,
+                "mutability": "mutable",
+                "name": "rate",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "494:12:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 1082,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "494:7:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "Flight",
+            "nodeType": "StructDefinition",
+            "scope": 1101,
+            "src": "232:281:6",
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 1086,
+            "mutability": "mutable",
+            "name": "currentFlightID",
+            "nodeType": "VariableDeclaration",
+            "scope": 1101,
+            "src": "519:23:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 1085,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "519:7:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 1091,
+            "mutability": "mutable",
+            "name": "flights",
+            "nodeType": "VariableDeclaration",
+            "scope": 1101,
+            "src": "548:34:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Flight_$1084_storage_$",
+              "typeString": "mapping(uint256 => struct FlightSuretyDataBase.Flight)"
+            },
+            "typeName": {
+              "id": 1090,
+              "keyType": {
+                "id": 1087,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "556:7:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "548:26:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Flight_$1084_storage_$",
+                "typeString": "mapping(uint256 => struct FlightSuretyDataBase.Flight)"
+              },
+              "valueType": {
+                "id": 1089,
+                "nodeType": "UserDefinedTypeName",
+                "pathNode": {
+                  "id": 1088,
+                  "name": "Flight",
+                  "nodeType": "IdentifierPath",
+                  "referencedDeclaration": 1084,
+                  "src": "567:6:6"
+                },
+                "referencedDeclaration": 1084,
+                "src": "567:6:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Flight_$1084_storage_ptr",
+                  "typeString": "struct FlightSuretyDataBase.Flight"
+                }
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 1093,
+            "mutability": "mutable",
+            "name": "currentInsuranceID",
+            "nodeType": "VariableDeclaration",
+            "scope": 1101,
+            "src": "588:26:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 1092,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "588:7:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 1098,
+            "mutability": "mutable",
+            "name": "insurances",
+            "nodeType": "VariableDeclaration",
+            "scope": 1101,
+            "src": "620:40:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Insurance_$1065_storage_$",
+              "typeString": "mapping(uint256 => struct FlightSuretyDataBase.Insurance)"
+            },
+            "typeName": {
+              "id": 1097,
+              "keyType": {
+                "id": 1094,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "628:7:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "620:29:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Insurance_$1065_storage_$",
+                "typeString": "mapping(uint256 => struct FlightSuretyDataBase.Insurance)"
+              },
+              "valueType": {
+                "id": 1096,
+                "nodeType": "UserDefinedTypeName",
+                "pathNode": {
+                  "id": 1095,
+                  "name": "Insurance",
+                  "nodeType": "IdentifierPath",
+                  "referencedDeclaration": 1065,
+                  "src": "639:9:6"
+                },
+                "referencedDeclaration": 1065,
+                "src": "639:9:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Insurance_$1065_storage_ptr",
+                  "typeString": "struct FlightSuretyDataBase.Insurance"
+                }
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 1100,
+            "mutability": "mutable",
+            "name": "totalInsuredValue",
+            "nodeType": "VariableDeclaration",
+            "scope": 1101,
+            "src": "666:25:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 1099,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "666:7:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "internal"
+          }
+        ],
+        "scope": 1102,
+        "src": "65:630:6"
+      }
+    ],
+    "src": "39:657:6"
+  },
+  "legacyAST": {
+    "absolutePath": "project:/contracts/FlightSuretyData/FlightSuretyDataBase.sol",
+    "exportedSymbols": {
+      "FlightSuretyDataBase": [
+        1101
+      ]
+    },
+    "id": 1102,
+    "license": "UNLICENSED",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1056,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".00"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "39:24:6"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 1101,
+        "linearizedBaseContracts": [
+          1101
+        ],
+        "name": "FlightSuretyDataBase",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "FlightSuretyDataBase.Insurance",
+            "id": 1065,
+            "members": [
+              {
+                "constant": false,
+                "id": 1058,
+                "mutability": "mutable",
+                "name": "flightID",
+                "nodeType": "VariableDeclaration",
+                "scope": 1065,
+                "src": "128:16:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 1057,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "128:7:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1060,
+                "mutability": "mutable",
+                "name": "insuredValue",
+                "nodeType": "VariableDeclaration",
+                "scope": 1065,
+                "src": "154:20:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 1059,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "154:7:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1062,
+                "mutability": "mutable",
+                "name": "owner",
+                "nodeType": "VariableDeclaration",
+                "scope": 1065,
+                "src": "184:13:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 1061,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "184:7:6",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1064,
+                "mutability": "mutable",
+                "name": "claimed",
+                "nodeType": "VariableDeclaration",
+                "scope": 1065,
+                "src": "207:12:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bool",
+                  "typeString": "bool"
+                },
+                "typeName": {
+                  "id": 1063,
+                  "name": "bool",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "207:4:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "Insurance",
+            "nodeType": "StructDefinition",
+            "scope": 1101,
+            "src": "101:125:6",
+            "visibility": "public"
+          },
+          {
+            "canonicalName": "FlightSuretyDataBase.Flight",
+            "id": 1084,
+            "members": [
+              {
+                "constant": false,
+                "id": 1067,
+                "mutability": "mutable",
+                "name": "flightRef",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "256:16:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 1066,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "256:6:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1069,
+                "mutability": "mutable",
+                "name": "estimatedDeparture",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "282:25:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint64",
+                  "typeString": "uint64"
+                },
+                "typeName": {
+                  "id": 1068,
+                  "name": "uint64",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "282:6:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1071,
+                "mutability": "mutable",
+                "name": "estimatedArrival",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "317:23:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint64",
+                  "typeString": "uint64"
+                },
+                "typeName": {
+                  "id": 1070,
+                  "name": "uint64",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "317:6:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1073,
+                "mutability": "mutable",
+                "name": "realDeparture",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "350:20:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint64",
+                  "typeString": "uint64"
+                },
+                "typeName": {
+                  "id": 1072,
+                  "name": "uint64",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "350:6:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1075,
+                "mutability": "mutable",
+                "name": "realArrival",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "380:18:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint64",
+                  "typeString": "uint64"
+                },
+                "typeName": {
+                  "id": 1074,
+                  "name": "uint64",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "380:6:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1077,
+                "mutability": "mutable",
+                "name": "isLate",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "408:11:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bool",
+                  "typeString": "bool"
+                },
+                "typeName": {
+                  "id": 1076,
+                  "name": "bool",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "408:4:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1079,
+                "mutability": "mutable",
+                "name": "insuranceProvider",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "429:25:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 1078,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "429:7:6",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1081,
+                "mutability": "mutable",
+                "name": "insuredValue",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "464:20:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 1080,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "464:7:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1083,
+                "mutability": "mutable",
+                "name": "rate",
+                "nodeType": "VariableDeclaration",
+                "scope": 1084,
+                "src": "494:12:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 1082,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "494:7:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "Flight",
+            "nodeType": "StructDefinition",
+            "scope": 1101,
+            "src": "232:281:6",
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 1086,
+            "mutability": "mutable",
+            "name": "currentFlightID",
+            "nodeType": "VariableDeclaration",
+            "scope": 1101,
+            "src": "519:23:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 1085,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "519:7:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 1091,
+            "mutability": "mutable",
+            "name": "flights",
+            "nodeType": "VariableDeclaration",
+            "scope": 1101,
+            "src": "548:34:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Flight_$1084_storage_$",
+              "typeString": "mapping(uint256 => struct FlightSuretyDataBase.Flight)"
+            },
+            "typeName": {
+              "id": 1090,
+              "keyType": {
+                "id": 1087,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "556:7:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "548:26:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Flight_$1084_storage_$",
+                "typeString": "mapping(uint256 => struct FlightSuretyDataBase.Flight)"
+              },
+              "valueType": {
+                "id": 1089,
+                "nodeType": "UserDefinedTypeName",
+                "pathNode": {
+                  "id": 1088,
+                  "name": "Flight",
+                  "nodeType": "IdentifierPath",
+                  "referencedDeclaration": 1084,
+                  "src": "567:6:6"
+                },
+                "referencedDeclaration": 1084,
+                "src": "567:6:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Flight_$1084_storage_ptr",
+                  "typeString": "struct FlightSuretyDataBase.Flight"
+                }
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 1093,
+            "mutability": "mutable",
+            "name": "currentInsuranceID",
+            "nodeType": "VariableDeclaration",
+            "scope": 1101,
+            "src": "588:26:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 1092,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "588:7:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 1098,
+            "mutability": "mutable",
+            "name": "insurances",
+            "nodeType": "VariableDeclaration",
+            "scope": 1101,
+            "src": "620:40:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Insurance_$1065_storage_$",
+              "typeString": "mapping(uint256 => struct FlightSuretyDataBase.Insurance)"
+            },
+            "typeName": {
+              "id": 1097,
+              "keyType": {
+                "id": 1094,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "628:7:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "620:29:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Insurance_$1065_storage_$",
+                "typeString": "mapping(uint256 => struct FlightSuretyDataBase.Insurance)"
+              },
+              "valueType": {
+                "id": 1096,
+                "nodeType": "UserDefinedTypeName",
+                "pathNode": {
+                  "id": 1095,
+                  "name": "Insurance",
+                  "nodeType": "IdentifierPath",
+                  "referencedDeclaration": 1065,
+                  "src": "639:9:6"
+                },
+                "referencedDeclaration": 1065,
+                "src": "639:9:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Insurance_$1065_storage_ptr",
+                  "typeString": "struct FlightSuretyDataBase.Insurance"
+                }
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 1100,
+            "mutability": "mutable",
+            "name": "totalInsuredValue",
+            "nodeType": "VariableDeclaration",
+            "scope": 1101,
+            "src": "666:25:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 1099,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "666:7:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "internal"
+          }
+        ],
+        "scope": 1102,
+        "src": "65:630:6"
+      }
+    ],
+    "src": "39:657:6"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.0+commit.c7dfd78e.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.2",
+  "updatedAt": "2021-08-08T09:23:37.462Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

@@ -1,0 +1,1224 @@
+{
+  "contractName": "IFlightSuretyDataOracle",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_flightID",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint64",
+          "name": "_realDeparture",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint64",
+          "name": "_realArrival",
+          "type": "uint64"
+        },
+        {
+          "internalType": "bool",
+          "name": "_isLate",
+          "type": "bool"
+        }
+      ],
+      "name": "updateFlight",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_totalInsuredValue",
+          "type": "uint256"
+        }
+      ],
+      "name": "setTotalInsuredValue",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getTotalInsuredValue",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "totalInsuredValue",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_flightID",
+          "type": "uint256"
+        }
+      ],
+      "name": "getFlight",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "flightRef",
+          "type": "string"
+        },
+        {
+          "internalType": "uint64",
+          "name": "estimatedDeparture",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint64",
+          "name": "estimatedArrival",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint64",
+          "name": "realDeparture",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint64",
+          "name": "realArrival",
+          "type": "uint64"
+        },
+        {
+          "internalType": "bool",
+          "name": "isLate",
+          "type": "bool"
+        },
+        {
+          "internalType": "address",
+          "name": "insuranceProvider",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "insuredValue",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_flightID\",\"type\":\"uint256\"}],\"name\":\"getFlight\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"flightRef\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"estimatedDeparture\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"estimatedArrival\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"realDeparture\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"realArrival\",\"type\":\"uint64\"},{\"internalType\":\"bool\",\"name\":\"isLate\",\"type\":\"bool\"},{\"internalType\":\"address\",\"name\":\"insuranceProvider\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"insuredValue\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getTotalInsuredValue\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"totalInsuredValue\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_totalInsuredValue\",\"type\":\"uint256\"}],\"name\":\"setTotalInsuredValue\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_flightID\",\"type\":\"uint256\"},{\"internalType\":\"uint64\",\"name\":\"_realDeparture\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"_realArrival\",\"type\":\"uint64\"},{\"internalType\":\"bool\",\"name\":\"_isLate\",\"type\":\"bool\"}],\"name\":\"updateFlight\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/FlightSuretyOracle/interfaces/IFlightSuretyDataOracle.sol\":\"IFlightSuretyDataOracle\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/FlightSuretyOracle/interfaces/IFlightSuretyDataOracle.sol\":{\"keccak256\":\"0xcd5308ec47b8e806a06ccdd04157fbbc6c9f9ae408a045fcab67996aaa3522b1\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://c84ebf4ab843d1df73b457827cac75626d9b8204fc7a6691c50613c6857e3d8f\",\"dweb:/ipfs/QmTRWZjC4FLphMfxmzBqCkPetZHxqQPnXncaMnCsR99spM\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.00;\n\ninterface IFlightSuretyDataOracle {\n    function updateFlight(\n        uint256 _flightID,\n        uint64 _realDeparture,\n        uint64 _realArrival,\n        bool _isLate\n    ) external;\n\n    function setTotalInsuredValue(uint256 _totalInsuredValue) external;\n\n    function getTotalInsuredValue()\n        external\n        view\n        returns (uint256 totalInsuredValue);\n\n    function getFlight(uint256 _flightID)\n        external\n        view\n        returns (\n            string memory flightRef,\n            uint64 estimatedDeparture,\n            uint64 estimatedArrival,\n            uint64 realDeparture,\n            uint64 realArrival,\n            bool isLate,\n            address insuranceProvider,\n            uint256 insuredValue\n        );\n}\n",
+  "sourcePath": "/home/bender/Documents/FlightInsurance/contracts/FlightSuretyOracle/interfaces/IFlightSuretyDataOracle.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/FlightSuretyOracle/interfaces/IFlightSuretyDataOracle.sol",
+    "exportedSymbols": {
+      "IFlightSuretyDataOracle": [
+        4015
+      ]
+    },
+    "id": 4016,
+    "license": "UNLICENSED",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 3972,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".00"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "39:24:18"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 4015,
+        "linearizedBaseContracts": [
+          4015
+        ],
+        "name": "IFlightSuretyDataOracle",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "ed7f24bc",
+            "id": 3983,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "updateFlight",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3981,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3974,
+                  "mutability": "mutable",
+                  "name": "_flightID",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3983,
+                  "src": "136:17:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3973,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "136:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3976,
+                  "mutability": "mutable",
+                  "name": "_realDeparture",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3983,
+                  "src": "163:21:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  },
+                  "typeName": {
+                    "id": 3975,
+                    "name": "uint64",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "163:6:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint64",
+                      "typeString": "uint64"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3978,
+                  "mutability": "mutable",
+                  "name": "_realArrival",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3983,
+                  "src": "194:19:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  },
+                  "typeName": {
+                    "id": 3977,
+                    "name": "uint64",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "194:6:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint64",
+                      "typeString": "uint64"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3980,
+                  "mutability": "mutable",
+                  "name": "_isLate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3983,
+                  "src": "223:12:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 3979,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "223:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "126:115:18"
+            },
+            "returnParameters": {
+              "id": 3982,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "250:0:18"
+            },
+            "scope": 4015,
+            "src": "105:146:18",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "0b337715",
+            "id": 3988,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setTotalInsuredValue",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3986,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3985,
+                  "mutability": "mutable",
+                  "name": "_totalInsuredValue",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3988,
+                  "src": "287:26:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3984,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "287:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "286:28:18"
+            },
+            "returnParameters": {
+              "id": 3987,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "323:0:18"
+            },
+            "scope": 4015,
+            "src": "257:67:18",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "d48b06b8",
+            "id": 3993,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getTotalInsuredValue",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3989,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "359:2:18"
+            },
+            "returnParameters": {
+              "id": 3992,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3991,
+                  "mutability": "mutable",
+                  "name": "totalInsuredValue",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3993,
+                  "src": "409:25:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3990,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "409:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "408:27:18"
+            },
+            "scope": 4015,
+            "src": "330:106:18",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "3a4396cb",
+            "id": 4014,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getFlight",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3996,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3995,
+                  "mutability": "mutable",
+                  "name": "_flightID",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "461:17:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3994,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "461:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "460:19:18"
+            },
+            "returnParameters": {
+              "id": 4013,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3998,
+                  "mutability": "mutable",
+                  "name": "flightRef",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "540:23:18",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 3997,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "540:6:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4000,
+                  "mutability": "mutable",
+                  "name": "estimatedDeparture",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "577:25:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  },
+                  "typeName": {
+                    "id": 3999,
+                    "name": "uint64",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "577:6:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint64",
+                      "typeString": "uint64"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4002,
+                  "mutability": "mutable",
+                  "name": "estimatedArrival",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "616:23:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  },
+                  "typeName": {
+                    "id": 4001,
+                    "name": "uint64",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "616:6:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint64",
+                      "typeString": "uint64"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4004,
+                  "mutability": "mutable",
+                  "name": "realDeparture",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "653:20:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  },
+                  "typeName": {
+                    "id": 4003,
+                    "name": "uint64",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "653:6:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint64",
+                      "typeString": "uint64"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4006,
+                  "mutability": "mutable",
+                  "name": "realArrival",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "687:18:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  },
+                  "typeName": {
+                    "id": 4005,
+                    "name": "uint64",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "687:6:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint64",
+                      "typeString": "uint64"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4008,
+                  "mutability": "mutable",
+                  "name": "isLate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "719:11:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 4007,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "719:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4010,
+                  "mutability": "mutable",
+                  "name": "insuranceProvider",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "744:25:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4009,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "744:7:18",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4012,
+                  "mutability": "mutable",
+                  "name": "insuredValue",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "783:20:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4011,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "783:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "526:287:18"
+            },
+            "scope": 4015,
+            "src": "442:372:18",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 4016,
+        "src": "65:751:18"
+      }
+    ],
+    "src": "39:778:18"
+  },
+  "legacyAST": {
+    "absolutePath": "project:/contracts/FlightSuretyOracle/interfaces/IFlightSuretyDataOracle.sol",
+    "exportedSymbols": {
+      "IFlightSuretyDataOracle": [
+        4015
+      ]
+    },
+    "id": 4016,
+    "license": "UNLICENSED",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 3972,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".00"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "39:24:18"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 4015,
+        "linearizedBaseContracts": [
+          4015
+        ],
+        "name": "IFlightSuretyDataOracle",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "ed7f24bc",
+            "id": 3983,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "updateFlight",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3981,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3974,
+                  "mutability": "mutable",
+                  "name": "_flightID",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3983,
+                  "src": "136:17:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3973,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "136:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3976,
+                  "mutability": "mutable",
+                  "name": "_realDeparture",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3983,
+                  "src": "163:21:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  },
+                  "typeName": {
+                    "id": 3975,
+                    "name": "uint64",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "163:6:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint64",
+                      "typeString": "uint64"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3978,
+                  "mutability": "mutable",
+                  "name": "_realArrival",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3983,
+                  "src": "194:19:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  },
+                  "typeName": {
+                    "id": 3977,
+                    "name": "uint64",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "194:6:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint64",
+                      "typeString": "uint64"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3980,
+                  "mutability": "mutable",
+                  "name": "_isLate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3983,
+                  "src": "223:12:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 3979,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "223:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "126:115:18"
+            },
+            "returnParameters": {
+              "id": 3982,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "250:0:18"
+            },
+            "scope": 4015,
+            "src": "105:146:18",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "0b337715",
+            "id": 3988,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setTotalInsuredValue",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3986,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3985,
+                  "mutability": "mutable",
+                  "name": "_totalInsuredValue",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3988,
+                  "src": "287:26:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3984,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "287:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "286:28:18"
+            },
+            "returnParameters": {
+              "id": 3987,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "323:0:18"
+            },
+            "scope": 4015,
+            "src": "257:67:18",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "d48b06b8",
+            "id": 3993,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getTotalInsuredValue",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3989,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "359:2:18"
+            },
+            "returnParameters": {
+              "id": 3992,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3991,
+                  "mutability": "mutable",
+                  "name": "totalInsuredValue",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3993,
+                  "src": "409:25:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3990,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "409:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "408:27:18"
+            },
+            "scope": 4015,
+            "src": "330:106:18",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "3a4396cb",
+            "id": 4014,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getFlight",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3996,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3995,
+                  "mutability": "mutable",
+                  "name": "_flightID",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "461:17:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3994,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "461:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "460:19:18"
+            },
+            "returnParameters": {
+              "id": 4013,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3998,
+                  "mutability": "mutable",
+                  "name": "flightRef",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "540:23:18",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 3997,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "540:6:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4000,
+                  "mutability": "mutable",
+                  "name": "estimatedDeparture",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "577:25:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  },
+                  "typeName": {
+                    "id": 3999,
+                    "name": "uint64",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "577:6:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint64",
+                      "typeString": "uint64"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4002,
+                  "mutability": "mutable",
+                  "name": "estimatedArrival",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "616:23:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  },
+                  "typeName": {
+                    "id": 4001,
+                    "name": "uint64",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "616:6:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint64",
+                      "typeString": "uint64"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4004,
+                  "mutability": "mutable",
+                  "name": "realDeparture",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "653:20:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  },
+                  "typeName": {
+                    "id": 4003,
+                    "name": "uint64",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "653:6:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint64",
+                      "typeString": "uint64"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4006,
+                  "mutability": "mutable",
+                  "name": "realArrival",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "687:18:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint64",
+                    "typeString": "uint64"
+                  },
+                  "typeName": {
+                    "id": 4005,
+                    "name": "uint64",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "687:6:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint64",
+                      "typeString": "uint64"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4008,
+                  "mutability": "mutable",
+                  "name": "isLate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "719:11:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 4007,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "719:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4010,
+                  "mutability": "mutable",
+                  "name": "insuranceProvider",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "744:25:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4009,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "744:7:18",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4012,
+                  "mutability": "mutable",
+                  "name": "insuredValue",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4014,
+                  "src": "783:20:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4011,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "783:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "526:287:18"
+            },
+            "scope": 4015,
+            "src": "442:372:18",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 4016,
+        "src": "65:751:18"
+      }
+    ],
+    "src": "39:778:18"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.0+commit.c7dfd78e.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.2",
+  "updatedAt": "2021-08-08T09:21:00.079Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

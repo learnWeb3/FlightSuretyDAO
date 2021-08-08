@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.00;
 
-interface FlightSuretyData {
+interface IFlightSuretyDataOracle {
     function updateFlight(
         uint256 _flightID,
         uint64 _realDeparture,

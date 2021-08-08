@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.00;
 
-interface MembershipFeeAmendmentProposal {
+interface IMembershipFeeAmendmentProposal {
     /** caller authorization */
 
     // authorize a new caller to call the contract
@@ -18,7 +18,7 @@ interface MembershipFeeAmendmentProposal {
     ) external;
 
     // vote an exitsing memebership fee amendment proposal
-     function voteMembershipFeeAmendmentProposal(
+    function voteMembershipFeeAmendmentProposal(
         uint256 _proposalID,
         address _caller,
         bool _side,
@@ -28,6 +28,12 @@ interface MembershipFeeAmendmentProposal {
     // activate an existing membership fee amendement proposal
     function activateMembershipFeeAmendmentProposal(uint256 _proposalID)
         external;
+
+    // check wether a voter as already voted for a specific proposal
+    function hasVotedMembershipFeeAmendmentProposal(
+        address _caller,
+        uint256 _proposalID
+    ) external returns (bool _hasVoted);
 
     // fetch the current vote count for a membership fee amendment proposal
     function getVoteCountMembershipFeeAmendmentProposal(
@@ -42,7 +48,7 @@ interface MembershipFeeAmendmentProposal {
         returns (uint256 currentProposalID);
 
     // check weather a proposal has reached consensus
-      function hasMembershipFeeAmendmentProposalReachedConsensus(
+    function hasMembershipFeeAmendmentProposalReachedConsensus(
         uint256 _proposalID,
         bool _side,
         uint256 _consensusTreshold

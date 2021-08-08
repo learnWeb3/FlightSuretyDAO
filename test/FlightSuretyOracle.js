@@ -1,0 +1,1 @@
+const FlightSuretyOracle = artifacts.require('FlightSuretyOracle');

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.00;
 
-import "./interfaces/FlightSuretyData.sol";
-import "./interfaces/InsuranceCoverageAmendmentProposal.sol";
-import "./interfaces/MembershipFeeAmendmentProposal.sol";
-import "./interfaces/InsuranceProviderRole.sol";
-import "./interfaces/OracleProviderRole.sol";
-import "./interfaces/FlighSuretyOracle.sol";
-import "./interfaces/FlighSuretyShares.sol";
+import "./interfaces/IFlightSuretyData.sol";
+import "./interfaces/IInsuranceCoverageAmendmentProposal.sol";
+import "./interfaces/IMembershipFeeAmendmentProposal.sol";
+import "./interfaces/IInsuranceProviderRole.sol";
+import "./interfaces/IOracleProviderRole.sol";
+import "./interfaces/IFlightSuretyOracle.sol";
+import "./interfaces/IFlightSuretyShares.sol";
 import "../Ownable/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
@@ -85,23 +85,54 @@ contract FlightSuretyApp is Ownable {
     event AuthorizedCaller(address caller, address contractAddress);
     event UnauthorizedCaller(address caller, address contractAddress);
 
-    FlightSuretyData flightSuretyData;
-    InsuranceCoverageAmendmentProposal insuranceCoverageAmendmentProposal;
-    MembershipFeeAmendmentProposal membershipFeeAmendmentProposal;
-    InsuranceProviderRole insuranceProviderRole;
-    OracleProviderRole oracleProviderRole;
-    FlighSuretyShares flighSuretyShares;
+    IFlightSuretyData flightSuretyData;
+    IInsuranceCoverageAmendmentProposal insuranceCoverageAmendmentProposal;
+    IMembershipFeeAmendmentProposal membershipFeeAmendmentProposal;
+    IInsuranceProviderRole insuranceProviderRole;
+    IOracleProviderRole oracleProviderRole;
+    IFlightSuretyShares flightSuretyShares;
+
+    // settings amendment proposals related checks
+
+    modifier requireTokenHolderHasNotVotedInsuranceCoverageAmendmentProposal(
+        address _caller,
+        uint256 _proposalID
+    ) {
+        require(
+            !insuranceCoverageAmendmentProposal
+                .hasVotedInsuranceCoverageAmendmentProposal(
+                    _caller,
+                    _proposalID
+                ),
+            "caller has already voted"
+        );
+        _;
+    }
+
+    modifier requireTokenHolderHasNotVotedMembershipFeeAmendmentProposal(
+        address _caller,
+        uint256 _proposalID
+    ) {
+        require(
+            !membershipFeeAmendmentProposal
+                .hasVotedMembershipFeeAmendmentProposal(_caller, _proposalID),
+            "caller has already voted"
+        );
+        _;
+    }
 
     // flights related checks
 
     modifier requireValidFlight(
         uint256 estimatedDeparture,
-        uint256 estimatedArrival
+        uint256 estimatedArrival,
+        uint256 rate
     ) {
         require(
             estimatedDeparture > block.timestamp &&
                 estimatedArrival > block.timestamp &&
-                estimatedArrival > estimatedDeparture,
+                estimatedArrival > estimatedDeparture &&
+                rate <= 1 ether,
             "flight must be valid"
         );
         _;
@@ -109,10 +140,15 @@ contract FlightSuretyApp is Ownable {
 
     // insurances related checks
 
+    modifier requireMessageValueGreatherOrEqualToFlightRate(uint256 _flightID) {
+        (, , , , , , , , uint256 rate) = flightSuretyData.getFlight(_flightID);
+        require(msg.value >= rate, "sent value does not match flight rate");
+        _;
+    }
+
     modifier requireFutureFlight(uint256 _flightID) {
-        (, uint64 estimatedDeparture, , , , , , ) = flightSuretyData.getFlight(
-            _flightID
-        );
+        (, uint64 estimatedDeparture, , , , , , , ) = flightSuretyData
+            .getFlight(_flightID);
         require(
             estimatedDeparture > block.timestamp,
             "flight departure must be future"
@@ -122,7 +158,7 @@ contract FlightSuretyApp is Ownable {
 
     modifier requireFlightIsLate(uint256 _insuranceID) {
         (uint256 flightID, , , ) = flightSuretyData.getInsurance(_insuranceID);
-        (, , , , , bool isLate, , ) = flightSuretyData.getFlight(flightID);
+        (, , , , , bool isLate, , , ) = flightSuretyData.getFlight(flightID);
         require(isLate, "flight must be late");
         _;
     }
@@ -135,11 +171,6 @@ contract FlightSuretyApp is Ownable {
     modifier onlyInsuranceOwner(uint256 _insuranceID) {
         (, , address owner, ) = flightSuretyData.getInsurance(_insuranceID);
         require(msg.sender == owner, "caller must be insurance owner");
-        _;
-    }
-
-    modifier requireMinimumValue(uint256 minimumValue) {
-        require(msg.value >= minimumValue, "minimum requirement does not match");
         _;
     }
 
@@ -189,7 +220,10 @@ contract FlightSuretyApp is Ownable {
     }
 
     modifier onlyTokenHolder(address _caller) {
-        require(flighSuretyShares.balanceOf(_caller) > 0, "caller must be token holder");
+        require(
+            flightSuretyShares.balanceOf(_caller) > 0,
+            "caller must be token holder"
+        );
         _;
     }
 
@@ -211,7 +245,10 @@ contract FlightSuretyApp is Ownable {
         _;
     }
 
-    modifier insuranceProviderHasNotVoted(address _caller, address _account) {
+    modifier requireTokenHolderHasNotVotedInsuranceProviderMembership(
+        address _caller,
+        address _account
+    ) {
         require(
             !insuranceProviderRole.hasVotedInsuranceProviderMembership(
                 _account,
@@ -240,7 +277,10 @@ contract FlightSuretyApp is Ownable {
         _;
     }
 
-    modifier oracleProviderHasNotVoted(address _caller, address _account) {
+    modifier requireTokenHolderHasNotVotedOracleProviderMembership(
+        address _caller,
+        address _account
+    ) {
         require(
             !oracleProviderRole.hasVotedOracleProviderMembership(
                 _account,
@@ -260,19 +300,19 @@ contract FlightSuretyApp is Ownable {
         address _membershipFeeAmendmentProposal,
         address _insuranceProviderRole,
         address _oracleProviderRole,
-        address _flighSuretyShares
+        address _flightSuretyShares
     ) external onlyOwner {
         // registering external contracts address
-        flightSuretyData = FlightSuretyData(_flightSuretyData);
-        insuranceCoverageAmendmentProposal = InsuranceCoverageAmendmentProposal(
+        flightSuretyData = IFlightSuretyData(_flightSuretyData);
+        insuranceCoverageAmendmentProposal = IInsuranceCoverageAmendmentProposal(
             _insuranceCoverageAmendmentProposal
         );
-        membershipFeeAmendmentProposal = MembershipFeeAmendmentProposal(
+        membershipFeeAmendmentProposal = IMembershipFeeAmendmentProposal(
             _membershipFeeAmendmentProposal
         );
-        insuranceProviderRole = InsuranceProviderRole(_insuranceProviderRole);
-        oracleProviderRole = OracleProviderRole(_oracleProviderRole);
-        flighSuretyShares = FlighSuretyShares(_flighSuretyShares);
+        insuranceProviderRole = IInsuranceProviderRole(_insuranceProviderRole);
+        oracleProviderRole = IOracleProviderRole(_oracleProviderRole);
+        flightSuretyShares = IFlightSuretyShares(_flightSuretyShares);
         // make the contract owner a registered insurance provider
         insuranceProviderRole.addInsuranceProvider(msg.sender);
         // make the contract owner an activated insurance provider
@@ -331,8 +371,8 @@ contract FlightSuretyApp is Ownable {
         external
         onlyOwner
     {
-        flighSuretyShares.authorizeCaller(_authorizedCaller);
-        emit AuthorizedCaller(_authorizedCaller, address(flighSuretyShares));
+        flightSuretyShares.authorizeCaller(_authorizedCaller);
+        emit AuthorizedCaller(_authorizedCaller, address(flightSuretyShares));
     }
 
     /* providers registrations */
@@ -346,7 +386,7 @@ contract FlightSuretyApp is Ownable {
         if (registeredInsuranceProviderCount <= 4) {
             insuranceProviderRole.activateInsuranceProvider(msg.sender);
             uint256 sharesToMint = _calculateSharesToMint();
-            flighSuretyShares.mint(msg.sender, sharesToMint);
+            flightSuretyShares.mint(msg.sender, sharesToMint);
             emit RegisteredInsuranceProvider(msg.sender);
             emit ActivatedInsuranceProvider(msg.sender);
         } else {
@@ -363,7 +403,7 @@ contract FlightSuretyApp is Ownable {
         if (registeredOracleProviderCount <= 4) {
             oracleProviderRole.activateOracleProvider(msg.sender);
             uint256 sharesToMint = _calculateSharesToMint();
-            flighSuretyShares.mint(msg.sender, sharesToMint);
+            flightSuretyShares.mint(msg.sender, sharesToMint);
             emit RegisteredOracleProvider(msg.sender);
             emit ActivatedOracleProvider(msg.sender);
         } else {
@@ -378,11 +418,15 @@ contract FlightSuretyApp is Ownable {
     function voteInsuranceProviderMembership(address _account)
         external
         onlyTokenHolder(msg.sender)
+        requireTokenHolderHasNotVotedInsuranceProviderMembership(
+            msg.sender,
+            _account
+        )
     {
         insuranceProviderRole.voteInsuranceProviderMembership(
             msg.sender,
             _account,
-            flighSuretyShares.balanceOf(msg.sender)
+            flightSuretyShares.balanceOf(msg.sender)
         );
         bool consensusCheck = insuranceProviderRole
             .hasReachedConsensusInsuranceProviderMembership(
@@ -404,11 +448,15 @@ contract FlightSuretyApp is Ownable {
     function voteOracleProviderMembership(address _account)
         external
         onlyTokenHolder(msg.sender)
+        requireTokenHolderHasNotVotedOracleProviderMembership(
+            msg.sender,
+            _account
+        )
     {
         oracleProviderRole.voteOracleProviderMembership(
             msg.sender,
             _account,
-            flighSuretyShares.balanceOf(msg.sender)
+            flightSuretyShares.balanceOf(msg.sender)
         );
         bool consensusCheck = oracleProviderRole
             .hasReachedConsensusOracleProviderMembership(
@@ -430,17 +478,19 @@ contract FlightSuretyApp is Ownable {
     function registerFlight(
         string calldata _flightRef,
         uint64 _estimatedDeparture,
-        uint64 _estimatedArrival
+        uint64 _estimatedArrival,
+        uint256 _rate
     )
         external
         onlyActivatedInsuranceProvider(msg.sender)
-        requireValidFlight(_estimatedDeparture, _estimatedArrival)
+        requireValidFlight(_estimatedDeparture, _estimatedArrival, _rate)
     {
         flightSuretyData.registerFlight(
             msg.sender,
             _flightRef,
             _estimatedDeparture,
-            _estimatedArrival
+            _estimatedArrival,
+            _rate
         );
         uint256 flightID = flightSuretyData.getCurrentFlightID(msg.sender);
         emit NewFlight(flightID, msg.sender);
@@ -452,7 +502,7 @@ contract FlightSuretyApp is Ownable {
         external
         payable
         requireFutureFlight(_flightID)
-        requireMinimumValue(1 ether)
+        requireMessageValueGreatherOrEqualToFlightRate(_flightID)
         requireTotalInsuredValueCoverage(msg.value)
     {
         // create insurance for the caller
@@ -503,7 +553,7 @@ contract FlightSuretyApp is Ownable {
         membershipFeeAmendmentProposal.registerMembershipFeeAmendmentProposal(
             msg.sender,
             _proposedValue,
-            flighSuretyShares.balanceOf(msg.sender)
+            flightSuretyShares.balanceOf(msg.sender)
         );
         uint256 _proposalID = membershipFeeAmendmentProposal
             .getMembershipFeeAmendmentProposalCurrentProposalID();
@@ -513,12 +563,16 @@ contract FlightSuretyApp is Ownable {
     function voteMembershipFeeAmendmentProposal(uint256 _proposalID)
         external
         onlyTokenHolder(msg.sender)
+        requireTokenHolderHasNotVotedMembershipFeeAmendmentProposal(
+            msg.sender,
+            _proposalID
+        )
     {
         membershipFeeAmendmentProposal.voteMembershipFeeAmendmentProposal(
             _proposalID,
             msg.sender,
             true,
-            flighSuretyShares.balanceOf(msg.sender)
+            flightSuretyShares.balanceOf(msg.sender)
         );
         bool consensusCheck = membershipFeeAmendmentProposal
             .hasMembershipFeeAmendmentProposalReachedConsensus(
@@ -551,7 +605,7 @@ contract FlightSuretyApp is Ownable {
             .registerInsuranceCoverageAmendmentProposal(
                 msg.sender,
                 _proposedValue,
-                flighSuretyShares.balanceOf(msg.sender)
+                flightSuretyShares.balanceOf(msg.sender)
             );
         uint256 _proposalID = insuranceCoverageAmendmentProposal
             .getInsuranceCoverageAmendmentCurrentProposalID();
@@ -561,13 +615,17 @@ contract FlightSuretyApp is Ownable {
     function voteInsuranceCoverageAmendmentProposal(uint256 _proposalID)
         external
         onlyTokenHolder(msg.sender)
+        requireTokenHolderHasNotVotedInsuranceCoverageAmendmentProposal(
+            msg.sender,
+            _proposalID
+        )
     {
         insuranceCoverageAmendmentProposal
             .voteInsuranceCoverageAmendmentProposal(
                 _proposalID,
                 msg.sender,
                 true,
-                flighSuretyShares.balanceOf(msg.sender)
+                flightSuretyShares.balanceOf(msg.sender)
             );
         bool consensusCheck = insuranceCoverageAmendmentProposal
             .hasInsuranceCoverageAmendmentProposalReachedConsensus(
@@ -611,7 +669,7 @@ contract FlightSuretyApp is Ownable {
         view
         returns (uint256 providersConsensusTreshold)
     {
-        return flighSuretyShares.totalSupply().div(2);
+        return flightSuretyShares.totalSupply().div(2);
     }
 
     function _calculateSharesToMint()

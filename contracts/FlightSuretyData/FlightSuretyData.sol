@@ -3,9 +3,9 @@ pragma solidity ^0.8.00;
 
 import "../Ownable/Ownable.sol";
 import "../CallerAuditable/CallerAuditable.sol";
-import "./FlighSuretyDataBase.sol";
+import "./FlightSuretyDataBase.sol";
 
-contract FlighSuretyData is Ownable, CallerAuditable, FlightSuretyDataBase {
+contract FlightSuretyData is Ownable, CallerAuditable, FlightSuretyDataBase {
     modifier onlyOwnerOrAuthorizedCaller() {
         require(
             msg.sender == owner || authorizedCallers[msg.sender],
@@ -45,7 +45,8 @@ contract FlighSuretyData is Ownable, CallerAuditable, FlightSuretyDataBase {
         address _caller,
         string calldata _flightRef,
         uint64 _estimatedDeparture,
-        uint64 _estimatedArrival
+        uint64 _estimatedArrival,
+        uint256 _rate
     ) external onlyAuthorizedCaller {
         Flight memory _flight = Flight({
             flightRef: _flightRef,
@@ -55,7 +56,8 @@ contract FlighSuretyData is Ownable, CallerAuditable, FlightSuretyDataBase {
             realArrival: 0,
             isLate: false,
             insuranceProvider: _caller,
-            insuredValue: 0
+            insuredValue: 0,
+            rate: _rate
         });
 
         currentFlightID++;
@@ -99,7 +101,8 @@ contract FlighSuretyData is Ownable, CallerAuditable, FlightSuretyDataBase {
             uint64 realArrival,
             bool isLate,
             address insuranceProvider,
-            uint256 insuredValue
+            uint256 insuredValue,
+            uint256 rate
         )
     {
         Flight memory flight = flights[_flightID];
@@ -111,7 +114,8 @@ contract FlighSuretyData is Ownable, CallerAuditable, FlightSuretyDataBase {
             flight.realArrival,
             flight.isLate,
             flight.insuranceProvider,
-            flight.insuredValue
+            flight.insuredValue,
+            flight.rate
         );
     }
 

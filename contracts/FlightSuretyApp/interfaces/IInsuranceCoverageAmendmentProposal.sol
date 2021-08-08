@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.00;
 
-interface InsuranceCoverageAmendmentProposal {
+interface IInsuranceCoverageAmendmentProposal {
     /** caller authorization */
 
     // authorize a new caller to call the contract
@@ -19,7 +19,7 @@ interface InsuranceCoverageAmendmentProposal {
     ) external;
 
     // vote an existing insurance coverage amendment proposal
-     function voteInsuranceCoverageAmendmentProposal(
+    function voteInsuranceCoverageAmendmentProposal(
         uint256 _proposalID,
         address _caller,
         bool _side,
@@ -29,6 +29,12 @@ interface InsuranceCoverageAmendmentProposal {
     // activate an existing insurance coverage amendment proposal
     function activateInsuranceCoverageAmendmentProposal(uint256 _proposalID)
         external;
+
+    // check wether a voter as already voted for a specific proposal
+    function hasVotedInsuranceCoverageAmendmentProposal(
+        address _caller,
+        uint256 _proposalID
+    ) external returns (bool _hasVoted);
 
     // fetch the current vote count for an insurance coverage amendment proposal
     function getVoteCountInsuranceCoverageAmendmentProposal(

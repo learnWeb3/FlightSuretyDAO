@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.00;
 
-interface FlightSuretyData {
+interface IFlightSuretyData {
     /** caller authorization */
 
     // authorize a new caller to call the contract
@@ -16,7 +16,8 @@ interface FlightSuretyData {
         address _caller,
         string calldata _flightRef,
         uint64 _estimatedDeparture,
-        uint64 _estimatedArrival
+        uint64 _estimatedArrival,
+        uint256 _rate
     ) external;
 
     // update flight data
@@ -74,7 +75,8 @@ interface FlightSuretyData {
             uint64 realArrival,
             bool isLate,
             address insuranceProvider,
-            uint256 insuredValue
+            uint256 insuredValue,
+            uint256 rate
         );
 
     // fetch the current total insured value

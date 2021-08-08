@@ -1,0 +1,22 @@
+{
+  "name": "flightinsurance",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.2.0",
+    "@truffle/hdwallet-provider": "^1.4.3"
+  },
+  "devDependencies": {
+    "dotenv": "^10.0.0"
+  },
+  "scripts": {
+    "deploy-dev": "truffle compile && truffle networks --clean && truffle migrate --reset",
+    "test": "truffle test"
+  },
+  "author": "",
+  "license": "ISC"
+}

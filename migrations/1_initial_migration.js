@@ -1,6 +1,16 @@
-const Migrations = artifacts.require("Migrations");
+const FlightSuretyApp = artifacts.require("FlightSuretyApp");
+const FlightSuretyOracle = artifacts.require("FlightSuretyOracle");
+const FlightSuretyData = artifacts.require("FlightSuretyData");
+const FlightSuretyShares = artifacts.require("FlightSuretyShares");
+const InsuranceProviderRole = artifacts.require("InsuranceProviderRole");
+const OracleProviderRole = artifacts.require("OracleProviderRole");
+const InsuranceCoverageAmendmentProposal = artifacts.require(
+  "InsuranceCoverageAmendmentProposal"
+);
+const MembershipFeeAmendmentProposal = artifacts.require(
+  "MembershipFeeAmendmentProposal"
+);
 
-module.exports = function (deployer) {
 /** 
   contracts deployement workflow :
 
@@ -16,6 +26,10 @@ module.exports = function (deployer) {
         - address _appContractAddress 
       6- deploy FlightSuretyShares authorizing callers : 
         - address _appContractAddress
+      7- deploy InsuranceCoverageAmendmentProposal authroizing caller : 
+        - address _appContractAddress
+      8- deploy MembershipFeeAmendmentProposal authorizing caller :
+        - address _appContractAddress
       7- initialize FlightSuretyApp referencing external contracts addresses : 
         - address _flightSuretyData
         - address _insuranceCoverageAmendmentProposal
@@ -26,36 +40,114 @@ module.exports = function (deployer) {
       8- initialize FlightSuretyOracle referencing external contracts addresses : 
         - address _flightSuretyData 
         - address _oracleProviderRole
-*/ 
-
-
-/**
- 
-  Application workflow : 
-
-      1- register an insurance provider through FlightSuretyApp contract
-      2- register an oracle provider through FlightSuretyApp contract
-      3- if insurance providers count is greater than 4 : vote the membership activation (all activated providers can vote)
-      4- if oracle provider count is greater than 4 : vote the membership activation (all activated providers can vote)
-      5- register a flight as an activated insurance provider through FlightSuretyApp contract
-      6- register an insurance through FlightSuretyApp contract
-      7- update flights data as oracle provider through FlightSuretyOracle contract
-      8- claim the insurance if flight is late
-
-      At any time as an insurance provider or an oracle provider I can as I have stake in the game :
-      - register a membership fee amendment proposal
-      - vote up an existing membership amendment proposal
-      (the current membership fee will be updated when 50% of the participants have voted up the proposal thus reaching consensus among the involved actors)
-      - register an insurance coverage amendment proposal
-      - vote up an existing insurance coverage amendment proposal
-      (the current insurance coverage will be updated when 50% of the participants have voted up the proposal thus reaching consensus among the involved actors)
-
-      Every year (calculated as 365 days after the first contract deployment) token holders aka insurance and oracle providers 
-      will be able during a week to burn their token in exchange for their respective share of the insurance funds profits;
-
-      The FSS token will be scoped as a security token.
-
 */
- 
-  deployer.deploy(Migrations);
+
+module.exports = async function (deployer, network, accounts) {
+  const owner = accounts[0];
+
+  // 1- deploy FlightSuretyApp
+  await deployer.deploy(FlightSuretyApp, { from: owner });
+  const flightSuretyApp = await FlightSuretyApp.deployed();
+
+  //2- deploy FlightSuretyOracle
+  await deployer.deploy(FlightSuretyOracle, { from: owner });
+  const flightSuretyOracle = await FlightSuretyOracle.deployed();
+
+  //3- deploy FlightSuretyData authorizing callers :
+  //  - address _appContractAddress
+  //  - address _oracleContractAddress
+  await deployer.deploy(
+    FlightSuretyData,
+    flightSuretyApp.address,
+    flightSuretyOracle.address,
+    { from: owner }
+  );
+  const flightSuretyData = await FlightSuretyData.deployed();
+
+  //4- deploy OracleProviderRole authorizing callers :
+  //  - address _appContractAddress
+  //  - address _oracleContractAddress
+  await deployer.deploy(
+    OracleProviderRole,
+    flightSuretyApp.address,
+    flightSuretyOracle.address,
+    { from: owner }
+  );
+  const oracleProviderRole = await OracleProviderRole.deployed();
+
+  //5- deploy InsuranceProviderRole authorizing callers :
+  //  - address _appContractAddress
+  await deployer.deploy(InsuranceProviderRole, flightSuretyApp.address, {
+    from: owner,
+  });
+  const insuranceProviderRole = await InsuranceProviderRole.deployed();
+
+  //6- deploy FlightSuretyShares authorizing callers :
+  //  - address _appContractAddress
+  await deployer.deploy(FlightSuretyShares, flightSuretyApp.address, {
+    from: owner,
+  });
+  const flightSuretyShares = await FlightSuretyShares.deployed();
+
+  //7- deploy InsuranceCoverageAmendmentProposal authroizing caller :
+  //  - address _appContractAddress
+  await deployer.deploy(
+    InsuranceCoverageAmendmentProposal,
+    flightSuretyApp.address,
+    { from: owner }
+  );
+  const insuranceCoverageAmendmentProposal =
+    await InsuranceCoverageAmendmentProposal.deployed();
+
+  //8- deploy MembershipFeeAmendmentProposal authorizing caller :
+  //  - address _appContractAddress
+  await deployer.deploy(
+    MembershipFeeAmendmentProposal,
+    flightSuretyApp.address,
+    { from: owner }
+  );
+  const membershipFeeAmendmentProposal =
+    await MembershipFeeAmendmentProposal.deployed();
+
+  // //9- initialize FlightSuretyApp referencing external contracts addresses :
+  // //  - address _flightSuretyData
+  // //  - address _insuranceCoverageAmendmentProposal
+  // //  - address _membershipFeeAmendmentProposal
+  // //  - address _insuranceProviderRole
+  // //  - address _oracleProviderRole
+  // //  - address _flighSuretyShares
+  await flightSuretyApp.initialize(
+    flightSuretyData.address,
+    insuranceCoverageAmendmentProposal.address,
+    membershipFeeAmendmentProposal.address,
+    insuranceProviderRole.address,
+    oracleProviderRole.address,
+    flightSuretyShares.address,
+    { from: owner }
+  );
+
+  console.log(
+    "========================================================================================="
+  );
+  console.log(`FlightSuretyApp succesfully initialized`);
+  console.log(
+    "========================================================================================="
+  );
+
+  //10- initialize FlightSuretyOracle referencing external contracts addresses :
+  //  - address _flightSuretyData
+  //  - address _oracleProviderRole
+  await flightSuretyOracle.initialize(
+    flightSuretyData.address,
+    oracleProviderRole.address,
+    { from: owner }
+  );
+
+  console.log(
+    "========================================================================================="
+  );
+  console.log(`FlightSuretyOracle succesfully initialized`);
+  console.log(
+    "========================================================================================="
+  );
 };

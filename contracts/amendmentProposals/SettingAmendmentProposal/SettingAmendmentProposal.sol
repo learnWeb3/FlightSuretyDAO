@@ -13,9 +13,11 @@ contract SettingAmendmentProposal {
     mapping(uint256 => Votable.ResultVote) proposalVotes;
     mapping(uint256 => Proposal) proposals;
 
-    function _registerProposal(address _caller, uint256 _proposedValue,  uint256 _voteWeight)
-        internal
-    {
+    function _registerProposal(
+        address _caller,
+        uint256 _proposedValue,
+        uint256 _voteWeight
+    ) internal {
         Proposal memory _proposal = Proposal({
             proposedValue: _proposedValue,
             createdAt: block.timestamp
@@ -32,7 +34,15 @@ contract SettingAmendmentProposal {
         bool _side,
         uint256 _voteWeight
     ) internal {
-        proposalVotes[_proposalID].voteResult(_caller, _side,  _voteWeight);
+        proposalVotes[_proposalID].voteResult(_caller, _side, _voteWeight);
+    }
+
+    function _hasVotedProposal(address _caller, uint256 _proposalID)
+        internal
+        view
+        returns (bool _hasVoted)
+    {
+        return proposalVotes[_proposalID].hasVotedResult(_caller);
     }
 
     function _getVoteCount(uint256 _proposalID, bool _side)

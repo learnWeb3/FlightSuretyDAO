@@ -50,7 +50,7 @@ contract InsuranceCoverageAmendmentProposal is
         uint256 _proposedValue,
         uint256 _voteWeight
     ) external onlyAuthorizedCaller {
-          _registerProposal(_caller, _proposedValue, _voteWeight);
+        _registerProposal(_caller, _proposedValue, _voteWeight);
     }
 
     // vote an existing insurance coverage amendment proposal
@@ -69,6 +69,14 @@ contract InsuranceCoverageAmendmentProposal is
         onlyAuthorizedCaller
     {
         _activateInsuranceCoverageAmendmentProposal(_proposalID);
+    }
+
+    // check wether a voter as already voted for a specific proposal
+    function hasVotedInsuranceCoverageAmendmentProposal(
+        address _caller,
+        uint256 _proposalID
+    ) external view onlyAuthorizedCaller returns (bool _hasVoted) {
+        return _hasVotedProposal(_caller, _proposalID);
     }
 
     // fetch the current vote count for an insurance coverage amendment proposal
@@ -108,7 +116,6 @@ contract InsuranceCoverageAmendmentProposal is
     {
         return _getInsuranceCoverageAmendmentCurrentProposalID();
     }
-
 
     function _activateInsuranceCoverageAmendmentProposal(uint256 _proposalID)
         internal

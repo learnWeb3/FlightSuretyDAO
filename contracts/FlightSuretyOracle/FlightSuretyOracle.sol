@@ -3,8 +3,8 @@ pragma solidity ^0.8.00;
 
 import "../Ownable/Ownable.sol";
 import "../Random/Random.sol";
-import "./interfaces/OracleProviderRole.sol";
-import "./interfaces/FlightSuretyData.sol";
+import "./interfaces/IOracleProviderRoleOracle.sol";
+import "./interfaces/IFlightSuretyDataOracle.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract FlightSuretyOracle is Ownable, Random {
@@ -22,8 +22,8 @@ contract FlightSuretyOracle is Ownable, Random {
     mapping(uint256 => mapping(uint256 => uint256)) responses;
     mapping(uint256 => mapping(address => bool)) responseCallers;
     mapping(uint256 => uint256[3]) acceptedAnswer;
-    FlightSuretyData flightSuretyData;
-    OracleProviderRole oracleProviderRole;
+    IFlightSuretyDataOracle flightSuretyData;
+    IOracleProviderRoleOracle oracleProviderRole;
 
     // requests related events
     event NewRequest(
@@ -73,8 +73,8 @@ contract FlightSuretyOracle is Ownable, Random {
         onlyOwner
     {
         // registering external contracts address
-        flightSuretyData = FlightSuretyData(_flightSuretyData);
-        oracleProviderRole = OracleProviderRole(_oracleProviderRole);
+        flightSuretyData = IFlightSuretyDataOracle(_flightSuretyData);
+        oracleProviderRole = IOracleProviderRoleOracle(_oracleProviderRole);
     }
 
     // create a request for a targeted oracle provider subset

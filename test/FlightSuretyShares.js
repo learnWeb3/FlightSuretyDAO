@@ -1,0 +1,1 @@
+const FlightSuretyShares = artifacts.require('FlightSuretyShares');

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.00;
 
-interface InsuranceProviderRole {
+interface IInsuranceProviderRole {
     /** caller authorization */
 
     // authorize a new caller to call the contract

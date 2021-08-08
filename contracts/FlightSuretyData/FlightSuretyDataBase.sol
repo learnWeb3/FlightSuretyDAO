@@ -18,6 +18,7 @@ contract FlightSuretyDataBase {
         bool isLate;
         address insuranceProvider;
         uint256 insuredValue;
+        uint256 rate;
     }
 
     uint256 currentFlightID;

@@ -1,0 +1,1 @@
+const OracleProviderRole = artifacts.require('OracleProviderRole');
