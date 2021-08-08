@@ -26,5 +26,12 @@
       The FSS token will be scoped as a security token.
 
 */
+const BigNumber = require("bignumber.js");
+const assert = require("chai").assert;
+const should = require("chai").should;
+const FlightSuretyApp = artifacts.require("FlightSuretyApp");
 
-const FlightSuretyApp = artifacts.require('FlightSuretyApp');
+// contract(FlightSuretyApp, async (accounts) => {
+//   const owner = accounts[0];
+// });
+

@@ -11,6 +11,8 @@
     "@truffle/hdwallet-provider": "^1.4.3"
   },
   "devDependencies": {
+    "bignumber.js": "^9.0.1",
+    "chai": "^4.3.4",
     "dotenv": "^10.0.0"
   },
   "scripts": {

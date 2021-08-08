@@ -94,6 +94,14 @@ contract OracleProviderRole is Ownable, CallerAuditable, Random {
             );
     }
 
+    // get the current votes number for a given account
+    function getOracleProviderMembershipCurrentMembershipVotes(
+        bool _side,
+        address _caller
+    ) external view onlyAuthorizedCaller returns (uint256) {
+        return oracleProvidersVote.getCurrentMembershipVotes(_caller, _side);
+    }
+
     // fetch current registered oracle provider count
     function getRegisteredOracleProvidersCount()
         external
@@ -134,9 +142,9 @@ contract OracleProviderRole is Ownable, CallerAuditable, Random {
         uint256 _voteWeight
     ) external onlyAuthorizedCaller {
         oracleProvidersVote.voteMembership(
-            _account,
-            true,
             _caller,
+            true,
+            _account,
             _voteWeight
         );
     }
@@ -169,7 +177,7 @@ contract OracleProviderRole is Ownable, CallerAuditable, Random {
         address _account,
         address _caller
     ) internal view returns (bool) {
-        return oracleProvidersVote.hasVotedMembership(_account, _caller);
+        return oracleProvidersVote.hasVotedMembership(_caller, _account);
     }
 
     function _getRegisteredOracleProvidersCount()

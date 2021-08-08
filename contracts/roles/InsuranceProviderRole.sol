@@ -12,8 +12,11 @@ contract InsuranceProviderRole is Ownable, CallerAuditable {
     using Votable for Votable.MembershipVote;
     Votable.MembershipVote insuranceProvidersVote;
 
-    modifier onlyOwnerOrAuthorizedCaller(){
-        require(msg.sender == owner || authorizedCallers[msg.sender], "caller must be owner or authorized caller");
+    modifier onlyOwnerOrAuthorizedCaller() {
+        require(
+            msg.sender == owner || authorizedCallers[msg.sender],
+            "caller must be owner or authorized caller"
+        );
         _;
     }
 
@@ -25,12 +28,18 @@ contract InsuranceProviderRole is Ownable, CallerAuditable {
     /** caller authorization */
 
     // authorize a new caller to call the contract
-    function authorizeCaller(address _caller) external onlyOwnerOrAuthorizedCaller{
+    function authorizeCaller(address _caller)
+        external
+        onlyOwnerOrAuthorizedCaller
+    {
         _authorizeCaller(_caller);
     }
 
     // remove an existing caller rights to call the contract
-    function unauthorizeCaller(address _caller) external onlyOwnerOrAuthorizedCaller{
+    function unauthorizeCaller(address _caller)
+        external
+        onlyOwnerOrAuthorizedCaller
+    {
         _unauthorizeCaller(_caller);
     }
 
@@ -70,11 +79,20 @@ contract InsuranceProviderRole is Ownable, CallerAuditable {
         address _caller,
         uint256 consensusTreshold
     ) external view onlyAuthorizedCaller returns (bool) {
-        return  insuranceProvidersVote.hasReachedConsensusMembership(
+        return
+            insuranceProvidersVote.hasReachedConsensusMembership(
                 _side,
                 _caller,
                 consensusTreshold
             );
+    }
+
+    // get the current votes number for a given account
+    function getInsuranceProviderMembershipCurrentMembershipVotes(
+        bool _side,
+        address _caller
+    ) external view onlyAuthorizedCaller returns (uint256) {
+        return insuranceProvidersVote.getCurrentMembershipVotes(_caller, _side);
     }
 
     // fetch current registered insurance provider count
@@ -114,11 +132,17 @@ contract InsuranceProviderRole is Ownable, CallerAuditable {
     }
 
     // vote for an insurance provider aka airline activation and membership
-    function voteInsuranceProviderMembership(address _caller, address _account,  uint256 _voteWeight)
-        external
-        onlyAuthorizedCaller
-    {
-         insuranceProvidersVote.voteMembership(_caller, true, _account, _voteWeight);
+    function voteInsuranceProviderMembership(
+        address _caller,
+        address _account,
+        uint256 _voteWeight
+    ) external onlyAuthorizedCaller {
+        insuranceProvidersVote.voteMembership(
+            _caller,
+            true,
+            _account,
+            _voteWeight
+        );
     }
 
     // activate an insurance provider aka airline
@@ -149,9 +173,8 @@ contract InsuranceProviderRole is Ownable, CallerAuditable {
         address _account,
         address _caller
     ) internal view returns (bool) {
-        return insuranceProvidersVote.hasVotedMembership(_account, _caller);
+        return insuranceProvidersVote.hasVotedMembership(_caller, _account);
     }
-
 
     function _getRegisteredInsuranceProvidersCount()
         internal
