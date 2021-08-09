@@ -10,4 +10,6 @@ interface IFlightSuretyOracle {
     // remove an existing caller rights to call the contract
     function unauthorizeCaller(address _caller) external;
 
+    
+
 }

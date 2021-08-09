@@ -8,6 +8,7 @@ contract(OracleProviderRole, async (accounts) => {
   const userTwo = accounts[2];
   const authorizedCaller = accounts[3];
   const unauthorizedCaller = accounts[4];
+  const persistentUser = accounts[5];
 
   // contract call authorization management
   it("As owner of the contract should authorize a caller", async () => {
@@ -48,6 +49,9 @@ contract(OracleProviderRole, async (accounts) => {
   it("As an authorized caller register an oracle provider", async () => {
     let contract = await OracleProviderRole.deployed();
     await contract.addOracleProvider(userOne, { from: authorizedCaller });
+    await contract.addOracleProvider(persistentUser, {
+      from: authorizedCaller,
+    });
   });
 
   it("As an unauthorized caller should fail to register an oracle provider", async () => {
@@ -67,7 +71,14 @@ contract(OracleProviderRole, async (accounts) => {
     let bool = await contract.isRegisteredOracleProvider(userOne, {
       from: authorizedCaller,
     });
+    let boolPersistentUser = await contract.isRegisteredOracleProvider(
+      persistentUser,
+      {
+        from: authorizedCaller,
+      }
+    );
     assert.equal(bool, true);
+    assert.equal(boolPersistentUser, true);
   });
 
   it("As an unauthorized caller should fail to checks if an oracle provider is registered", async () => {
@@ -92,7 +103,7 @@ contract(OracleProviderRole, async (accounts) => {
     let count = await contract.getRegisteredOracleProvidersCount({
       from: authorizedCaller,
     });
-    assert.equal(new BigNumber(count).isEqualTo(new BigNumber(1)), true);
+    assert.equal(new BigNumber(count).isEqualTo(new BigNumber(2)), true);
   });
 
   it("As an unauthorized caller should fail to fetch current registered oracle provider count", async () => {
@@ -115,6 +126,9 @@ contract(OracleProviderRole, async (accounts) => {
   it("As an authorized caller activate an oracle provider", async () => {
     let contract = await OracleProviderRole.deployed();
     await contract.activateOracleProvider(userOne, { from: authorizedCaller });
+    await contract.activateOracleProvider(persistentUser, {
+      from: authorizedCaller,
+    });
   });
 
   it("As an unauthorized caller should fail to activate an oracle provider", async () => {
@@ -136,7 +150,14 @@ contract(OracleProviderRole, async (accounts) => {
     let bool = await contract.isActivatedOracleProvider(userOne, {
       from: authorizedCaller,
     });
+    let boolPersistentUser = await contract.isActivatedOracleProvider(
+      persistentUser,
+      {
+        from: authorizedCaller,
+      }
+    );
     assert.equal(bool, true);
+    assert.equal(boolPersistentUser, true);
   });
 
   it("As an unauthorized caller should fail to checks if an oracle provider is activated", async () => {
@@ -161,7 +182,7 @@ contract(OracleProviderRole, async (accounts) => {
     let count = await contract.getActivatedOracleProvidersCount({
       from: authorizedCaller,
     });
-    assert(new BigNumber(count).isEqualTo(new BigNumber(1)));
+    assert(new BigNumber(count).isEqualTo(new BigNumber(2)));
   });
 
   it("As an unauthorized caller should fail to fetch current activated oracle provider count", async () => {

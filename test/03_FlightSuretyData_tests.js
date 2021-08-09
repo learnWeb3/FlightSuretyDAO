@@ -9,10 +9,12 @@ contract(FlightSuretyData, async (accounts) => {
   const userTwo = accounts[2];
   const authorizedCaller = accounts[3];
   const unauthorizedCaller = accounts[4];
+
   const flightRef = "UA840";
   const estimatedDeparture = parseInt(Date.now().toString().slice(0, -3));
   const estimatedArrival = estimatedDeparture + 3600 * 2;
   const rate = 500000000;
+
   // contract call authorization management
   it("As owner of the contract should authorize a caller", async () => {
     let contract = await FlightSuretyData.deployed();

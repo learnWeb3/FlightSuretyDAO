@@ -8,7 +8,6 @@ contract(InsuranceProviderRole, async (accounts) => {
   const userTwo = accounts[2];
   const authorizedCaller = accounts[3];
   const unauthorizedCaller = accounts[4];
-
   // contract call authorization management
   it("As owner of the contract should authorize a caller", async () => {
     let contract = await InsuranceProviderRole.deployed();

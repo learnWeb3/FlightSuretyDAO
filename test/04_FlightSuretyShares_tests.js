@@ -3,11 +3,13 @@ const assert = require("chai").assert;
 const FlightSuretyShares = artifacts.require("FlightSuretyShares");
 
 contract(FlightSuretyShares, async (accounts) => {
+
   const owner = accounts[0];
   const userOne = accounts[1];
   const userTwo = accounts[2];
   const authorizedCaller = accounts[3];
   const unauthorizedCaller = accounts[4];
+
   // contract call authorization management
   it("As owner of the contract should authorize a caller", async () => {
     let contract = await FlightSuretyShares.deployed();
