@@ -34,7 +34,10 @@ contract FlightSuretyApp is Ownable {
     );
 
     // flights related events
-    event NewFlight(uint256 indexed flightID, address insuranceProvider);
+    event NewFlight(
+        uint256 indexed flightID,
+        address indexed insuranceProvider
+    );
 
     // insurances related events
     event NewInsurance(
@@ -50,6 +53,7 @@ contract FlightSuretyApp is Ownable {
     );
 
     event NewPayout(
+        uint256 indexed flightID,
         uint256 indexed insuranceID,
         uint256 insuredValue,
         address indexed owner
@@ -143,7 +147,9 @@ contract FlightSuretyApp is Ownable {
     modifier requireMessageValueGreatherOrEqualToFlightRate(uint256 _flightID) {
         (, , , , , , , , uint256 rate) = flightSuretyData.getFlight(_flightID);
         require(msg.value >= rate, "sent value does not match flight rate");
+        uint256 amountDue = rate - msg.value;
         _;
+        payable(msg.sender).transfer(amountDue);
     }
 
     modifier requireFutureFlight(uint256 _flightID) {
@@ -184,7 +190,7 @@ contract FlightSuretyApp is Ownable {
             newTotalInsuredValue
         );
         require(
-            totalFundsWithCoverage >= address(this).balance,
+            totalFundsWithCoverage <= address(this).balance,
             "current funds must cover new insurance value"
         );
         _;
@@ -240,7 +246,7 @@ contract FlightSuretyApp is Ownable {
     modifier onlyActivatedInsuranceProvider(address _caller) {
         require(
             insuranceProviderRole.isActivatedInsuranceProvider(_caller),
-            "caller must be insurance provider"
+            "caller must be activated insurance provider"
         );
         _;
     }
@@ -321,58 +327,119 @@ contract FlightSuretyApp is Ownable {
 
     /* external contracts calls management */
 
-    function updateAuthorizedCallerFlightSuretyData(address _authorizedCaller)
-        external
-        onlyOwner
-    {
-        flightSuretyData.authorizeCaller(_authorizedCaller);
-        emit AuthorizedCaller(_authorizedCaller, address(flightSuretyData));
+    function updateAuthorizedCallerFlightSuretyData(
+        address _authorizedCaller,
+        bool _access
+    ) external onlyOwner {
+        if (_access) {
+            flightSuretyData.authorizeCaller(_authorizedCaller);
+            emit AuthorizedCaller(_authorizedCaller, address(flightSuretyData));
+        } else {
+            flightSuretyData.unauthorizeCaller(_authorizedCaller);
+            emit UnauthorizedCaller(
+                _authorizedCaller,
+                address(flightSuretyData)
+            );
+        }
     }
 
     function updateAuthorizedCallerInsuranceCoverageAmendmentProposal(
-        address _authorizedCaller
+        address _authorizedCaller,
+        bool _access
     ) external onlyOwner {
-        insuranceCoverageAmendmentProposal.authorizeCaller(_authorizedCaller);
-        emit AuthorizedCaller(
-            _authorizedCaller,
-            address(insuranceCoverageAmendmentProposal)
-        );
+        if (_access) {
+            insuranceCoverageAmendmentProposal.authorizeCaller(
+                _authorizedCaller
+            );
+            emit AuthorizedCaller(
+                _authorizedCaller,
+                address(insuranceCoverageAmendmentProposal)
+            );
+        } else {
+            insuranceCoverageAmendmentProposal.unauthorizeCaller(
+                _authorizedCaller
+            );
+            emit UnauthorizedCaller(
+                _authorizedCaller,
+                address(insuranceCoverageAmendmentProposal)
+            );
+        }
     }
 
     function updateAuthorizedCallerMembershipFeeAmendmentProposal(
-        address _authorizedCaller
+        address _authorizedCaller,
+        bool _access
     ) external onlyOwner {
-        membershipFeeAmendmentProposal.authorizeCaller(_authorizedCaller);
-        emit AuthorizedCaller(
-            _authorizedCaller,
-            address(membershipFeeAmendmentProposal)
-        );
+        if (_access) {
+            membershipFeeAmendmentProposal.authorizeCaller(_authorizedCaller);
+            emit AuthorizedCaller(
+                _authorizedCaller,
+                address(membershipFeeAmendmentProposal)
+            );
+        } else {
+            membershipFeeAmendmentProposal.unauthorizeCaller(_authorizedCaller);
+            emit UnauthorizedCaller(
+                _authorizedCaller,
+                address(membershipFeeAmendmentProposal)
+            );
+        }
     }
 
     function updateAuthorizedCallerInsuranceProviderRole(
-        address _authorizedCaller
+        address _authorizedCaller,
+        bool _access
     ) external onlyOwner {
-        insuranceProviderRole.authorizeCaller(_authorizedCaller);
-        emit AuthorizedCaller(
-            _authorizedCaller,
-            address(insuranceProviderRole)
-        );
+        if (_access) {
+            insuranceProviderRole.authorizeCaller(_authorizedCaller);
+            emit AuthorizedCaller(
+                _authorizedCaller,
+                address(insuranceProviderRole)
+            );
+        } else {
+            insuranceProviderRole.unauthorizeCaller(_authorizedCaller);
+            emit UnauthorizedCaller(
+                _authorizedCaller,
+                address(insuranceProviderRole)
+            );
+        }
     }
 
-    function updateAuthorizedCallerOracleProviderRole(address _authorizedCaller)
-        external
-        onlyOwner
-    {
-        oracleProviderRole.authorizeCaller(_authorizedCaller);
-        emit AuthorizedCaller(_authorizedCaller, address(oracleProviderRole));
+    function updateAuthorizedCallerOracleProviderRole(
+        address _authorizedCaller,
+        bool _access
+    ) external onlyOwner {
+        if (_access) {
+            oracleProviderRole.authorizeCaller(_authorizedCaller);
+            emit AuthorizedCaller(
+                _authorizedCaller,
+                address(oracleProviderRole)
+            );
+        } else {
+            oracleProviderRole.unauthorizeCaller(_authorizedCaller);
+            emit UnauthorizedCaller(
+                _authorizedCaller,
+                address(oracleProviderRole)
+            );
+        }
     }
 
-    function updateAuthorizedCallerFlighSuretyShares(address _authorizedCaller)
-        external
-        onlyOwner
-    {
-        flightSuretyShares.authorizeCaller(_authorizedCaller);
-        emit AuthorizedCaller(_authorizedCaller, address(flightSuretyShares));
+    function updateAuthorizedCallerFlighSuretyShares(
+        address _authorizedCaller,
+        bool _access
+    ) external onlyOwner {
+        if (_access) {
+            flightSuretyShares.authorizeCaller(_authorizedCaller);
+            emit AuthorizedCaller(
+                _authorizedCaller,
+                address(flightSuretyShares)
+            );
+        } else {
+            flightSuretyShares.unauthorizeCaller(_authorizedCaller);
+            emit UnauthorizedCaller(
+                _authorizedCaller,
+                address(flightSuretyShares)
+            );
+        }
     }
 
     /* providers registrations */
@@ -436,6 +503,8 @@ contract FlightSuretyApp is Ownable {
             );
         if (consensusCheck) {
             insuranceProviderRole.activateInsuranceProvider(_account);
+            uint256 sharesToMint = _calculateSharesToMint();
+            flightSuretyShares.mint(_account, sharesToMint);
             emit NewVoteInsuranceProvider(msg.sender, true, _account);
             emit ActivatedInsuranceProvider(_account);
         } else {
@@ -466,6 +535,8 @@ contract FlightSuretyApp is Ownable {
             );
         if (consensusCheck) {
             oracleProviderRole.activateOracleProvider(_account);
+            uint256 sharesToMint = _calculateSharesToMint();
+            flightSuretyShares.mint(_account, sharesToMint);
             emit NewVoteOracleProvider(msg.sender, true, _account);
             emit ActivatedOracleProvider(_account);
         } else {
@@ -492,7 +563,7 @@ contract FlightSuretyApp is Ownable {
             _estimatedArrival,
             _rate
         );
-        uint256 flightID = flightSuretyData.getCurrentFlightID(msg.sender);
+        uint256 flightID = flightSuretyData.getCurrentFlightID();
         emit NewFlight(flightID, msg.sender);
     }
 
@@ -505,16 +576,14 @@ contract FlightSuretyApp is Ownable {
         requireMessageValueGreatherOrEqualToFlightRate(_flightID)
         requireTotalInsuredValueCoverage(msg.value)
     {
+        // fetch flight rate
+        (, , , , , , , , uint256 rate) = flightSuretyData.getFlight(_flightID);
         // create insurance for the caller
-        flightSuretyData.insure(msg.sender, _flightID, msg.value);
+        flightSuretyData.insure(msg.sender, _flightID, rate);
         // update total insured value  (locking up funds to be sure to be able to cover all funds locked up in contract)
-        uint256 currentTotalInsuredValue = flightSuretyData
-            .getTotalInsuredValue();
-        flightSuretyData.setTotalInsuredValue(
-            currentTotalInsuredValue.add(msg.value)
-        );
+        _incrementTotalInsuredValue(rate);
         uint256 insuranceID = flightSuretyData.getCurrentInsuranceID();
-        emit NewInsurance(msg.sender, insuranceID, _flightID, msg.value);
+        emit NewInsurance(msg.sender, insuranceID, _flightID, rate);
     }
 
     function claimInsurance(uint256 _insuranceID)
@@ -525,9 +594,8 @@ contract FlightSuretyApp is Ownable {
         onlyInsuranceIsNotClaimed(_insuranceID)
     {
         // fetch the insurance insured value
-        (, uint256 insuredValue, , ) = flightSuretyData.getInsurance(
-            _insuranceID
-        );
+        (uint256 flightID, uint256 insuredValue, , ) = flightSuretyData
+            .getInsurance(_insuranceID);
         // update insurance to claimed
         flightSuretyData.setInsuranceToClaimed(_insuranceID);
         // update total insured value as funds are about to be sent (unlocking funds to take new insurance contracts)
@@ -539,7 +607,7 @@ contract FlightSuretyApp is Ownable {
         // calculate the amount to transfer according to the insurance coverage policy
         uint256 amountToTransfer = _calculateInsuredValueBenefits(insuredValue);
         payable(msg.sender).transfer(amountToTransfer);
-        emit NewPayout(_insuranceID, insuredValue, msg.sender);
+        emit NewPayout(flightID, _insuranceID, insuredValue, msg.sender);
     }
 
     /* Settings amendment proposals*/
@@ -558,6 +626,7 @@ contract FlightSuretyApp is Ownable {
         uint256 _proposalID = membershipFeeAmendmentProposal
             .getMembershipFeeAmendmentProposalCurrentProposalID();
         emit NewMembershipFeeAmendmentProposal(_proposalID, _proposedValue);
+        emit NewVoteMembershipFeeAmendmentProposal(_proposalID, msg.sender);
     }
 
     function voteMembershipFeeAmendmentProposal(uint256 _proposalID)
@@ -610,6 +679,7 @@ contract FlightSuretyApp is Ownable {
         uint256 _proposalID = insuranceCoverageAmendmentProposal
             .getInsuranceCoverageAmendmentCurrentProposalID();
         emit NewInsuranceCoverageAmendmentProposal(_proposalID, _proposedValue);
+        emit NewVoteInsuranceCoverageAmendmentProposal(_proposalID, msg.sender);
     }
 
     function voteInsuranceCoverageAmendmentProposal(uint256 _proposalID)
@@ -652,6 +722,14 @@ contract FlightSuretyApp is Ownable {
                 msg.sender
             );
         }
+    }
+
+    function _incrementTotalInsuredValue(uint256 _addedValue) internal {
+        uint256 currentTotalInsuredValue = flightSuretyData
+            .getTotalInsuredValue();
+        flightSuretyData.setTotalInsuredValue(
+            currentTotalInsuredValue.add(_addedValue)
+        );
     }
 
     function _calculateInsuredValueBenefits(uint256 initialValue)

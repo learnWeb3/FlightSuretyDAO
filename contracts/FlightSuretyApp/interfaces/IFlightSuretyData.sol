@@ -29,7 +29,7 @@ interface IFlightSuretyData {
     ) external;
 
     // get current autoincrementing id of a given insurance provider aka airline
-    function getCurrentFlightID(address _caller)
+    function getCurrentFlightID()
         external
         view
         returns (uint256 insuranceProviderCurrentFlightID);

@@ -31,7 +31,7 @@ contract(FlightSuretyOracle, async (accounts) => {
   // initialize external contracts addresses
 
   it("As a contract owner it initialize external contracts addresses", async () => {
-    let contract = await FlightSuretyOracle.deployed();
+    const contract = await FlightSuretyOracle.deployed();
     // deploying linked contract
     let flightSuretyApp = await FlightSuretyApp.new({ from: owner });
     let oracleProviderRole = await OracleProviderRole.new(
@@ -68,7 +68,7 @@ contract(FlightSuretyOracle, async (accounts) => {
   });
 
   it("As any other address it fails to initialize external contracts addresses", async () => {
-    let contract = await FlightSuretyOracle.deployed();
+    const contract = await FlightSuretyOracle.deployed();
     try {
       await contract.initialize(
         flightSuretyDataAddress,
@@ -84,7 +84,7 @@ contract(FlightSuretyOracle, async (accounts) => {
   // Request and responses management
 
   it("As an activated oracle provider it should create a request for a targeted oracle provider subset", async () => {
-    let contract = await FlightSuretyOracle.deployed();
+    const contract = await FlightSuretyOracle.deployed();
     let oracleProviderRoleContract = await OracleProviderRole.at(
       oracleProviderRoleAddress
     );
@@ -124,7 +124,7 @@ contract(FlightSuretyOracle, async (accounts) => {
   });
 
   it("As any other account it should fail to create a request for a targeted oracle provider subset", async () => {
-    let contract = await FlightSuretyOracle.deployed();
+    const contract = await FlightSuretyOracle.deployed();
     try {
       await contract.createRequest(flightID, flightRef, { from: userTwo });
       assert.fail();
@@ -132,7 +132,7 @@ contract(FlightSuretyOracle, async (accounts) => {
   });
 
   it("As an activated oracle provider it should update responses to a request and validate the accepted outcome according to multiparty consensus rules", async () => {
-    let contract = await FlightSuretyOracle.deployed();
+    const contract = await FlightSuretyOracle.deployed();
     await contract.respondToRequest(
       persistentUser,
       1,
@@ -144,7 +144,7 @@ contract(FlightSuretyOracle, async (accounts) => {
   });
 
   it("As any other account it should fail to update responses to a request and validate the accepted outcome according to multiparty consensus rules", async () => {
-    let contract = await FlightSuretyOracle.deployed();
+    const contract = await FlightSuretyOracle.deployed();
     try {
       await contract.respondToRequest(
         persistentUser,

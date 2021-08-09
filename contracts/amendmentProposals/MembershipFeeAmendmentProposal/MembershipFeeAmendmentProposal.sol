@@ -53,7 +53,7 @@ contract MembershipFeeAmendmentProposal is
         _registerProposal(_caller, _proposedValue, _voteWeight);
     }
 
-    // vote an exitsing memebership fee amendment proposal
+    // vote an existing memebership fee amendment proposal
     function voteMembershipFeeAmendmentProposal(
         uint256 _proposalID,
         address _caller,

@@ -10,13 +10,13 @@ contract(InsuranceProviderRole, async (accounts) => {
   const unauthorizedCaller = accounts[4];
   // contract call authorization management
   it("As owner of the contract should authorize a caller", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     await contract.authorizeCaller(userOne, { from: owner });
     await contract.authorizeCaller(authorizedCaller, { from: owner });
   });
 
   it("As caller not owner of the contract should fail to authorize a caller", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     try {
       await contract.authorizeCaller(userOne, { from: userTwo });
       assert.fail();
@@ -26,12 +26,12 @@ contract(InsuranceProviderRole, async (accounts) => {
   });
 
   it("As  owner of the contract should unauthorize a caller ", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     await contract.unauthorizeCaller(userOne, { from: owner });
   });
 
   it("As caller not owner of the contract should fail to unauthorize a caller ", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     try {
       await contract.unauthorizeCaller(userOne, { from: userTwo });
       assert.fail();
@@ -45,12 +45,12 @@ contract(InsuranceProviderRole, async (accounts) => {
   // REGISTRATION
 
   it("As an authorized caller register an insurance provider", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     await contract.addInsuranceProvider(userOne, { from: authorizedCaller });
   });
 
   it("As an unauthorized caller should fail to register an insurance provider", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     try {
       await contract.addInsuranceProvider(userOne, {
         from: unauthorizedCaller,
@@ -64,7 +64,7 @@ contract(InsuranceProviderRole, async (accounts) => {
   // READ REGISTRATION
 
   it("As an authorized caller checks if an insurance provider is registered", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     let bool = await contract.isRegisteredInsuranceProvider(userOne, {
       from: authorizedCaller,
     });
@@ -72,7 +72,7 @@ contract(InsuranceProviderRole, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to checks if an insurance provider is registered", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     try {
       await contract.isRegisteredInsuranceProvider(userOne, {
         from: unauthorizedCaller,
@@ -89,7 +89,7 @@ contract(InsuranceProviderRole, async (accounts) => {
   // READ REGISTERED PROVIDER COUNT
 
   it("As an authorized caller fetch current registered insurance provider count", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     let count = await contract.getRegisteredInsuranceProvidersCount({
       from: authorizedCaller,
     });
@@ -97,7 +97,7 @@ contract(InsuranceProviderRole, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to fetch current registered insurance provider count", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     try {
       await contract.getRegisteredInsuranceProvidersCount({
         from: unauthorizedCaller,
@@ -114,14 +114,14 @@ contract(InsuranceProviderRole, async (accounts) => {
   // ACTIVATION
 
   it("As an authorized caller activate an insurance provider", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     await contract.activateInsuranceProvider(userOne, {
       from: authorizedCaller,
     });
   });
 
   it("As an unauthorized caller should fail to activate an insurance provider", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     try {
       await contract.activateInsuranceProvider(userOne, {
         from: unauthorizedCaller,
@@ -135,7 +135,7 @@ contract(InsuranceProviderRole, async (accounts) => {
   // READ ACTIVATION
 
   it("As an authorized caller checks if an insurance provider is activated", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     let bool = await contract.isActivatedInsuranceProvider(userOne, {
       from: authorizedCaller,
     });
@@ -143,7 +143,7 @@ contract(InsuranceProviderRole, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to checks if an insurance provider is activated", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     try {
       await contract.isActivatedInsuranceProvider(userOne, {
         from: unauthorizedCaller,
@@ -160,7 +160,7 @@ contract(InsuranceProviderRole, async (accounts) => {
   // READ ACTIVATED PROVIDER COUNT
 
   it("As an authorized caller fetch current activated insurance provider count", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     let count = await contract.getActivatedInsuranceProvidersCount({
       from: authorizedCaller,
     });
@@ -168,7 +168,7 @@ contract(InsuranceProviderRole, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to fetch current activated insurance provider count", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     try {
       await contract.getActivatedInsuranceProvidersCount({
         from: unauthorizedCaller,
@@ -185,14 +185,14 @@ contract(InsuranceProviderRole, async (accounts) => {
   // VOTE PROVIDER MEMBERSHIP
 
   it("As an authorized caller  vote for an insurance provider activation and membership", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     contract.voteInsuranceProviderMembership(userTwo, userOne, 1, {
       from: authorizedCaller,
     });
   });
 
   it("As an unauthorized caller should fail to  vote for an insurance provider activation and membership", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     try {
       await contract.voteInsuranceProviderMembership(userTwo, userOne, 1, {
         from: unauthorizedCaller,
@@ -206,7 +206,7 @@ contract(InsuranceProviderRole, async (accounts) => {
   // READ VOTE
 
   it("As an authorized caller checks if a given caller has voted for the membership of an other address", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     let bool = await contract.hasVotedInsuranceProviderMembership(
       userOne,
       userTwo,
@@ -218,7 +218,7 @@ contract(InsuranceProviderRole, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to checks if a given caller has voted for the membership of an other address", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     try {
       await contract.hasVotedInsuranceProviderMembership(userOne, userTwo, {
         from: unauthorizedCaller,
@@ -233,7 +233,7 @@ contract(InsuranceProviderRole, async (accounts) => {
   });
 
   it("As an authorized caller get the current votes count for a given account", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     let count =
       await contract.getInsuranceProviderMembershipCurrentMembershipVotes(
         true,
@@ -247,7 +247,7 @@ contract(InsuranceProviderRole, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to get the current votes count for a given account", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     try {
       await contract.getInsuranceProviderMembershipCurrentMembershipVotes(
         true,
@@ -268,7 +268,7 @@ contract(InsuranceProviderRole, async (accounts) => {
   // READ CONSENSUS MEMBERSHIP
 
   it("As an authorized caller checks if an address currently voted for insurance provider membership has reached consensus among the community", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     let bool = await contract.hasReachedConsensusInsuranceProviderMembership(
       true,
       userOne,
@@ -281,7 +281,7 @@ contract(InsuranceProviderRole, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to checks if an address currently voted for insurance provider membership has reached consensus among the community", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     try {
       await contract.hasReachedConsensusInsuranceProviderMembership(
         true,
@@ -303,14 +303,14 @@ contract(InsuranceProviderRole, async (accounts) => {
   // REMOVE PROVIDER
 
   it("As an authorized caller remove an existing insurance provider", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     await contract.renounceInsuranceProvider(userOne, {
       from: authorizedCaller,
     });
   });
 
   it("As an unauthorized caller should fail to remove an existing insurance provider", async () => {
-    let contract = await InsuranceProviderRole.deployed();
+    const contract = await InsuranceProviderRole.deployed();
     try {
       await contract.renounceInsuranceProvider(userOne, {
         from: unauthorizedCaller,

@@ -13,13 +13,13 @@ contract(MembershipFeeAmendmentProposal, async (accounts) => {
 
   // contract call authorization management
   it("As owner of the contract should authorize a caller", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     await contract.authorizeCaller(userOne, { from: owner });
     await contract.authorizeCaller(authorizedCaller, { from: owner });
   });
 
   it("As caller not owner of the contract should fail to authorize a caller", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     try {
       await contract.authorizeCaller(userOne, { from: userTwo });
       assert.fail();
@@ -29,12 +29,12 @@ contract(MembershipFeeAmendmentProposal, async (accounts) => {
   });
 
   it("As  owner of the contract should unauthorize a caller ", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     await contract.unauthorizeCaller(userOne, { from: owner });
   });
 
   it("As caller not owner of the contract should fail to unauthorize a caller ", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     try {
       await contract.unauthorizeCaller(userOne, { from: userTwo });
       assert.fail();
@@ -48,14 +48,14 @@ contract(MembershipFeeAmendmentProposal, async (accounts) => {
   // register a new membership amendment proposal
 
   it("As an authorized caller register a new membership amendment proposal", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     await contract.registerMembershipFeeAmendmentProposal(userOne, 1, 1, {
       from: authorizedCaller,
     });
   });
 
   it("As an unauthorized caller should fail to register a new membership amendment proposal", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     try {
       await contract.registerMembershipFeeAmendmentProposal(userOne, 1, 1, {
         from: unauthorizedCaller,
@@ -66,16 +66,16 @@ contract(MembershipFeeAmendmentProposal, async (accounts) => {
     }
   });
 
-  // vote an exitsing memebership fee amendment proposal
-  it("As an authorized caller vote an exitsing memebership fee amendment proposal", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+  // vote an existing memebership fee amendment proposal
+  it("As an authorized caller vote an existing memebership fee amendment proposal", async () => {
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     await contract.voteMembershipFeeAmendmentProposal(1, userOne, true, 1, {
       from: authorizedCaller,
     });
   });
 
-  it("As an unauthorized caller should fail to vote an exitsing memebership fee amendment proposal", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+  it("As an unauthorized caller should fail to vote an existing memebership fee amendment proposal", async () => {
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     try {
       await contract.voteMembershipFeeAmendmentProposal(1, userOne, true, 1, {
         from: unauthorizedCaller,
@@ -89,14 +89,14 @@ contract(MembershipFeeAmendmentProposal, async (accounts) => {
   // activate an existing membership fee amendement proposal
 
   it("As an authorized caller activate an existing membership fee amendement proposal", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     await contract.activateMembershipFeeAmendmentProposal(1, {
       from: authorizedCaller,
     });
   });
 
   it("As an unauthorized caller should fail to activate an existing membership fee amendement proposal", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     try {
       await contract.activateMembershipFeeAmendmentProposal(1, {
         from: unauthorizedCaller,
@@ -110,7 +110,7 @@ contract(MembershipFeeAmendmentProposal, async (accounts) => {
   // check wether a voter as already voted for a specific proposal
 
   it("As an authorized caller check wether a voter as already voted for a specific proposal", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     const bool = await contract.hasVotedMembershipFeeAmendmentProposal(
       userOne,
       1,
@@ -122,7 +122,7 @@ contract(MembershipFeeAmendmentProposal, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to check wether a voter as already voted for a specific proposal", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     try {
       await contract.hasVotedMembershipFeeAmendmentProposal(userOne, 1, {
         from: unauthorizedCaller,
@@ -139,7 +139,7 @@ contract(MembershipFeeAmendmentProposal, async (accounts) => {
   // fetch the current vote count for a membership fee amendment proposal
 
   it("As an authorized caller fetch the current vote count for a membership fee amendment proposal", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     const count = await contract.getVoteCountMembershipFeeAmendmentProposal(
       1,
       true,
@@ -150,7 +150,7 @@ contract(MembershipFeeAmendmentProposal, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to fetch the current vote count for a membership fee amendment proposal", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     try {
       await contract.getVoteCountMembershipFeeAmendmentProposal(1, true, {
         from: unauthorizedCaller,
@@ -166,7 +166,7 @@ contract(MembershipFeeAmendmentProposal, async (accounts) => {
 
   // fetch the current membership fee
   it("As an authorized caller fetch the current membership fee", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     const fee = await contract.getCurrentMembershipFee({
       from: authorizedCaller,
     });
@@ -174,7 +174,7 @@ contract(MembershipFeeAmendmentProposal, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to fetch the current membership fee", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     try {
       await contract.getCurrentMembershipFee({ from: unauthorizedCaller });
       assert.fail();
@@ -189,7 +189,7 @@ contract(MembershipFeeAmendmentProposal, async (accounts) => {
   // fetch the membership proposal current proposal ID
 
   it("As an authorized caller fetch the membership proposal current proposal ID", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     const id =
       await contract.getMembershipFeeAmendmentProposalCurrentProposalID({
         from: authorizedCaller,
@@ -198,7 +198,7 @@ contract(MembershipFeeAmendmentProposal, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to fetch the membership proposal current proposal ID", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     try {
       await contract.getMembershipFeeAmendmentProposalCurrentProposalID({
         from: unauthorizedCaller,
@@ -214,7 +214,7 @@ contract(MembershipFeeAmendmentProposal, async (accounts) => {
 
   // check weather a proposal has reached consensus
   it("As an authorized caller check weather a proposal has reached consensus", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     const bool =
       await contract.hasMembershipFeeAmendmentProposalReachedConsensus(
         1,
@@ -226,7 +226,7 @@ contract(MembershipFeeAmendmentProposal, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to check weather a proposal has reached consensus", async () => {
-    let contract = await MembershipFeeAmendmentProposal.deployed();
+    const contract = await MembershipFeeAmendmentProposal.deployed();
     try {
       await contract.hasMembershipFeeAmendmentProposalReachedConsensus(
         1,

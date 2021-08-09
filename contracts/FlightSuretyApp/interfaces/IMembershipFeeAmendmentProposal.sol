@@ -17,7 +17,7 @@ interface IMembershipFeeAmendmentProposal {
         uint256 _voteWeight
     ) external;
 
-    // vote an exitsing memebership fee amendment proposal
+    // vote an existing memebership fee amendment proposal
     function voteMembershipFeeAmendmentProposal(
         uint256 _proposalID,
         address _caller,

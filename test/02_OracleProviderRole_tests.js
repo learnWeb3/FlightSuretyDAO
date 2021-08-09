@@ -12,13 +12,13 @@ contract(OracleProviderRole, async (accounts) => {
 
   // contract call authorization management
   it("As owner of the contract should authorize a caller", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     await contract.authorizeCaller(userOne, { from: owner });
     await contract.authorizeCaller(authorizedCaller, { from: owner });
   });
 
   it("As caller not owner of the contract should fail to authorize a caller", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     try {
       await contract.authorizeCaller(userOne, { from: userTwo });
       assert.fail();
@@ -28,12 +28,12 @@ contract(OracleProviderRole, async (accounts) => {
   });
 
   it("As  owner of the contract should unauthorize a caller ", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     await contract.unauthorizeCaller(userOne, { from: owner });
   });
 
   it("As caller not owner of the contract should fail to unauthorize a caller ", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     try {
       await contract.unauthorizeCaller(userOne, { from: userTwo });
       assert.fail();
@@ -47,7 +47,7 @@ contract(OracleProviderRole, async (accounts) => {
   // REGISTRATION
 
   it("As an authorized caller register an oracle provider", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     await contract.addOracleProvider(userOne, { from: authorizedCaller });
     await contract.addOracleProvider(persistentUser, {
       from: authorizedCaller,
@@ -55,7 +55,7 @@ contract(OracleProviderRole, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to register an oracle provider", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     try {
       await contract.addOracleProvider(userOne, { from: unauthorizedCaller });
       assert.fail();
@@ -67,7 +67,7 @@ contract(OracleProviderRole, async (accounts) => {
   // READ REGISTRATION
 
   it("As an authorized caller checks if an oracle provider is registered", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     let bool = await contract.isRegisteredOracleProvider(userOne, {
       from: authorizedCaller,
     });
@@ -82,7 +82,7 @@ contract(OracleProviderRole, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to checks if an oracle provider is registered", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     try {
       await contract.isRegisteredOracleProvider(userOne, {
         from: unauthorizedCaller,
@@ -99,7 +99,7 @@ contract(OracleProviderRole, async (accounts) => {
   // READ REGISTERED PROVIDER COUNT
 
   it("As an authorized caller fetch current registered oracle provider count", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     let count = await contract.getRegisteredOracleProvidersCount({
       from: authorizedCaller,
     });
@@ -107,7 +107,7 @@ contract(OracleProviderRole, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to fetch current registered oracle provider count", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     try {
       await contract.getRegisteredOracleProvidersCount({
         from: unauthorizedCaller,
@@ -124,7 +124,7 @@ contract(OracleProviderRole, async (accounts) => {
   // ACTIVATION
 
   it("As an authorized caller activate an oracle provider", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     await contract.activateOracleProvider(userOne, { from: authorizedCaller });
     await contract.activateOracleProvider(persistentUser, {
       from: authorizedCaller,
@@ -132,7 +132,7 @@ contract(OracleProviderRole, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to activate an oracle provider", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     try {
       await contract.activateOracleProvider(userOne, {
         from: unauthorizedCaller,
@@ -146,7 +146,7 @@ contract(OracleProviderRole, async (accounts) => {
   // READ ACTIVATION
 
   it("As an authorized caller checks if an oracle provider is activated", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     let bool = await contract.isActivatedOracleProvider(userOne, {
       from: authorizedCaller,
     });
@@ -161,7 +161,7 @@ contract(OracleProviderRole, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to checks if an oracle provider is activated", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     try {
       await contract.isActivatedOracleProvider(userOne, {
         from: unauthorizedCaller,
@@ -178,7 +178,7 @@ contract(OracleProviderRole, async (accounts) => {
   // READ ACTIVATED PROVIDER COUNT
 
   it("As an authorized caller fetch current activated oracle provider count", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     let count = await contract.getActivatedOracleProvidersCount({
       from: authorizedCaller,
     });
@@ -186,7 +186,7 @@ contract(OracleProviderRole, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to fetch current activated oracle provider count", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     try {
       await contract.getActivatedOracleProvidersCount({
         from: unauthorizedCaller,
@@ -203,7 +203,7 @@ contract(OracleProviderRole, async (accounts) => {
   // READ PROVIDERS PSEUDO RANDOM INDEXES
 
   it("As an authorized caller fetch oracle providers indexes", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     const indexes = await contract.getOracleProviderIndexes(userOne, {
       from: authorizedCaller,
     });
@@ -211,7 +211,7 @@ contract(OracleProviderRole, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to fetch oracle providers indexes", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     try {
       await contract.getOracleProviderIndexes(userOne, {
         from: unauthorizedCaller,
@@ -228,14 +228,14 @@ contract(OracleProviderRole, async (accounts) => {
   // VOTE PROVIDER MEMBERSHIP
 
   it("As an authorized caller  vote for an oracle provider activation and membership", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     contract.voteOracleProviderMembership(userTwo, userOne, 1, {
       from: authorizedCaller,
     });
   });
 
   it("As an unauthorized caller should fail to  vote for an oracle provider activation and membership", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     try {
       await contract.voteOracleProviderMembership(userTwo, userOne, 1, {
         from: unauthorizedCaller,
@@ -249,7 +249,7 @@ contract(OracleProviderRole, async (accounts) => {
   // READ VOTE
 
   it("As an authorized caller checks if a given caller has voted for the membership of an other address", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     let bool = await contract.hasVotedOracleProviderMembership(
       userOne,
       userTwo,
@@ -261,7 +261,7 @@ contract(OracleProviderRole, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to checks if a given caller has voted for the membership of an other address", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     try {
       await contract.hasVotedOracleProviderMembership(userOne, userTwo, {
         from: unauthorizedCaller,
@@ -276,7 +276,7 @@ contract(OracleProviderRole, async (accounts) => {
   });
 
   it("As an authorized caller get the current votes count for a given account", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     let count =
       await contract.getOracleProviderMembershipCurrentMembershipVotes(
         true,
@@ -290,7 +290,7 @@ contract(OracleProviderRole, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to get the current votes count for a given account", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     try {
       await contract.getOracleProviderMembershipCurrentMembershipVotes(
         true,
@@ -311,7 +311,7 @@ contract(OracleProviderRole, async (accounts) => {
   // READ CONSENSUS MEMBERSHIP
 
   it("As an authorized caller checks if an address currently voted for oracle provider membership has reached consensus among the community", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     let bool = await contract.hasReachedConsensusOracleProviderMembership(
       true,
       userOne,
@@ -324,7 +324,7 @@ contract(OracleProviderRole, async (accounts) => {
   });
 
   it("As an unauthorized caller should fail to checks if an address currently voted for oracle provider membership has reached consensus among the community", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     try {
       await contract.hasReachedConsensusOracleProviderMembership(
         true,
@@ -346,12 +346,12 @@ contract(OracleProviderRole, async (accounts) => {
   // REMOVE PROVIDER
 
   it("As an authorized caller remove an existing oracle provider", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     await contract.renounceOracleProvider(userOne, { from: authorizedCaller });
   });
 
   it("As an unauthorized caller should fail to remove an existing oracle provider", async () => {
-    let contract = await OracleProviderRole.deployed();
+    const contract= await OracleProviderRole.deployed();
     try {
       await contract.renounceOracleProvider(userOne, {
         from: unauthorizedCaller,
