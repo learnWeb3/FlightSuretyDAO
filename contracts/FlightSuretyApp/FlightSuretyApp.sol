@@ -36,27 +36,26 @@ contract FlightSuretyApp is Ownable {
     // flights related events
     event NewFlight(
         uint256 indexed flightID,
-        address indexed insuranceProvider
+        address indexed insuranceProvider,
+        uint256 estimatedDeparture,
+        uint256 estimatedArrival
     );
 
     // insurances related events
     event NewInsurance(
         address indexed passenger,
+        address indexed insuranceProvider,
         uint256 indexed insuranceID,
-        uint256 indexed flightID,
+        uint256 flightID,
         uint256 insuredValue
-    );
-    event UpdatedInsurance(
-        address indexed passenger,
-        uint256 indexed insuranceID,
-        uint256 indexed flightID
     );
 
     event NewPayout(
-        uint256 indexed flightID,
+        address indexed owner,
+        address indexed insuranceProvider,
         uint256 indexed insuranceID,
-        uint256 insuredValue,
-        address indexed owner
+        uint256 flightID,
+        uint256 insuredValue
     );
 
     // settings amendment proposal related events
@@ -181,13 +180,8 @@ contract FlightSuretyApp is Ownable {
     }
 
     modifier requireTotalInsuredValueCoverage(uint256 newInsuranceValue) {
-        uint256 currentTotalInsuredValue = flightSuretyData
-            .getTotalInsuredValue();
-        uint256 newTotalInsuredValue = currentTotalInsuredValue.add(
-            newInsuranceValue
-        );
         uint256 totalFundsWithCoverage = _calculateInsuredValueBenefits(
-            newTotalInsuredValue
+            flightSuretyData.getTotalInsuredValue().add(newInsuranceValue)
         );
         require(
             totalFundsWithCoverage <= address(this).balance,
@@ -199,16 +193,16 @@ contract FlightSuretyApp is Ownable {
     // membership fee checks
 
     modifier requireMembershipFee() {
-        uint256 currentMembershipFee = membershipFeeAmendmentProposal
+        uint256 _currentMembershipFee = membershipFeeAmendmentProposal
             .getCurrentMembershipFee();
         require(
-            msg.value >= currentMembershipFee,
+            msg.value >= _currentMembershipFee,
             "incorrect fee sent to contract"
         );
 
-        if (msg.value > currentMembershipFee) {
+        if (msg.value > _currentMembershipFee) {
             payable(address(this)).transfer(
-                msg.value.sub(currentMembershipFee)
+                msg.value.sub(_currentMembershipFee)
             );
         }
         _;
@@ -564,7 +558,12 @@ contract FlightSuretyApp is Ownable {
             _rate
         );
         uint256 flightID = flightSuretyData.getCurrentFlightID();
-        emit NewFlight(flightID, msg.sender);
+        emit NewFlight(
+            flightID,
+            msg.sender,
+            _estimatedDeparture,
+            _estimatedArrival
+        );
     }
 
     /* insurances management */
@@ -577,13 +576,29 @@ contract FlightSuretyApp is Ownable {
         requireTotalInsuredValueCoverage(msg.value)
     {
         // fetch flight rate
-        (, , , , , , , , uint256 rate) = flightSuretyData.getFlight(_flightID);
+        (
+            ,
+            ,
+            ,
+            ,
+            ,
+            ,
+            address insuranceProvider,
+            ,
+            uint256 rate
+        ) = flightSuretyData.getFlight(_flightID);
         // create insurance for the caller
         flightSuretyData.insure(msg.sender, _flightID, rate);
         // update total insured value  (locking up funds to be sure to be able to cover all funds locked up in contract)
         _incrementTotalInsuredValue(rate);
         uint256 insuranceID = flightSuretyData.getCurrentInsuranceID();
-        emit NewInsurance(msg.sender, insuranceID, _flightID, rate);
+        emit NewInsurance(
+            msg.sender,
+            insuranceProvider,
+            insuranceID,
+            _flightID,
+            rate
+        );
     }
 
     function claimInsurance(uint256 _insuranceID)
@@ -596,6 +611,9 @@ contract FlightSuretyApp is Ownable {
         // fetch the insurance insured value
         (uint256 flightID, uint256 insuredValue, , ) = flightSuretyData
             .getInsurance(_insuranceID);
+        // fetch the flight data
+        (, , , , , , address insuranceProvider, , ) = flightSuretyData
+            .getFlight(flightID);
         // update insurance to claimed
         flightSuretyData.setInsuranceToClaimed(_insuranceID);
         // update total insured value as funds are about to be sent (unlocking funds to take new insurance contracts)
@@ -607,10 +625,26 @@ contract FlightSuretyApp is Ownable {
         // calculate the amount to transfer according to the insurance coverage policy
         uint256 amountToTransfer = _calculateInsuredValueBenefits(insuredValue);
         payable(msg.sender).transfer(amountToTransfer);
-        emit NewPayout(flightID, _insuranceID, insuredValue, msg.sender);
+        emit NewPayout(
+            msg.sender,
+            insuranceProvider,
+            _insuranceID,
+            flightID,
+            insuredValue
+        );
     }
 
     /* Settings amendment proposals*/
+
+    // fetch the current membership fee
+    function currentMembershipFee() external view returns (uint256) {
+        return membershipFeeAmendmentProposal.getCurrentMembershipFee();
+    }
+
+    // fetch the current insurance coverage ratio
+    function currentInsuranceCoverageRatio() external view returns (uint256) {
+        return insuranceCoverageAmendmentProposal.getCurrentInsuranceCoverage();
+    }
 
     // membership fee amendment proposals
 

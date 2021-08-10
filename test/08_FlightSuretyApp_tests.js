@@ -873,6 +873,14 @@ contract(FlightSuretyApp, async (accounts) => {
 
   // membership fee amendment proposals
 
+  it("should return the current membership fee", async () => {
+    const contract = await FlightSuretyApp.deployed();
+    const fee = await contract.currentMembershipFee({
+      from: unauthorizedCaller,
+    });
+    assert.equal(fee > 0, true);
+  });
+
   it("As a token holder register a new membership amendment proposal", async () => {
     const contract = await FlightSuretyApp.deployed();
     await contract.registerMembershipFeeAmendmentProposal(
@@ -962,6 +970,15 @@ contract(FlightSuretyApp, async (accounts) => {
   });
 
   // insurance coverage amendment proposal
+
+  it("should return the current insurance coverage ratio", async () => {
+    const contract = await FlightSuretyApp.deployed();
+    const ratio = await contract.currentInsuranceCoverageRatio({
+      from: unauthorizedCaller,
+    });
+    assert.equal(ratio > 0, true);
+  });
+
   it("As a token holder register a new membership amendment proposal", async () => {
     const contract = await FlightSuretyApp.deployed();
     await contract.registerInsuranceCoverageAmendmentProposal(200, {

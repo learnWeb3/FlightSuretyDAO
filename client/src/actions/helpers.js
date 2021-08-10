@@ -1,0 +1,111 @@
+import { getPastEvents } from "../web3";
+
+// fetch all registered insurance providers
+const fetchRegisteredInsuranceProviders = async (appContract) => {
+  return await getPastEvents(appContract, "RegisteredInsuranceProvider");
+};
+
+// fetch all activated insurance providers
+const fetchActivatedInsuranceProviders = async (appContract) => {
+  return await getPastEvents(appContract, "ActivatedInsuranceProvider");
+};
+// fetch all registered oracle providers
+const fetchRegisteredOracleProviders = async (appContract) => {
+  return await getPastEvents(appContract, "RegisteredOracleProvider");
+};
+// fetch all activated oracle providers
+const fetchActivatedOracleProviders = async (appContract) => {
+  return await getPastEvents(appContract, "ActivatedOracleProvider");
+};
+
+// fetch all insurance created
+const fetchInsurances = async (appContract) => {
+  return await getPastEvents(appContract, "NewInsurance");
+};
+
+// profits aka registred insurance cumulated value - payout cumulated value
+const fetchProfits = async (appContract, insuranceProvider) => {
+  const totalCumulatedInsuranceValue = await getPastEvents(
+    appContract,
+    "NewInsurance"
+  ).then((insurances) =>
+    insurances.length > 0
+      ? insurances.reduce(
+          (prev, next) => prev.insuredValue + next.insuredValue,
+          0
+        )
+      : 0
+  );
+  const myCumulatedInsuranceValue = await getPastEvents(
+    appContract,
+    "NewInsurance",
+    { insuranceProvider }
+  ).then((insurances) =>
+    insurances.length > 0
+      ? insurances.reduce(
+          (prev, next) => prev.insuredValue + next.insuredValue,
+          0
+        )
+      : 0
+  );
+  const totalCumulatedPayoutValue = await getPastEvents(
+    appContract,
+    "NewPayout"
+  ).then((payouts) =>
+    payouts.length > 0
+      ? payouts.reduce((prev, next) => prev.insuredValue + next.insuredValue, 0)
+      : 0
+  );
+  const myCumulatedPayoutValue = await getPastEvents(appContract, "NewPayout", {
+    insuranceProvider,
+  }).then((payouts) =>
+    payouts.length > 0
+      ? payouts.reduce((prev, next) => prev.insuredValue + next.insuredValue, 0)
+      : 0
+  );
+  const totalCummulatedProfits =
+    totalCumulatedInsuranceValue - totalCumulatedPayoutValue;
+  const myCumulatedProfits = myCumulatedInsuranceValue - myCumulatedPayoutValue;
+  return {
+    totalCummulatedProfits,
+    myCumulatedProfits,
+  };
+};
+
+// default rates aka payouts / registered insurances
+const fetchDefaultRates = async (
+  appContract,
+  insuranceProvider,
+  totalRegisteredInsuranceCount,
+  myRegisteredInsuranceCount
+) => {
+  const totalInsurancePayoutCount = await getPastEvents(
+    appContract,
+    "NewPayout"
+  ).then((payouts) => payouts.length);
+  const totalInsuranceDefaultRate =
+    totalRegisteredInsuranceCount > 0
+      ? totalInsurancePayoutCount / totalRegisteredInsuranceCount
+      : null;
+  const myInsurancePayoutCount = await getPastEvents(appContract, "NewPayout", {
+    insuranceProvider,
+  }).then((payouts) => payouts.length);
+  const myInsuranceDefaultRate =
+    myRegisteredInsuranceCount > 0
+      ? myInsurancePayoutCount / myRegisteredInsuranceCount
+      : null;
+  return {
+    totalInsuranceDefaultRate,
+    myInsuranceDefaultRate,
+  };
+};
+
+export {
+  fetchRegisteredInsuranceProviders,
+  fetchActivatedInsuranceProviders,
+  fetchRegisteredOracleProviders,
+  fetchActivatedOracleProviders,
+  fetchInsurances,
+  fetchProfits,
+  fetchDefaultRates,
+};

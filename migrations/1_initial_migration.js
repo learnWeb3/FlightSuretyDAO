@@ -1,3 +1,4 @@
+const fs = require("fs");
 const FlightSuretyApp = artifacts.require("FlightSuretyApp");
 const FlightSuretyOracle = artifacts.require("FlightSuretyOracle");
 const FlightSuretyData = artifacts.require("FlightSuretyData");
@@ -150,4 +151,25 @@ module.exports = async function (deployer, network, accounts) {
   console.log(
     "========================================================================================="
   );
+
+
+
+  // copying contract abi to client directory
+
+  const deployedContractNames = [
+    "FlightSuretyApp",
+    "FlightSuretyOracle",
+    "FlightSuretyShares",
+  ];
+
+  deployedContractNames.map((filename) => {
+    const data = fs.readFileSync(
+      process.cwd() + "/build/contracts/" + filename + ".json"
+    );
+    fs.writeFileSync(
+      process.cwd() + "/client/src/contracts/" + filename + ".json",
+      data
+    );
+  });
+
 };
