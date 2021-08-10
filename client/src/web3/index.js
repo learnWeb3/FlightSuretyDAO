@@ -2,6 +2,7 @@ const web3Contract = (provider, address, abi) => {
   const contract = new provider.eth.Contract(abi, address);
   const { fromWei, toWei } = provider.utils;
   contract.utils = { fromWei, toWei };
+  contract.eth = provider.eth;
   return contract;
 };
 

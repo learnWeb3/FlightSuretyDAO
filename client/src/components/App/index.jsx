@@ -123,6 +123,12 @@ const App = ({ state, setState }) => {
     }
   }, [appContract, oracleContract, tokenContract]);
 
+  useEffect(()=>{
+
+    console.log(userTx)
+
+  }, [userTx])
+
   return (
     <Context.Provider
       value={{

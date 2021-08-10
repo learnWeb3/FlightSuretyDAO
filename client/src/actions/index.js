@@ -221,152 +221,63 @@ const fetchDAOIndicators = async (
 
 // get all user transactions
 const fetchUserTransactions = async (appContract, selectedAddress) => {
-  const userRegistrationsRelatedTx = {
-    insuranceProvider: await appContract
-      .getPastEvents("RegisteredInsuranceProvider", {
-        fromBlock: 0,
-        filter: { insuranceProvider: selectedAddress },
-      })
-      .then((events) =>
-        events.length > 0
-          ? events.map((event) => event.transactionHash)
-          : events
-      ),
-    oracleProvider: await appContract
-      .getPastEvents("RegisteredOracleProvider", {
-        fromBlock: 0,
-        filter: { oracleProvider: selectedAddress },
-      })
-      .then((events) =>
-        events.length > 0
-          ? events.map((event) => event.transactionHash)
-          : events
-      ),
+  const mappingEventNameToIndexedKey = {
+    RegisteredInsuranceProvider: "insuranceProvider",
+    RegisteredOracleProvider: "oracleProvider",
+    NewVoteInsuranceProvider: "voter",
+    NewVoteOracleProvider: "voter",
+    NewMembershipFeeAmendmentProposal: "caller",
+    NewVoteMembershipFeeAmendmentProposal: "voter",
+    NewInsuranceCoverageAmendmentProposal: "caller",
+    NewVoteInsuranceCoverageAmendmentProposal: "voter",
+    NewFlight: "insuranceProvider",
+    NewInsurance: "passenger",
+    NewPayout: "owner",
+    AuthorizedCaller: "contractOwner",
+    UnauthorizedCaller: "contractOwner",
   };
 
-  const daoRelatedTx = {
-    insuranceProviderVotes: await appContract
-      .getPastEvents("NewVoteInsuranceProvider", {
-        fromBlock: 0,
-        filter: { voter: selectedAddress },
-      })
-      .then((events) =>
-        events.length > 0
-          ? events.map((event) => event.transactionHash)
-          : events
-      ),
-    oracleProviderVotes: await appContract
-      .getPastEvents("NewVoteOracleProvider", {
-        fromBlock: 0,
-        filter: { voter: selectedAddress },
-      })
-      .then((events) =>
-        events.length > 0
-          ? events.map((event) => event.transactionHash)
-          : events
-      ),
-    membershipFeeAmendmentProposalVotes: await appContract.getPastEvents(
-      "NewMembershipFeeAmendmentProposal",
-      { fromBlock: 0, filter: { voter: selectedAddress } }
-    ),
-    insuranceCoverageAmendmentProposalVotes: await appContract
-      .getPastEvents("NewVoteMembershipFeeAmendmentProposal", {
-        fromBlock: 0,
-        filter: { voter: selectedAddress },
-      })
-      .then((events) =>
-        events.length > 0
-          ? events.map((event) => event.transactionHash)
-          : events
-      ),
-    membershipFeeAmendmentProposal: await appContract
-      .getPastEvents("NewInsuranceCoverageAmendmentProposal", {
-        fromBlock: 0,
-        filter: { caller: selectedAddress },
-      })
-      .then((events) =>
-        events.length > 0
-          ? events.map((event) => event.transactionHash)
-          : events
-      ),
-    insuranceCoverageAmendmentProposal: await appContract
-      .getPastEvents("NewVoteInsuranceCoverageAmendmentProposal", {
-        fromBlock: 0,
-        filter: { caller: selectedAddress },
-      })
-      .then((events) =>
-        events.length > 0
-          ? events.map((event) => event.transactionHash)
-          : events
-      ),
-  };
+  const userTx = [];
 
-  const insuranceProviderRelatedTx = {
-    flightRegistration: await appContract
-      .getPastEvents("NewFlight", {
-        fromBlock: 0,
-        filter: { insuranceProvider: selectedAddress },
-      })
-      .then((events) =>
-        events.length > 0
-          ? events.map((event) => event.transactionHash)
-          : events
-      ),
-  };
+  await Promise.all(
+    Object.keys(mappingEventNameToIndexedKey).map(
+      async (eventName) =>
+        await appContract
+          .getPastEvents(eventName, {
+            fromBlock: 0,
+            filter: {
+              [mappingEventNameToIndexedKey[eventName]]: selectedAddress,
+            },
+          })
+          .then(async (events) =>
+            events.length > 0
+              ? await Promise.all(
+                  events.map(async (event) => {
+                    const tx = event.transactionHash;
+                    const blockNumber = event.blockNumber;
+                    const timestamp = await appContract.eth.getBlock(
+                      blockNumber
+                    );
+                    const eventName = event.event;
+                    return {
+                      tx,
+                      blockNumber,
+                      timestamp,
+                      eventName,
+                    };
+                  })
+                )
+              : events
+          )
+          .then((userTxSets) =>
+            userTxSets.map(
+              (set) => set.length > 0 && set.map((tx) => userTx.push(tx))
+            )
+          )
+    )
+  );
 
-  const passengerRelatedTx = {
-    inusranceRegistration: await appContract
-      .getPastEvents("NewInsurance", {
-        fromBlock: 0,
-        filter: { passenger: selectedAddress },
-      })
-      .then((events) =>
-        events.length > 0
-          ? events.map((event) => event.transactionHash)
-          : events
-      ),
-    payoutClaim: await appContract
-      .getPastEvents("NewPayout", {
-        fromBlock: 0,
-        filter: { owner: selectedAddress },
-      })
-      .then((events) =>
-        events.length > 0
-          ? events.map((event) => event.transactionHash)
-          : events
-      ),
-  };
-
-  const adminManagementTx = {
-    authorizeCaller: await appContract
-      .getPastEvents("AuthorizedCaller", {
-        fromBlock: 0,
-        filter: { contractOwner: selectedAddress },
-      })
-      .then((events) =>
-        events.length > 0
-          ? events.map((event) => event.transactionHash)
-          : events
-      ),
-    UnauthorizeCaller: await appContract
-      .getPastEvents("UnauthorizedCaller", {
-        fromBlock: 0,
-        filter: { contractOwner: selectedAddress },
-      })
-      .then((events) =>
-        events.length > 0
-          ? events.map((event) => event.transactionHash)
-          : events
-      ),
-  };
-
-  return {
-    userRegistrationsRelatedTx,
-    daoRelatedTx,
-    insuranceProviderRelatedTx,
-    passengerRelatedTx,
-    adminManagementTx,
-  };
+  return userTx;
 };
 
 /**======================================================================================================================================== */
