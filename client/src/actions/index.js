@@ -175,10 +175,12 @@ const fetchDAOIndicators = async (
   // settings metrics
   const currentMembershipFee = await appContract.methods
     .currentMembershipFee()
-    .call({ from: currentAddress });
+    .call({ from: currentAddress })
+    .then((fee) => appContract.utils.fromWei(fee, "ether"));
   const currentInsuranceCoverageRatio = await appContract.methods
     .currentInsuranceCoverageRatio()
-    .call({ from: currentAddress });
+    .call({ from: currentAddress })
+    .then((ratio) => ratio / 100);
   // roles metrics
   const oracleRegisteredProvidersCount = await fetchRegisteredOracleProviders(
     appContract

@@ -1,6 +1,7 @@
 import React, {useContext} from "react";
 import { useProvider } from "../../hooks";
 import Context from "../../context/index";
+import Layout from "../../components/Layout";
 
 const Admin = ({ setState, state }) => {
   const {
@@ -13,7 +14,7 @@ const Admin = ({ setState, state }) => {
     daoIndicators,
   } = useContext(Context);
   const { provider, selectedAddress } = useProvider(setState);
-  return null;
+  return <Layout component={null}/>;
 };
 
 export default Admin;

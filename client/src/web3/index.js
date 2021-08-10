@@ -1,5 +1,8 @@
 const web3Contract = (provider, address, abi) => {
-  return new provider.eth.Contract(abi, address);
+  const contract = new provider.eth.Contract(abi, address);
+  const { fromWei, toWei } = provider.utils;
+  contract.utils = { fromWei, toWei };
+  return contract;
 };
 
 const getPastEvents = async (contract, event, filter = null) => {

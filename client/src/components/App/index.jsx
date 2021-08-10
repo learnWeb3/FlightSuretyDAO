@@ -68,12 +68,14 @@ const App = ({ state, setState }) => {
       );
     };
 
-    provider && initializeContracts(provider);
+    if (provider) {
+      try {
+        initializeContracts(provider);
+      } catch (error) {
+        setState({ status: "error", code: 500 });
+      }
+    }
   }, [provider]);
-
-  // useEffect(()=>{
-  //   console.log(appContract, oracleContract, tokenContract)
-  // }, [appContract, oracleContract, tokenContract])
 
   useEffect(() => {
     const fetchAndSetAppData = async (
@@ -108,10 +110,13 @@ const App = ({ state, setState }) => {
       setFundsIndicators(_fundsIndicator);
       setDAOIndicators(_daoIndicators);
     };
-    appContract &&
-      oracleContract &&
-      tokenContract &&
-      fetchAndSetAppData(appContract, tokenContract, oracleContract);
+    if (appContract && oracleContract && tokenContract) {
+      try {
+        fetchAndSetAppData(appContract, tokenContract, oracleContract);
+      } catch (error) {
+        setState({ status: "error", code: 500 });
+      }
+    }
   }, [appContract, oracleContract, tokenContract]);
 
   return (

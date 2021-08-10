@@ -63,9 +63,14 @@ const fetchProfits = async (appContract, insuranceProvider) => {
       ? payouts.reduce((prev, next) => prev.insuredValue + next.insuredValue, 0)
       : 0
   );
-  const totalCummulatedProfits =
-    totalCumulatedInsuranceValue - totalCumulatedPayoutValue;
-  const myCumulatedProfits = myCumulatedInsuranceValue - myCumulatedPayoutValue;
+  const totalCummulatedProfits = appContract.utils.fromWei(
+    `${totalCumulatedInsuranceValue - totalCumulatedPayoutValue}`,
+    "ether"
+  );
+  const myCumulatedProfits = appContract.utils.fromWei(
+    `${myCumulatedInsuranceValue - myCumulatedPayoutValue}`,
+    "ether"
+  );
   return {
     totalCummulatedProfits,
     myCumulatedProfits,

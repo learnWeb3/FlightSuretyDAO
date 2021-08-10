@@ -1,4 +1,5 @@
 import React, { useEffect, useContext } from "react";
+import Layout from "../../components/Layout";
 import Context from "../../context/index";
 
 const DAO = ({ state, setState }) => {
@@ -13,7 +14,7 @@ const DAO = ({ state, setState }) => {
     daoIndicators,
   } = useContext(Context);
 
-  return null;
+  return <Layout component={null}/>;
 };
 
 export default DAO;

@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import Layout from "../../components/Layout";
 // import Context from '../../context/index';
 
 const OracleProvider = ({ state, setState }) => {
@@ -21,7 +22,7 @@ const OracleProvider = ({ state, setState }) => {
   //   daoIndicators,
   //   setDAOIndicators,
   // } = useContext(Context);
-  return null;
+  return <Layout component={null}/>;
 };
 
 export default OracleProvider;

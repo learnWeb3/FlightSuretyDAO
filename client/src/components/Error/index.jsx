@@ -46,11 +46,11 @@ const ErrorPage = ({
   const mapCodeToMessage = {
     404: {
       message: "Page not found !",
-      illustration: <NotFound height="25rem" />,
+      illustration: <NotFound height="30rem" />,
     },
     403: {
       message: "Forbidden !",
-      illustration: <Forbidden height="25rem" />,
+      illustration: <Forbidden height="30rem" />,
     },
     499: {
       message: "Please install Metamask !",
@@ -58,7 +58,7 @@ const ErrorPage = ({
     },
     500: {
       message: "Internal Server Error",
-      illustration: <ServerError height="25rem" />,
+      illustration: <ServerError height="30rem" />,
     },
   };
   return (
