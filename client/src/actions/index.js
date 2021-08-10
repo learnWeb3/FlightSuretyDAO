@@ -219,6 +219,156 @@ const fetchDAOIndicators = async (
   };
 };
 
+// get all user transactions
+const fetchUserTransactions = async (appContract, selectedAddress) => {
+  const userRegistrationsRelatedTx = {
+    insuranceProvider: await appContract
+      .getPastEvents("RegisteredInsuranceProvider", {
+        fromBlock: 0,
+        filter: { insuranceProvider: selectedAddress },
+      })
+      .then((events) =>
+        events.length > 0
+          ? events.map((event) => event.transactionHash)
+          : events
+      ),
+    oracleProvider: await appContract
+      .getPastEvents("RegisteredOracleProvider", {
+        fromBlock: 0,
+        filter: { oracleProvider: selectedAddress },
+      })
+      .then((events) =>
+        events.length > 0
+          ? events.map((event) => event.transactionHash)
+          : events
+      ),
+  };
+
+  const daoRelatedTx = {
+    insuranceProviderVotes: await appContract
+      .getPastEvents("NewVoteInsuranceProvider", {
+        fromBlock: 0,
+        filter: { voter: selectedAddress },
+      })
+      .then((events) =>
+        events.length > 0
+          ? events.map((event) => event.transactionHash)
+          : events
+      ),
+    oracleProviderVotes: await appContract
+      .getPastEvents("NewVoteOracleProvider", {
+        fromBlock: 0,
+        filter: { voter: selectedAddress },
+      })
+      .then((events) =>
+        events.length > 0
+          ? events.map((event) => event.transactionHash)
+          : events
+      ),
+    membershipFeeAmendmentProposalVotes: await appContract.getPastEvents(
+      "NewMembershipFeeAmendmentProposal",
+      { fromBlock: 0, filter: { voter: selectedAddress } }
+    ),
+    insuranceCoverageAmendmentProposalVotes: await appContract
+      .getPastEvents("NewVoteMembershipFeeAmendmentProposal", {
+        fromBlock: 0,
+        filter: { voter: selectedAddress },
+      })
+      .then((events) =>
+        events.length > 0
+          ? events.map((event) => event.transactionHash)
+          : events
+      ),
+    membershipFeeAmendmentProposal: await appContract
+      .getPastEvents("NewInsuranceCoverageAmendmentProposal", {
+        fromBlock: 0,
+        filter: { caller: selectedAddress },
+      })
+      .then((events) =>
+        events.length > 0
+          ? events.map((event) => event.transactionHash)
+          : events
+      ),
+    insuranceCoverageAmendmentProposal: await appContract
+      .getPastEvents("NewVoteInsuranceCoverageAmendmentProposal", {
+        fromBlock: 0,
+        filter: { caller: selectedAddress },
+      })
+      .then((events) =>
+        events.length > 0
+          ? events.map((event) => event.transactionHash)
+          : events
+      ),
+  };
+
+  const insuranceProviderRelatedTx = {
+    flightRegistration: await appContract
+      .getPastEvents("NewFlight", {
+        fromBlock: 0,
+        filter: { insuranceProvider: selectedAddress },
+      })
+      .then((events) =>
+        events.length > 0
+          ? events.map((event) => event.transactionHash)
+          : events
+      ),
+  };
+
+  const passengerRelatedTx = {
+    inusranceRegistration: await appContract
+      .getPastEvents("NewInsurance", {
+        fromBlock: 0,
+        filter: { passenger: selectedAddress },
+      })
+      .then((events) =>
+        events.length > 0
+          ? events.map((event) => event.transactionHash)
+          : events
+      ),
+    payoutClaim: await appContract
+      .getPastEvents("NewPayout", {
+        fromBlock: 0,
+        filter: { owner: selectedAddress },
+      })
+      .then((events) =>
+        events.length > 0
+          ? events.map((event) => event.transactionHash)
+          : events
+      ),
+  };
+
+  const adminManagementTx = {
+    authorizeCaller: await appContract
+      .getPastEvents("AuthorizedCaller", {
+        fromBlock: 0,
+        filter: { contractOwner: selectedAddress },
+      })
+      .then((events) =>
+        events.length > 0
+          ? events.map((event) => event.transactionHash)
+          : events
+      ),
+    UnauthorizeCaller: await appContract
+      .getPastEvents("UnauthorizedCaller", {
+        fromBlock: 0,
+        filter: { contractOwner: selectedAddress },
+      })
+      .then((events) =>
+        events.length > 0
+          ? events.map((event) => event.transactionHash)
+          : events
+      ),
+  };
+
+  return {
+    userRegistrationsRelatedTx,
+    daoRelatedTx,
+    insuranceProviderRelatedTx,
+    passengerRelatedTx,
+    adminManagementTx,
+  };
+};
+
 /**======================================================================================================================================== */
 // WRITE TO THE BLOCKCHAIN
 /**======================================================================================================================================== */
@@ -339,6 +489,7 @@ export {
   fetchInsuranceProvidersProfits,
   fetchFundsIndicators,
   fetchDAOIndicators,
+  fetchUserTransactions,
   // WRITE TO THE BLOCKCHAIN
   registerInsuranceProvider,
   registerOracleProvider,

@@ -15,6 +15,7 @@ import {
   fetchFundsIndicators,
   fetchInsuranceProvidersProfits,
   fetchSettingsAmendmentProposal,
+  fetchUserTransactions,
 } from "../../actions";
 import { useProvider } from "../../hooks";
 // contracts abis
@@ -31,6 +32,7 @@ const App = ({ state, setState }) => {
   const [oracleContract, setOracleContract] = useState(null);
 
   // data
+  const [userTx, setUserTx] = useState(null);
   const [flights, setFLights] = useState(null);
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [currentMembershipApplications, setCurrentMembershipApplications] =
@@ -83,6 +85,7 @@ const App = ({ state, setState }) => {
       tokenContract,
       oracleContract
     ) => {
+      const _userTx = await fetchUserTransactions(appContract, selectedAddress);
       const _flights = await fetchFlights(appContract);
       const _currentMembershipApplications =
         await fetchCurrentMembershipApplications(appContract);
@@ -103,6 +106,7 @@ const App = ({ state, setState }) => {
         appContract,
         selectedAddress
       );
+      setUserTx(_userTx);
       setFLights(_flights);
       setCurrentMembershipApplications(_currentMembershipApplications);
       setSettingsAmendmentProposal(_settingsAmendmentProposal);
