@@ -42,6 +42,9 @@ const PageContent = ({ state, setState }) => {
     appContract,
     // alert
     setAlert,
+    // data refresh
+    refreshCounter,
+    setRefreshCounter,
   } = useContext(Context);
 
   useEffect(() => {
@@ -50,18 +53,17 @@ const PageContent = ({ state, setState }) => {
 
   const handleOracleProviderRegistration = async () => {
     try {
-      setState({ status: "loading", code: null });
       const value = await fetchCurrentMembershipFee(
         appContract,
         selectedAddress
       );
       await registerOracleProvider(appContract, selectedAddress, value);
-      setState({ status: "loaded", code: null });
       setAlert({
         displayed: true,
         message: "Your transaction has been processed successfully",
         type: "success",
       });
+      setRefreshCounter(refreshCounter + 1);
     } catch (error) {
       console.log(error);
       setAlert({
@@ -75,18 +77,17 @@ const PageContent = ({ state, setState }) => {
 
   const handleInsuranceProviderRegistration = async () => {
     try {
-      setState({ status: "loading", code: null });
       const value = await fetchCurrentMembershipFee(
         appContract,
         selectedAddress
       );
       await registerInsuranceProvider(appContract, selectedAddress, value);
-      setState({ status: "loaded", code: null });
       setAlert({
         displayed: true,
         message: "Your transaction has been processed successfully",
         type: "success",
       });
+      setRefreshCounter(refreshCounter + 1);
     } catch (error) {
       console.log(error);
       setAlert({
