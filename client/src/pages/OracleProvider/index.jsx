@@ -22,7 +22,7 @@ const OracleProvider = ({ state, setState }) => {
   //   daoIndicators,
   //   setDAOIndicators,
   // } = useContext(Context);
-  return <Layout component={null}/>;
+  return <Layout component={null} state={state} setState={setState}/>;
 };
 
 export default OracleProvider;

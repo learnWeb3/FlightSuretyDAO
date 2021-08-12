@@ -2,6 +2,15 @@ import { useEffect, useState } from "react";
 import Web3 from "web3";
 import detectEthereumProvider from "@metamask/detect-provider";
 
+// internal state of the component
+const useComponentState = () => {
+  const [state, setState] = useState({ status: "loaded", code: null });
+  return {
+    state,
+    setState,
+  };
+};
+
 // make web3 provider and accounts available for component using this hook
 const useProvider = (setState) => {
   const [provider, setProvider] = useState();
@@ -57,4 +66,4 @@ const useProvider = (setState) => {
   };
 };
 
-export { useProvider };
+export { useProvider, useComponentState };

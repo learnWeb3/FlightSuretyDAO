@@ -13,6 +13,12 @@ import {
 // READ FROM THE BLOCKCHAIN
 /**======================================================================================================================================== */
 
+// fetch current membership fee
+const fetchCurrentMembershipFee = async (appContract, selectedAddress) =>
+  await appContract.methods
+    .currentMembershipFee()
+    .call({ from: selectedAddress });
+
 // fetch all flights created to insure a new passengers (new insurance pick up index page)
 const fetchFlights = async (appContract) => {
   return await getPastEvents(appContract, "NewFlight");
@@ -23,20 +29,68 @@ const fetchFlight = async (appContract, flightID) => {
   return await getPastEvents(appContract, "NewFlight", { flightID });
 };
 
+const fetchInsuranceProviderFlights = async (
+  appContract,
+  insuranceProvider
+) => {
+  return await getPastEvents(appContract, "NewFlight", { insuranceProvider });
+};
+
 // fetch current roles registered but not activated (DAO specific page per role)
 const fetchCurrentMembershipApplications = async (appContract) => {
   const registeredOracleProviders = await fetchRegisteredOracleProviders(
     appContract
-  );
+  ).then(async (providers) => {
+    const accounts = await Promise.all(
+      providers.map(async (provider) => ({
+        ...provider,
+        timestamp: await appContract.eth
+          .getBlock(provider.blockNumber)
+          .then(({ timestamp }) => timestamp),
+      }))
+    );
+    return accounts;
+  });
   const registeredInsuranceProviders = await fetchRegisteredInsuranceProviders(
     appContract
-  );
+  ).then(async (providers) => {
+    const accounts = await Promise.all(
+      providers.map(async (provider) => ({
+        ...provider,
+        timestamp: await appContract.eth
+          .getBlock(provider.blockNumber)
+          .then(({ timestamp }) => timestamp),
+      }))
+    );
+    return accounts;
+  });
+
   const activatedOracleProviders = await fetchActivatedOracleProviders(
     appContract
-  );
+  ).then(async (providers) => {
+    const accounts = await Promise.all(
+      providers.map(async (provider) => ({
+        ...provider,
+        timestamp: await appContract.eth
+          .getBlock(provider.blockNumber)
+          .then(({ timestamp }) => timestamp),
+      }))
+    );
+    return accounts;
+  });
   const activatedInsuranceProviders = await fetchActivatedInsuranceProviders(
     appContract
-  );
+  ).then(async (providers) => {
+    const accounts = await Promise.all(
+      providers.map(async (provider) => ({
+        ...provider,
+        timestamp: await appContract.eth
+          .getBlock(provider.blockNumber)
+          .then(({ timestamp }) => timestamp),
+      }))
+    );
+    return accounts;
+  });
 
   const insuranceProviderApplications = registeredInsuranceProviders.filter(
     (registeredProvider) =>
@@ -86,21 +140,49 @@ const fetchInsuranceProvidersProfits = async (
   const insuranceProvidersAddresses = await fetchActivatedInsuranceProviders(
     appContract
   ).then((providers) =>
-    providers.length > 0 ? providers.insuranceProvider : []
+    providers.length > 0
+      ? providers.map((provider) => provider.insuranceProvider)
+      : []
   );
   if (insuranceProvidersAddresses.length > 0) {
     return await Promise.all(
       insuranceProvidersAddresses.map(
         async (insuranceProviderAddress) =>
           await fetchProfits(appContract, insuranceProviderAddress).then(
-            (profitsData) =>
-              profitsData.map(
-                ({ totalCummulatedProfits, myCumulatedProfits }) => ({
-                  insuranceProviderAddress,
-                  myCumulatedProfits,
-                })
-              )
+            ({ totalCummulatedProfits, myCumulatedProfits }) => ({
+              id: insuranceProviderAddress,
+              label: insuranceProviderAddress,
+              value: parseInt(myCumulatedProfits),
+            })
           )
+      )
+    );
+  } else {
+    return [];
+  }
+};
+
+// fetch flights number per insurance providers
+const fetchInsuranceProvidersFlights = async (appContract) => {
+  const insuranceProvidersAddresses = await fetchActivatedInsuranceProviders(
+    appContract
+  ).then((providers) =>
+    providers.length > 0
+      ? providers.map((provider) => provider.insuranceProvider)
+      : []
+  );
+  if (insuranceProvidersAddresses.length > 0) {
+    return await Promise.all(
+      insuranceProvidersAddresses.map(
+        async (insuranceProviderAddress) =>
+          await fetchInsuranceProviderFlights(
+            appContract,
+            insuranceProviderAddress
+          ).then((flights) => ({
+            value: flights.length,
+            id: insuranceProviderAddress,
+            label: insuranceProviderAddress,
+          }))
       )
     );
   } else {
@@ -137,7 +219,7 @@ const fetchFundsIndicators = async (
     { insuranceProvider }
   ).then((flights) => flights.length);
 
-  const { totalCummulatedProfits, myCumulatedProfits } = await fetchProfits(
+  const { totalCumulatedProfits, myCumulatedProfits } = await fetchProfits(
     appContract,
     insuranceProvider
   );
@@ -155,7 +237,7 @@ const fetchFundsIndicators = async (
     totalRegisteredInsuranceCount,
     myRegisteredFlightsCount,
     myRegisteredInsuranceCount,
-    totalCummulatedProfits,
+    totalCumulatedProfits,
     myCumulatedProfits,
     totalInsuranceDefaultRate,
     myInsuranceDefaultRate,
@@ -239,7 +321,7 @@ const fetchUserTransactions = async (appContract, selectedAddress) => {
 
   const userTx = [];
 
-  await Promise.all(
+  const userTxSets = await Promise.all(
     Object.keys(mappingEventNameToIndexedKey).map(
       async (eventName) =>
         await appContract
@@ -255,29 +337,32 @@ const fetchUserTransactions = async (appContract, selectedAddress) => {
                   events.map(async (event) => {
                     const tx = event.transactionHash;
                     const blockNumber = event.blockNumber;
-                    const timestamp = await appContract.eth.getBlock(
+                    const { timestamp } = await appContract.eth.getBlock(
                       blockNumber
                     );
+                    const type = event.type;
                     const eventName = event.event;
                     return {
+                      id: tx,
                       tx,
                       blockNumber,
                       timestamp,
                       eventName,
+                      type,
                     };
                   })
                 )
               : events
           )
-          .then((userTxSets) =>
-            userTxSets.map(
-              (set) => set.length > 0 && set.map((tx) => userTx.push(tx))
-            )
-          )
+          .then((userTx) => userTx)
     )
   );
 
-  return userTx;
+  userTxSets.map((set) => set.length > 0 && set.map((tx) => userTx.push(tx)));
+
+  return userTx.length > 1
+    ? userTx.sort((a, b) => a.timestamp > b.timestamp)
+    : userTx;
 };
 
 /**======================================================================================================================================== */
@@ -288,18 +373,28 @@ const fetchUserTransactions = async (appContract, selectedAddress) => {
 
 // insurance providers
 
-const registerInsuranceProvider = async (appContract, currentAddress) => {
+const registerInsuranceProvider = async (
+  appContract,
+  currentAddress,
+  value,
+  gas = 150000
+) => {
   return await appContract.methods
     .registerInsuranceProvider()
-    .send({ from: currentAddress });
+    .send({ from: currentAddress, value, gas });
 };
 
 // oracle providers
 
-const registerOracleProvider = async (appContract, currentAddress) => {
+const registerOracleProvider = async (
+  appContract,
+  currentAddress,
+  value,
+  gas = 500000
+) => {
   return await appContract.methods
     .registerOracleProvider()
-    .send({ from: currentAddress });
+    .send({ from: currentAddress, value, gas });
 };
 
 /* votes providers */
@@ -332,19 +427,26 @@ const voteOracleProviderMembership = async (
 const registerFlight = async (
   appContract,
   currentAddress,
-  { flightRef, estimatedDeparture, estimatedArrival, rate }
+  { flightRef, estimatedDeparture, estimatedArrival, rate },
+  gas = 150000
 ) => {
   return await appContract.methods
     .registerFlight(flightRef, estimatedDeparture, estimatedArrival, rate)
-    .send({ from: currentAddress });
+    .send({ from: currentAddress, gas });
 };
 
 /* insurances management */
 
-const registerInsurance = async (appContract, currentAddress, flightID) => {
+const registerInsurance = async (
+  appContract,
+  currentAddress,
+  flightID,
+  value,
+  gas = 500000
+) => {
   return await appContract.methods
     .registerInsurance(flightID)
-    .send({ from: currentAddress });
+    .send({ from: currentAddress, value, gas });
 };
 
 /* Settings amendment proposals*/
@@ -393,8 +495,11 @@ const voteInsuranceCoverageAmendmentProposal = async (
 
 export {
   // READ FROM THE BLOCKCHAIN
+  fetchCurrentMembershipFee,
   fetchFlights,
   fetchFlight,
+  fetchInsuranceProviderFlights,
+  fetchInsuranceProvidersFlights,
   fetchCurrentMembershipApplications,
   fetchSettingsAmendmentProposal,
   fetchInsuranceProvidersProfits,

@@ -12,6 +12,7 @@ import {
   fetchCurrentMembershipApplications,
   fetchDAOIndicators,
   fetchFlights,
+  fetchInsuranceProvidersFlights,
   fetchFundsIndicators,
   fetchInsuranceProvidersProfits,
   fetchSettingsAmendmentProposal,
@@ -23,6 +24,9 @@ import FlightSuretyApp from "../../contracts/FlightSuretyApp.json";
 import FlightSuretyShares from "../../contracts/FlightSuretyShares.json";
 import FlightSuretyOracle from "../../contracts/FlightSuretyOracle.json";
 import { web3Contract } from "../../web3";
+import Profile from "../../pages/Profile/index";
+import MembershipApplication from "../../pages/MembershipApplication/index";
+import Registration from "../../pages/Registration/index";
 
 const App = ({ state, setState }) => {
   const { provider, selectedAddress } = useProvider(setState);
@@ -30,7 +34,21 @@ const App = ({ state, setState }) => {
   const [appContract, setAppContract] = useState(null);
   const [tokenContract, setTokenContract] = useState(null);
   const [oracleContract, setOracleContract] = useState(null);
-
+  // filters
+  const [isFilterFlightToActive, setFilterFlightToActive] = useState(true);
+  // modal
+  const [modal, setModal] = useState({
+    displayed: false,
+    content: null,
+  });
+  // snackbar
+  const [alert, setAlert] = useState({
+    displayed: false,
+    message: "",
+    type: "",
+  });
+  // data refresh
+  const [refreshCounter, setRefreshCounter] = useState(0);
   // data
   const [userTx, setUserTx] = useState(null);
   const [flights, setFLights] = useState(null);
@@ -43,6 +61,8 @@ const App = ({ state, setState }) => {
     useState(null);
   const [fundsIndicators, setFundsIndicators] = useState(null);
   const [daoIndicators, setDAOIndicators] = useState(null);
+  const [insuranceProvidersFlights, setInsuranceProvidersFlights] =
+    useState(null);
 
   useEffect(() => {
     const initializeContracts = async (provider) => {
@@ -106,6 +126,9 @@ const App = ({ state, setState }) => {
         appContract,
         selectedAddress
       );
+      const _insuranceProvidersFlights = await fetchInsuranceProvidersFlights(
+        appContract
+      );
       setUserTx(_userTx);
       setFLights(_flights);
       setCurrentMembershipApplications(_currentMembershipApplications);
@@ -113,6 +136,7 @@ const App = ({ state, setState }) => {
       setInsuranceProvidersProfits(_insuranceProvidersProfits);
       setFundsIndicators(_fundsIndicator);
       setDAOIndicators(_daoIndicators);
+      setInsuranceProvidersFlights(_insuranceProvidersFlights);
     };
     if (appContract && oracleContract && tokenContract) {
       try {
@@ -121,13 +145,7 @@ const App = ({ state, setState }) => {
         setState({ status: "error", code: 500 });
       }
     }
-  }, [appContract, oracleContract, tokenContract]);
-
-  useEffect(()=>{
-
-    console.log(userTx)
-
-  }, [userTx])
+  }, [appContract, oracleContract, tokenContract, refreshCounter]);
 
   return (
     <Context.Provider
@@ -136,11 +154,29 @@ const App = ({ state, setState }) => {
         appContract,
         tokenContract,
         oracleContract,
+        // data refresh
+        refreshCounter,
+        setRefreshCounter,
+        // current address
+        selectedAddress,
+        // filters
+        isFilterFlightToActive,
+        setFilterFlightToActive,
+        // modal
+        modal,
+        setModal,
+        // snackbar
+        alert,
+        setAlert,
         // data
+        userTx,
+        setUserTx,
         flights,
         setFLights,
         selectedFlight,
         setSelectedFlight,
+        insuranceProvidersFlights,
+        setInsuranceProvidersFlights,
         currentMembershipApplications,
         setCurrentMembershipApplications,
         settingsAmendmentProposal,
@@ -170,8 +206,17 @@ const App = ({ state, setState }) => {
           <Route exact path="/dao">
             <ComponentState component={DAO} />
           </Route>
+          <Route exact path="/membership">
+            <ComponentState component={MembershipApplication} />
+          </Route>
+          <Route exact path="/me">
+            <ComponentState component={Profile} />
+          </Route>
+          <Route exact path="/register">
+            <ComponentState component={Registration} />
+          </Route>
           <Route path="*">
-            <ErrorPage code={404} height="90vh" />
+            <ErrorPage code={404} height="100vh" />
           </Route>
         </Switch>
       </Router>

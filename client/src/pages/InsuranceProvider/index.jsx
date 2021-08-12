@@ -1,21 +1,9 @@
-import React, { useContext } from "react";
+import React from "react";
 import Layout from "../../components/Layout";
-import Context from "../../context/index";
+import PageContent from './PageContent/index';
 
 const InsuranceProvider = ({ state, setState }) => {
-  const {
-    // contracts
-    appContract,
-    tokenContract,
-    oracleContract,
-    // data
-    flights,
-    insuranceProvidersProfits,
-    fundsIndicators,
-    setFundsIndicators,
-  } = useContext(Context);
-
-  return <Layout component={null}/>;
+  return <Layout component={PageContent} state={state} setState={setState}/>;
 };
 
 export default InsuranceProvider;

@@ -3,11 +3,7 @@ import signUp from "./img/sign_up.png";
 
 const SignUp = ({ height, width }) => {
   return (
-    <img
-      src={SignUp}
-      alt="server error"
-      style={{ height: height, width: width }}
-    />
+    <img src={signUp} alt="register" style={{ height: height, width: width }} />
   );
 };
 

@@ -38,7 +38,9 @@ contract FlightSuretyApp is Ownable {
         uint256 indexed flightID,
         address indexed insuranceProvider,
         uint256 estimatedDeparture,
-        uint256 estimatedArrival
+        uint256 estimatedArrival,
+        string flightRef,
+        uint256 rate
     );
 
     // insurances related events
@@ -61,6 +63,7 @@ contract FlightSuretyApp is Ownable {
     // settings amendment proposal related events
     event NewMembershipFeeAmendmentProposal(
         uint256 indexed proposalID,
+        address indexed caller,
         uint256 proposedMembershipFee
     );
     event NewVoteMembershipFeeAmendmentProposal(
@@ -73,6 +76,7 @@ contract FlightSuretyApp is Ownable {
     );
     event NewInsuranceCoverageAmendmentProposal(
         uint256 indexed proposalID,
+        address indexed caller,
         uint256 insuranceCoverage
     );
     event ActivatedInsuranceCoverageAmendmentProposal(
@@ -85,8 +89,16 @@ contract FlightSuretyApp is Ownable {
     );
 
     // authorize caller related events
-    event AuthorizedCaller(address caller, address contractAddress);
-    event UnauthorizedCaller(address caller, address contractAddress);
+    event AuthorizedCaller(
+        address indexed contractOwner,
+        address caller,
+        address contractAddress
+    );
+    event UnauthorizedCaller(
+        address indexed contractOwner,
+        address caller,
+        address contractAddress
+    );
 
     IFlightSuretyData flightSuretyData;
     IInsuranceCoverageAmendmentProposal insuranceCoverageAmendmentProposal;
@@ -327,10 +339,15 @@ contract FlightSuretyApp is Ownable {
     ) external onlyOwner {
         if (_access) {
             flightSuretyData.authorizeCaller(_authorizedCaller);
-            emit AuthorizedCaller(_authorizedCaller, address(flightSuretyData));
+            emit AuthorizedCaller(
+                msg.sender,
+                _authorizedCaller,
+                address(flightSuretyData)
+            );
         } else {
             flightSuretyData.unauthorizeCaller(_authorizedCaller);
             emit UnauthorizedCaller(
+                msg.sender,
                 _authorizedCaller,
                 address(flightSuretyData)
             );
@@ -346,6 +363,7 @@ contract FlightSuretyApp is Ownable {
                 _authorizedCaller
             );
             emit AuthorizedCaller(
+                msg.sender,
                 _authorizedCaller,
                 address(insuranceCoverageAmendmentProposal)
             );
@@ -354,6 +372,7 @@ contract FlightSuretyApp is Ownable {
                 _authorizedCaller
             );
             emit UnauthorizedCaller(
+                msg.sender,
                 _authorizedCaller,
                 address(insuranceCoverageAmendmentProposal)
             );
@@ -367,12 +386,14 @@ contract FlightSuretyApp is Ownable {
         if (_access) {
             membershipFeeAmendmentProposal.authorizeCaller(_authorizedCaller);
             emit AuthorizedCaller(
+                msg.sender,
                 _authorizedCaller,
                 address(membershipFeeAmendmentProposal)
             );
         } else {
             membershipFeeAmendmentProposal.unauthorizeCaller(_authorizedCaller);
             emit UnauthorizedCaller(
+                msg.sender,
                 _authorizedCaller,
                 address(membershipFeeAmendmentProposal)
             );
@@ -386,12 +407,14 @@ contract FlightSuretyApp is Ownable {
         if (_access) {
             insuranceProviderRole.authorizeCaller(_authorizedCaller);
             emit AuthorizedCaller(
+                msg.sender,
                 _authorizedCaller,
                 address(insuranceProviderRole)
             );
         } else {
             insuranceProviderRole.unauthorizeCaller(_authorizedCaller);
             emit UnauthorizedCaller(
+                msg.sender,
                 _authorizedCaller,
                 address(insuranceProviderRole)
             );
@@ -405,12 +428,14 @@ contract FlightSuretyApp is Ownable {
         if (_access) {
             oracleProviderRole.authorizeCaller(_authorizedCaller);
             emit AuthorizedCaller(
+                msg.sender,
                 _authorizedCaller,
                 address(oracleProviderRole)
             );
         } else {
             oracleProviderRole.unauthorizeCaller(_authorizedCaller);
             emit UnauthorizedCaller(
+                msg.sender,
                 _authorizedCaller,
                 address(oracleProviderRole)
             );
@@ -424,12 +449,14 @@ contract FlightSuretyApp is Ownable {
         if (_access) {
             flightSuretyShares.authorizeCaller(_authorizedCaller);
             emit AuthorizedCaller(
+                msg.sender,
                 _authorizedCaller,
                 address(flightSuretyShares)
             );
         } else {
             flightSuretyShares.unauthorizeCaller(_authorizedCaller);
             emit UnauthorizedCaller(
+                msg.sender,
                 _authorizedCaller,
                 address(flightSuretyShares)
             );
@@ -562,7 +589,9 @@ contract FlightSuretyApp is Ownable {
             flightID,
             msg.sender,
             _estimatedDeparture,
-            _estimatedArrival
+            _estimatedArrival,
+            _flightRef,
+            _rate
         );
     }
 
@@ -659,7 +688,11 @@ contract FlightSuretyApp is Ownable {
         );
         uint256 _proposalID = membershipFeeAmendmentProposal
             .getMembershipFeeAmendmentProposalCurrentProposalID();
-        emit NewMembershipFeeAmendmentProposal(_proposalID, _proposedValue);
+        emit NewMembershipFeeAmendmentProposal(
+            _proposalID,
+            msg.sender,
+            _proposedValue
+        );
         emit NewVoteMembershipFeeAmendmentProposal(_proposalID, msg.sender);
     }
 
@@ -712,7 +745,11 @@ contract FlightSuretyApp is Ownable {
             );
         uint256 _proposalID = insuranceCoverageAmendmentProposal
             .getInsuranceCoverageAmendmentCurrentProposalID();
-        emit NewInsuranceCoverageAmendmentProposal(_proposalID, _proposedValue);
+        emit NewInsuranceCoverageAmendmentProposal(
+            _proposalID,
+            msg.sender,
+            _proposedValue
+        );
         emit NewVoteInsuranceCoverageAmendmentProposal(_proposalID, msg.sender);
     }
 

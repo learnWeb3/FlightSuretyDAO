@@ -1,18 +1,9 @@
-import React, { useContext } from "react";
+import React from "react";
 import Layout from "../../components/Layout";
-import Context from "../../context/index";
+import PageContent from "./PageContent";
 
 const Passenger = ({ state, setState }) => {
-  const {
-    // contracts
-    appContract,
-    // data
-    flights,
-    selectedFlight,
-    setSelectedFlight,
-  } = useContext(Context);
-
-  return <Layout component={null} />;
+  return <Layout component={PageContent} state={state} setState={setState} />;
 };
 
 export default Passenger;

@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Container } from "@material-ui/core";
+import { Typography, Container, Grid } from "@material-ui/core";
 import ErrorOutlineRoundedIcon from "@material-ui/icons/ErrorOutlineRounded";
 import MetamaskIcon from "../icons/MetamaskIcon";
 import NotFound from "../icons/NotFound";
@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    padding: 16,
+    padding: 24,
   },
   errorCode: {
     marginTop: 24,
@@ -46,27 +46,23 @@ const ErrorPage = ({
   const mapCodeToMessage = {
     404: {
       message: "Page not found !",
-      illustration: <NotFound height="30rem" />,
+      illustration: <NotFound height="50%" />,
     },
     403: {
       message: "Forbidden !",
-      illustration: <Forbidden height="30rem" />,
+      illustration: <Forbidden height="50%" />,
     },
     499: {
       message: "Please install Metamask !",
-      illustration: <MetamaskIcon height="10rem" />,
+      illustration: <MetamaskIcon height="50%" />,
     },
     500: {
       message: "Internal Server Error",
-      illustration: <ServerError height="30rem" />,
+      illustration: <ServerError height="50%" />,
     },
   };
   return (
-    <Container
-      maxWidth="lg"
-      className={classes.container}
-      style={{ height: height }}
-    >
+    <Container className={classes.container} style={{ height: height }}>
       {mapCodeToMessage[code].illustration}
       {messageDisplayed && (
         <Alert severity="error" className={classes.errorCode}>

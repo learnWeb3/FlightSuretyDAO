@@ -1,20 +1,9 @@
-import React, {useContext} from "react";
-import { useProvider } from "../../hooks";
-import Context from "../../context/index";
+import React from "react";
 import Layout from "../../components/Layout";
+import PageContent from "./PageContent";
 
 const Admin = ({ setState, state }) => {
-  const {
-    // contracts
-    appContract,
-    tokenContract,
-    oracleContract,
-    // data
-    fundsIndicators,
-    daoIndicators,
-  } = useContext(Context);
-  const { provider, selectedAddress } = useProvider(setState);
-  return <Layout component={null}/>;
+  return <Layout component={PageContent} state={state} setState={setState} />;
 };
 
 export default Admin;

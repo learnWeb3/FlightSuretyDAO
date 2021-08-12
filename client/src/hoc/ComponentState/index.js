@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const ComponentState = ({ component: Component }) => {
-  const [state, setState] = useState(null);
+  const [state, setState] = useState({ status: "loading", code: null });
   return <Component state={state} setState={setState} />;
 };
 

@@ -28,14 +28,15 @@ const fetchProfits = async (appContract, insuranceProvider) => {
   const totalCumulatedInsuranceValue = await getPastEvents(
     appContract,
     "NewInsurance"
-  ).then((insurances) =>
-    insurances.length > 0
+  ).then((insurances) => {
+    return insurances.length > 0
       ? insurances.reduce(
-          (prev, next) => prev.insuredValue + next.insuredValue,
+          (acc, currentValue) => acc + parseInt(currentValue.insuredValue),
           0
         )
-      : 0
-  );
+      : 0;
+  });
+
   const myCumulatedInsuranceValue = await getPastEvents(
     appContract,
     "NewInsurance",
@@ -43,7 +44,7 @@ const fetchProfits = async (appContract, insuranceProvider) => {
   ).then((insurances) =>
     insurances.length > 0
       ? insurances.reduce(
-          (prev, next) => prev.insuredValue + next.insuredValue,
+          (acc, currentValue) => acc + parseInt(currentValue.insuredValue),
           0
         )
       : 0
@@ -53,17 +54,24 @@ const fetchProfits = async (appContract, insuranceProvider) => {
     "NewPayout"
   ).then((payouts) =>
     payouts.length > 0
-      ? payouts.reduce((prev, next) => prev.insuredValue + next.insuredValue, 0)
+      ? payouts.reduce(
+          (acc, currentValue) => acc + parseInt(currentValue.insuredValue),
+          0
+        )
       : 0
   );
   const myCumulatedPayoutValue = await getPastEvents(appContract, "NewPayout", {
     insuranceProvider,
   }).then((payouts) =>
     payouts.length > 0
-      ? payouts.reduce((prev, next) => prev.insuredValue + next.insuredValue, 0)
+      ? payouts.reduce(
+          (acc, currentValue) => acc + parseInt(currentValue.insuredValue),
+          0
+        )
       : 0
   );
-  const totalCummulatedProfits = appContract.utils.fromWei(
+
+  const totalCumulatedProfits = appContract.utils.fromWei(
     `${totalCumulatedInsuranceValue - totalCumulatedPayoutValue}`,
     "ether"
   );
@@ -72,7 +80,7 @@ const fetchProfits = async (appContract, insuranceProvider) => {
     "ether"
   );
   return {
-    totalCummulatedProfits,
+    totalCumulatedProfits,
     myCumulatedProfits,
   };
 };
