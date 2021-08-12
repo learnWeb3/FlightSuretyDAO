@@ -114,15 +114,48 @@ const fetchCurrentMembershipApplications = async (appContract) => {
   };
 };
 
-// fetch all settings amendment proposals (DAO specific page per setting)
 const fetchSettingsAmendmentProposal = async (appContract) => {
   const membershipFeeAmendmentProposals = await getPastEvents(
     appContract,
     "NewMembershipFeeAmendmentProposal"
+  ).then(
+    async (proposals) =>
+      await Promise.all(
+        proposals.map(async (proposal) => ({
+          ...proposal,
+          id: proposal.transactionHash,
+          timestamp: await appContract.eth
+            .getBlock(proposal.blockNumber)
+            .then(({ timestamp }) => timestamp),
+          currentVotes: await getPastEvents(
+            appContract,
+            "NewVoteMembershipFeeAmendmentProposal",
+            { proposalID: parseInt(proposal.proposalID) }
+          ).then((votes) => votes.length),
+          requiredVotes: null,
+        }))
+      )
   );
   const insuranceCoverageAmendmentProposals = await getPastEvents(
     appContract,
     "NewInsuranceCoverageAmendmentProposal"
+  ).then(
+    async (proposals) =>
+      await Promise.all(
+        proposals.map(async (proposal) => ({
+          ...proposal,
+          id: proposal.transactionHash,
+          timestamp: await appContract.eth
+            .getBlock(proposal.blockNumber)
+            .then(({ timestamp }) => timestamp),
+          currentVotes: await getPastEvents(
+            appContract,
+            "NewVoteInsuranceCoverageAmendmentProposal",
+            { proposalID: parseInt(proposal.proposalID) }
+          ).then((votes) => votes.length),
+          requiredVotes: null,
+        }))
+      )
   );
   return {
     membershipFeeAmendmentProposals,
@@ -361,7 +394,7 @@ const fetchUserTransactions = async (appContract, selectedAddress) => {
   userTxSets.map((set) => set.length > 0 && set.map((tx) => userTx.push(tx)));
 
   return userTx.length > 1
-    ? userTx.sort((a, b) => a.timestamp > b.timestamp)
+    ? userTx.sort((a, b) => b.timestamp - a.timestamp)
     : userTx;
 };
 
@@ -404,11 +437,12 @@ const registerOracleProvider = async (
 const voteInsuranceProviderMembership = async (
   appContract,
   currentAddress,
-  votee
+  votee,
+  gas = 150000
 ) => {
   return await appContract.methods
     .voteInsuranceProviderMembership(votee)
-    .send({ from: currentAddress });
+    .send({ from: currentAddress, gas });
 };
 
 // oracle providers
@@ -416,11 +450,12 @@ const voteInsuranceProviderMembership = async (
 const voteOracleProviderMembership = async (
   appContract,
   currentAddress,
-  votee
+  votee,
+  gas = 150000
 ) => {
   return await appContract.methods
     .voteOracleProviderMembership(votee)
-    .send({ from: currentAddress });
+    .send({ from: currentAddress, gas });
 };
 /* flights management */
 
@@ -454,21 +489,23 @@ const registerInsurance = async (
 const registerMembershipFeeAmendmentProposal = async (
   appContract,
   currentAddress,
-  proposedValue
+  proposedValue,
+  gas = 150000
 ) => {
   return await appContract.methods
     .registerMembershipFeeAmendmentProposal(proposedValue)
-    .send({ from: currentAddress });
+    .send({ from: currentAddress, gas });
 };
 
 const voteMembershipFeeAmendmentProposal = async (
   appContract,
   currentAddress,
-  proposalID
+  proposalID,
+  gas = 150000
 ) => {
   return await appContract.methods
     .voteMembershipFeeAmendmentProposal(proposalID)
-    .send({ from: currentAddress });
+    .send({ from: currentAddress, gas });
 };
 
 // insurance coverage amendment proposal
@@ -476,21 +513,23 @@ const voteMembershipFeeAmendmentProposal = async (
 const registerInsuranceCoverageAmendmentProposal = async (
   appContract,
   currentAddress,
-  proposedValue
+  proposedValue,
+  gas = 150000
 ) => {
   return await appContract.methods
     .registerInsuranceCoverageAmendmentProposal(proposedValue)
-    .send({ from: currentAddress });
+    .send({ from: currentAddress, gas });
 };
 
 const voteInsuranceCoverageAmendmentProposal = async (
   appContract,
   currentAddress,
-  proposalID
+  proposalID,
+  gas = 150000
 ) => {
   return await appContract.methods
     .voteInsuranceCoverageAmendmentProposal(proposalID)
-    .send({ from: currentAddress });
+    .send({ from: currentAddress, gas });
 };
 
 export {

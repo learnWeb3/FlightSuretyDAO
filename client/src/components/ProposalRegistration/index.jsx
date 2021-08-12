@@ -1,6 +1,5 @@
 import React, { useContext, useState } from "react";
 import Context from "../../context/index";
-import { useComponentState } from "../../hooks";
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import {
@@ -14,8 +13,10 @@ import {
   TextField,
   useMediaQuery,
 } from "@material-ui/core";
-import { registerFlight } from "../../actions";
-import DateField from "../DateField";
+import {
+  registerInsuranceCoverageAmendmentProposal,
+  registerMembershipFeeAmendmentProposal,
+} from "../../actions";
 
 const useStyles = makeStyles(() => ({
   flex: {
@@ -44,7 +45,7 @@ const useStyles = makeStyles(() => ({
     height: "100vh",
   },
 }));
-const FlightRegistration = () => {
+const ProposalRegistration = ({ type }) => {
   const {
     // contract
     appContract,
@@ -59,46 +60,32 @@ const FlightRegistration = () => {
     setRefreshCounter,
   } = useContext(Context);
   const matches = useMediaQuery("(max-width:600px)");
-  const { state, setState } = useComponentState();
   const classes = useStyles();
   const [isAgreed, setAggreed] = useState(false);
-  const [formData, setFormData] = useState({
-    flightRef: null,
-    estimatedDeparture: Date.now(),
-    estimatedArrival: Date.now(),
-    rate: null,
-  });
-  const [errors, setErrors] = useState({
-    flightRef: false,
-    estimatedDeparture: false,
-    estimatedArrival: false,
-    rate: false,
-  });
-
+  const [proposedValue, setProposedValue] = useState(null);
+  const [errors, setErrors] = useState(false);
   const handleRegister = async () => {
     try {
-      const { flightRef, estimatedDeparture, estimatedArrival, rate } =
-        formData;
-      const weiRate = appContract.utils.toWei(rate, "ether");
-      const estimatedDepartureSeconds = parseInt(
-        estimatedDeparture.toString().slice(0, -3)
-      );
-      const estimatedArrivalSeconds = parseInt(
-        estimatedArrival.toString().slice(0, -3)
-      );
-      await registerFlight(appContract, selectedAddress, {
-        flightRef,
-        estimatedDeparture: estimatedDepartureSeconds,
-        estimatedArrival: estimatedArrivalSeconds,
-        rate: weiRate,
-      });
+      if (type === "insuranceCoverageRatioAmendmentProposal") {
+        await registerInsuranceCoverageAmendmentProposal(
+          appContract,
+          selectedAddress,
+          proposedValue
+        );
+      } else if (type === "membershipFeeAmendmentProposal") {
+        await registerMembershipFeeAmendmentProposal(
+          appContract,
+          selectedAddress,
+          proposedValue
+        );
+      }
       setModal({ displayed: false, content: null });
+      setRefreshCounter(refreshCounter + 1);
       setAlert({
         displayed: true,
         message: "Your transaction has been processed successfully",
         type: "success",
       });
-      setRefreshCounter(refreshCounter + 1);
     } catch (error) {
       setAlert({
         displayed: true,
@@ -114,22 +101,12 @@ const FlightRegistration = () => {
   };
 
   const handleChange = (event) => {
-    if (event.target.id === "rate") {
-      if (parseInt(event.target.value) > 1) {
-        setErrors({ ...errors, [event.target.id]: true });
-      } else {
-        setErrors({ ...errors, [event.target.id]: false });
-      }
+    if (event.target.value === "") {
+      setErrors(true);
+    } else {
+      setErrors(false);
     }
-    setFormData({ ...formData, [event.target.id]: event.target.value });
-  };
-
-  const handleDepartureDateChange = (date) => {
-    setFormData({ ...formData, estimatedDeparture: date.getTime() });
-  };
-
-  const handleArrivalDateChange = (date) => {
-    setFormData({ ...formData, estimatedArrival: date.getTime() });
+    setProposedValue(event.target.value);
   };
 
   return (
@@ -151,48 +128,30 @@ const FlightRegistration = () => {
                 className={classes.header}
                 gutterBottom
               >
-                Register a new flight
+                Register a new
+                {type === "membershipFeeAmendmentProposal"
+                  ? " membership fee amendment "
+                  : type === "insuranceCoverageRatioAmendmentProposal"
+                  ? " insurance coverage ratio amendment "
+                  : ""}
+                proposal
               </Typography>
             </Grid>
             <Grid item xs={12}>
               <TextField
-                error={errors.flightRef}
+                error={errors}
                 onChange={handleChange}
                 className={classes.fullWidth}
                 required
-                id="flightRef"
-                label="Flight reference"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <DateField
-                error={errors.stimatedDeparture}
-                label={"Departure date"}
-                id={"departure-date"}
-                selectedDate={formData.estimatedDeparture}
-                handleChange={handleDepartureDateChange}
-                required={true}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <DateField
-                label={"Arrival date"}
-                id={"arrival-date"}
-                selectedDate={formData.estimatedArrival}
-                handleChange={handleArrivalDateChange}
-                required={true}
-                error={errors.estimatedArrival}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                error={errors.rate}
-                onChange={handleChange}
-                className={classes.fullWidth}
-                required
-                id="rate"
-                label="Rate in Eth"
-                helperText={errors.rate ? "Must be less than 1 eth" : ""}
+                id="proposedValue"
+                label="Proposed value"
+                helperText={
+                  type === "membershipFeeAmendmentProposal"
+                    ? "number value denominated in Eth required"
+                    : type === "insuranceCoverageRatioAmendmentProposal"
+                    ? "base 100 number value required"
+                    : ""
+                }
               />
             </Grid>
 
@@ -216,15 +175,7 @@ const FlightRegistration = () => {
                 color="primary"
                 size="large"
                 className={classes.fullWidth}
-                disabled={
-                  isAgreed &&
-                  formData.rate &&
-                  formData.estimatedArrival &&
-                  formData.flightRef &&
-                  formData.estimatedDeparture
-                    ? false
-                    : true
-                }
+                disabled={isAgreed && proposedValue ? false : true}
                 onClick={handleRegister}
               >
                 REGISTER
@@ -252,4 +203,4 @@ const FlightRegistration = () => {
   );
 };
 
-export default FlightRegistration;
+export default ProposalRegistration;

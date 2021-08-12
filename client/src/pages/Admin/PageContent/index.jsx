@@ -7,6 +7,7 @@ import FlightRegistration from "../../../components/FlightRegistration";
 import { ErrorPage } from "../../../components/Error";
 import LoadingAnimation from "../../../components/LoadingAnimation/index";
 import NoContent from "../../../components/icons/NoContent";
+import PieChart from "../../../components/PieChart/index";
 
 const PageContent = ({ state, setState }) => {
   const {
@@ -14,11 +15,17 @@ const PageContent = ({ state, setState }) => {
     setModal,
     // data
     fundsIndicators,
-    daoIndicators
+    daoIndicators,
+    insuranceProvidersProfits,
+    insuranceProvidersFlights,
   } = useContext(Context);
 
   useEffect(() => {
-    fundsIndicators && setState({ status: "loaded", code: null });
+    fundsIndicators &&
+      insuranceProvidersProfits &&
+      insuranceProvidersFlights &&
+      daoIndicators &&
+      setState({ status: "loaded", code: null });
   }, [fundsIndicators]);
 
   const handleClick = () => {
@@ -114,6 +121,19 @@ const PageContent = ({ state, setState }) => {
           </>
         ) : (
           <LoadingAnimation />
+        )}
+
+        {insuranceProvidersProfits && (
+          <PieChart
+            data={insuranceProvidersProfits}
+            label="Profits / Insurance provider"
+          />
+        )}
+        {insuranceProvidersFlights && (
+          <PieChart
+            data={insuranceProvidersFlights}
+            label="Flights count / Insurance provider"
+          />
         )}
 
         {daoIndicators ? (

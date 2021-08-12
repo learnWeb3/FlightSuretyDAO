@@ -32,7 +32,7 @@ const PageContent = ({ state, setState }) => {
       if (userTx.length > 0) {
         const _formattedUserdTx = userTx.map((tx) => ({
           ...tx,
-          timestamp: moment(tx.timestamp)
+          timestamp: moment(tx.timestamp * 1000)
             .format("MMMM Do YYYY h:mm:ss a")
             .toString(),
         }));

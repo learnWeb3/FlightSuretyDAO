@@ -27,6 +27,7 @@ import { web3Contract } from "../../web3";
 import Profile from "../../pages/Profile/index";
 import MembershipApplication from "../../pages/MembershipApplication/index";
 import Registration from "../../pages/Registration/index";
+import VotingProposals from '../../pages/VotingProposals/index';
 
 const App = ({ state, setState }) => {
   const { provider, selectedAddress } = useProvider(setState);
@@ -208,6 +209,9 @@ const App = ({ state, setState }) => {
           </Route>
           <Route exact path="/membership">
             <ComponentState component={MembershipApplication} />
+          </Route>
+          <Route exact path="/proposals">
+            <ComponentState component={VotingProposals} />
           </Route>
           <Route exact path="/me">
             <ComponentState component={Profile} />

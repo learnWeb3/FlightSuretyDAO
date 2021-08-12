@@ -25,7 +25,7 @@ const useStyles = makeStyles(() => ({
   overflow: {
     overflow: "auto",
     height: "100%",
-    padding: 24
+    padding: 24,
   },
   root: {
     padding: 24,
@@ -65,7 +65,6 @@ const InsuranceSubscription = () => {
   const [isAgreed, setAggreed] = useState(false);
   const handleSubscribe = async () => {
     try {
-      setState({ status: "loading", code: null });
       await registerInsurance(
         appContract,
         selectedAddress,
@@ -73,13 +72,12 @@ const InsuranceSubscription = () => {
         `${selectedFlight.rate}`
       );
       setModal({ displayed: false, content: null });
-      setRefreshCounter(refreshCounter + 1);
       setAlert({
         displayed: true,
         message: "Your transaction has been processed successfully",
         type: "success",
       });
-      setState({ status: "loaded", code: null });
+      setRefreshCounter(refreshCounter + 1);
     } catch (error) {
       console.log(error);
       setAlert({

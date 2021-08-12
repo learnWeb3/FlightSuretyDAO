@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import Context from "../../context/index";
+import Context from "../../../context/index";
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import {
@@ -13,8 +13,12 @@ import {
   TextField,
   useMediaQuery,
 } from "@material-ui/core";
-import { registerFlight } from "../../actions";
-import DateField from "../DateField";
+import {
+  voteInsuranceCoverageAmendmentProposal,
+  voteInsuranceProviderMembership,
+  voteMembershipFeeAmendmentProposal,
+  voteOracleProviderMembership,
+} from "../../../actions";
 
 const useStyles = makeStyles(() => ({
   flex: {
@@ -43,41 +47,47 @@ const useStyles = makeStyles(() => ({
     height: "100vh",
   },
 }));
-const FlightRegistration = () => {
-  const { appContract, selectedAddress, setModal, setAlert } =
-    useContext(Context);
-  const matches = useMediaQuery("(max-width:600px)");
+const ProposalVote = ({ type, proposalID, proposedValue }) => {
+  const {
+    // contract
+    appContract,
+    // current address
+    selectedAddress,
+    // modal
+    setModal,
+    // alert
+    setAlert,
+    // data refresh
+    refreshCounter,
+    setRefreshCounter,
+  } = useContext(Context);
   const classes = useStyles();
+  const matches = useMediaQuery("(max-width:600px)");
   const [isAgreed, setAggreed] = useState(false);
-  const [formData, setFormData] = useState({
-    flightRef: null,
-    estimatedDeparture: Date.now(),
-    estimatedArrival: Date.now(),
-    rate: null,
-  });
-
-  const [errors, setErrors] = useState({
-    flightRef: false,
-    estimatedDeparture: false,
-    estimatedArrival: false,
-    rate: false,
-  });
   const handleRegister = async () => {
     try {
-      const { flightRef, estimatedDeparture, estimatedArrival, rate } =
-        formData;
-      await registerFlight(appContract, selectedAddress, {
-        flightRef,
-        estimatedDeparture,
-        estimatedArrival,
-        rate,
-      });
+      if (type === "membershipFeeAmendmentProposal") {
+        await voteMembershipFeeAmendmentProposal(
+          appContract,
+          selectedAddress,
+          proposalID
+        );
+      } else if (type === "insuranceCoverageRatioAmendmentProposal") {
+        await voteInsuranceCoverageAmendmentProposal(
+          appContract,
+          selectedAddress,
+          proposalID
+        );
+      }
+      setModal({ displayed: false, content: null });
       setAlert({
         displayed: true,
         message: "Your transaction has been processed successfully",
         type: "success",
       });
+      setRefreshCounter(refreshCounter + 1);
     } catch (error) {
+      setModal({ displayed: false, content: null });
       setAlert({
         displayed: true,
         message:
@@ -89,25 +99,6 @@ const FlightRegistration = () => {
 
   const handleCancel = () => {
     setModal({ displayed: false, content: null });
-  };
-
-  const handleChange = (event) => {
-    if (event.target.id === "rate") {
-      if (parseInt(event.target.value) > 1) {
-        setErrors({ ...errors, [event.target.id]: true });
-      } else {
-        setErrors({ ...errors, [event.target.id]: false });
-      }
-    }
-    setFormData({ ...formData, [event.target.id]: event.target.value });
-  };
-
-  const handleDepartureDateChange = (date) => {
-    setFormData({ ...formData, estimatedDeparture: date.getTime() });
-  };
-
-  const handleArrivalDateChange = (date) => {
-    setFormData({ ...formData, estimatedArrival: date.getTime() });
   };
 
   return (
@@ -129,51 +120,44 @@ const FlightRegistration = () => {
                 className={classes.header}
                 gutterBottom
               >
-                Register a new flight
+                Vote
+                {type === "membershipFeeAmendmentProposal"
+                  ? " membership amendement proposal"
+                  : type === "insuranceCoverageRatioAmendmentProposal"
+                  ? " insurance coverage amendment proposal"
+                  : ""}
               </Typography>
             </Grid>
             <Grid item xs={12}>
               <TextField
-                error={errors.flightRef}
-                onChange={handleChange}
                 className={classes.fullWidth}
                 required
-                id="flightRef"
-                label="Flight reference"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <DateField
-                error={errors.stimatedDeparture}
-                label={"Departure date"}
-                id={"departure-date"}
-                selectedDate={formData.estimatedDeparture}
-                handleChange={handleDepartureDateChange}
-                required={true}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <DateField
-                label={"Arrival date"}
-                id={"arrival-date"}
-                selectedDate={formData.estimatedArrival}
-                handleChange={handleArrivalDateChange}
-                required={true}
-                error={errors.estimatedArrival}
+                id="voter"
+                label="Voter address"
+                value={selectedAddress}
+                disabled={true}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
-                error={errors.rate}
-                onChange={handleChange}
                 className={classes.fullWidth}
                 required
-                id="rate"
-                label="Rate in Eth"
-                helperText={errors.rate ? "Must be less than 1 eth" : ""}
+                id="proposedValue"
+                label="Proposed value"
+                value={proposedValue}
+                disabled={true}
               />
             </Grid>
-
+            <Grid item xs={12}>
+              <TextField
+                className={classes.fullWidth}
+                required
+                id="proposalID"
+                label="Proposal ID"
+                value={proposalID}
+                disabled={true}
+              />
+            </Grid>
             <Grid item xs={12}>
               <FormControlLabel
                 control={
@@ -194,18 +178,10 @@ const FlightRegistration = () => {
                 color="primary"
                 size="large"
                 className={classes.fullWidth}
-                disabled={
-                  isAgreed &&
-                  formData.rate &&
-                  formData.estimatedArrival &&
-                  formData.flightRef &&
-                  formData.estimatedDeparture
-                    ? false
-                    : true
-                }
+                disabled={isAgreed ? false : true}
                 onClick={handleRegister}
               >
-                REGISTER
+                VOTE
               </Button>
             </Grid>
 
@@ -230,4 +206,4 @@ const FlightRegistration = () => {
   );
 };
 
-export default FlightRegistration;
+export default ProposalVote;

@@ -16,8 +16,8 @@ const useStyles = makeStyles(() => ({
   menuLeft: {
     display: "block",
     position: "fixed",
-    top:0,
-    left:0,
+    top: 0,
+    left: 0,
     height: "100vh",
     width: "25%",
     padding: 24,
@@ -39,6 +39,7 @@ const Menu = () => {
     { to: "/admin", label: "Admin Dashboard", order: 4 },
     { to: "/dao", label: "Community metrics", order: 5 },
     { to: "/membership", label: "Current membership applications", order: 6 },
+    { to: "/proposals", label: "Current setting proposals", order: 7 },
     { to: "/register", label: "Register as a service provider", order: 7 },
   ].sort((a, b) => a.order - b.order);
   return (
