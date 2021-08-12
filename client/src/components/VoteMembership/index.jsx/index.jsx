@@ -46,8 +46,19 @@ const useStyles = makeStyles(() => ({
   },
 }));
 const VoteMembership = ({ type, votee }) => {
-  const { appContract, selectedAddress, setModal, setAlert } =
-    useContext(Context);
+  const { 
+    // contract
+    appContract, 
+    // current address
+    selectedAddress, 
+    // modal
+    setModal,
+    // alert 
+    setAlert,
+    // data refresh
+    refreshCounter,
+    setRefreshCounter,
+   } = useContext(Context);
   const classes = useStyles();
   const matches = useMediaQuery("(max-width:600px)");
   const [isAgreed, setAggreed] = useState(false);
@@ -64,8 +75,6 @@ const VoteMembership = ({ type, votee }) => {
   });
   const handleRegister = async () => {
     try {
-      const { flightRef, estimatedDeparture, estimatedArrival, rate } =
-        formData;
       if (type === "insuranceProvider") {
         await voteInsuranceProviderMembership(
           appContract,
@@ -79,12 +88,15 @@ const VoteMembership = ({ type, votee }) => {
           formData.votee
         );
       }
+      setModal({displayed: false, content: null});
       setAlert({
         displayed: true,
         message: "Your transaction has been processed successfully",
         type: "success",
       });
+      setRefreshCounter(refreshCounter + 1);
     } catch (error) {
+      console.log(error)
       setAlert({
         displayed: true,
         message:
@@ -127,9 +139,9 @@ const VoteMembership = ({ type, votee }) => {
                 gutterBottom
               >
                 Vote
-                {type === "insuranceProvider"
-                  ? "insurance provider"
-                  : "oracle provider"}{" "}
+                {type === " insuranceProvider"
+                  ? "insurance provider "
+                  : " oracle provider "}
                 membership
               </Typography>
             </Grid>

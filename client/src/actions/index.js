@@ -37,7 +37,11 @@ const fetchInsuranceProviderFlights = async (
 };
 
 // fetch current roles registered but not activated (DAO specific page per role)
-const fetchCurrentMembershipApplications = async (appContract) => {
+const fetchCurrentMembershipApplications = async (
+  appContract,
+  tokenContract,
+  selectedAddress
+) => {
   const registeredOracleProviders = await fetchRegisteredOracleProviders(
     appContract
   ).then(async (providers) => {
@@ -47,6 +51,17 @@ const fetchCurrentMembershipApplications = async (appContract) => {
         timestamp: await appContract.eth
           .getBlock(provider.blockNumber)
           .then(({ timestamp }) => timestamp),
+        currentVotes: await getPastEvents(
+          appContract,
+          "NewVoteOracleProvider",
+          { votee: provider.oracleProvider }
+        ).then((votes) => votes.length),
+        requiredVotes: await tokenContract.methods
+          .totalSupply()
+          .call({ from: selectedAddress })
+          .then((totalSupply) => totalSupply / 2),
+          id: provider.oracleProvider,
+          address: provider.oracleProvider
       }))
     );
     return accounts;
@@ -60,6 +75,17 @@ const fetchCurrentMembershipApplications = async (appContract) => {
         timestamp: await appContract.eth
           .getBlock(provider.blockNumber)
           .then(({ timestamp }) => timestamp),
+        currentVotes: await getPastEvents(
+          appContract,
+          "NewVoteInsuranceProvider",
+          { votee: provider.insuranceProvider }
+        ).then((votes) => votes.length),
+        requiredVotes: await tokenContract.methods
+          .totalSupply()
+          .call({ from: selectedAddress })
+          .then((totalSupply) => totalSupply / 2),
+        id: provider.insuranceProvider,
+        address: provider.insuranceProvider
       }))
     );
     return accounts;
@@ -78,6 +104,7 @@ const fetchCurrentMembershipApplications = async (appContract) => {
     );
     return accounts;
   });
+
   const activatedInsuranceProviders = await fetchActivatedInsuranceProviders(
     appContract
   ).then(async (providers) => {
@@ -114,7 +141,11 @@ const fetchCurrentMembershipApplications = async (appContract) => {
   };
 };
 
-const fetchSettingsAmendmentProposal = async (appContract) => {
+const fetchSettingsAmendmentProposal = async (
+  appContract,
+  tokenContract,
+  selectedAddress
+) => {
   const membershipFeeAmendmentProposals = await getPastEvents(
     appContract,
     "NewMembershipFeeAmendmentProposal"
@@ -132,7 +163,10 @@ const fetchSettingsAmendmentProposal = async (appContract) => {
             "NewVoteMembershipFeeAmendmentProposal",
             { proposalID: parseInt(proposal.proposalID) }
           ).then((votes) => votes.length),
-          requiredVotes: null,
+          requiredVotes: await tokenContract.methods
+            .totalSupply()
+            .call({ from: selectedAddress })
+            .then((totalSupply) => totalSupply / 2),
         }))
       )
   );
@@ -438,7 +472,7 @@ const voteInsuranceProviderMembership = async (
   appContract,
   currentAddress,
   votee,
-  gas = 150000
+  gas = 200000
 ) => {
   return await appContract.methods
     .voteInsuranceProviderMembership(votee)

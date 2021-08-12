@@ -121,7 +121,7 @@ const PageContent = ({ state, setState }) => {
             Settings amendment proposals
           </Typography>
         </Grid>
-        <Grid item lg={3}>
+        <Grid item xs={12} lg={3}>
           <Button
             id="membershipFeeAmendmentProposal"
             variant="contained"

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Container, Grid, Typography } from "@material-ui/core";
 import Context from "../../../context/index";
 import { makeStyles } from "@material-ui/core/styles";
@@ -7,6 +7,7 @@ import LoadingAnimation from "../../../components/LoadingAnimation";
 import NoContent from "../../../components/icons/NoContent";
 import { ErrorPage } from "../../../components/Error";
 import VoteMembership from "../../../components/VoteMembership/index.jsx/index";
+import moment from "moment";
 
 const useStyles = makeStyles(() => ({
   header: {
@@ -36,15 +37,52 @@ const PageContent = ({ state, setState }) => {
     setModal({
       displayed: true,
       content: VoteMembership,
-      props: { type: "insuranceProvider", votee: event.row["insuranceProvider"] },
+      props: {
+        type: "insuranceProvider",
+        votee: event.row["insuranceProvider"],
+      },
     });
   };
 
+  const [
+    formattedCurrentMembershipApplications,
+    setFormattedCurrentMembershipApplications,
+  ] = useState(null);
+
   useEffect(() => {
-    currentMembershipApplications?.oracleProvidersApplications.length === 0 &&
-      currentMembershipApplications?.insuranceProviderApplications.length ===
-        0 &&
-      setState({ status: "nocontent", code: null });
+    if (currentMembershipApplications) {
+      {
+        const _formattedCurrentMembershipApplications = {
+          oracleProvidersApplications:
+            currentMembershipApplications.oracleProvidersApplications.length > 0
+              ? currentMembershipApplications.insuranceProviderApplications.map(
+                  (membershipApplication) => ({
+                    ...membershipApplication,
+                    timestamp: moment(membershipApplication.timestamp * 1000)
+                      .format("MMMM Do YYYY h:mm:ss a")
+                      .toString(),
+                  })
+                )
+              : [],
+          insuranceProviderApplications:
+            currentMembershipApplications.insuranceProviderApplications.length >
+            0
+              ? currentMembershipApplications.insuranceProviderApplications.map(
+                  (membershipApplication) => ({
+                    ...membershipApplication,
+                    timestamp: moment(membershipApplication.timestamp * 1000)
+                      .format("MMMM Do YYYY h:mm:ss a")
+                      .toString(),
+                  })
+                )
+              : [],
+        };
+        setFormattedCurrentMembershipApplications(
+          _formattedCurrentMembershipApplications
+        );
+        setState({ status: "loaded", code: null });
+      }
+    }
   }, [currentMembershipApplications]);
 
   const columns = [
@@ -52,7 +90,6 @@ const PageContent = ({ state, setState }) => {
     { field: "timestamp", headerName: "date", width: 250 },
     { field: "currentVotes", headerName: "current votes", width: 250 },
     { field: "requiredVotes", headerName: "required votes", width: 250 },
-    { field: "vote", headerName: "vote", width: 250 },
   ];
 
   return state.status === "loaded" ? (
@@ -61,38 +98,37 @@ const PageContent = ({ state, setState }) => {
         Membership application
       </Typography>
 
-      {currentMembershipApplications?.oracleProvidersApplications.length >
-        0 && (
+      {formattedCurrentMembershipApplications?.oracleProvidersApplications.length > 0 ? (
         <Grid container>
           <MyDataGrid
             handleClick={handleClickOracleProvidersDataGrid}
             header="Oracle provider applications"
-            rows={currentMembershipApplications.oracleProvidersApplications}
+            rows={formattedCurrentMembershipApplications.oracleProvidersApplications}
             columns={columns}
           />
         </Grid>
+      ) : (
+        <NoContent width="25%" message="Nothing just yet ..." />
       )}
 
-      {currentMembershipApplications?.insuranceProviderApplications.length >
-        0 && (
+      {formattedCurrentMembershipApplications?.insuranceProviderApplications.length >
+      0 ? (
         <Grid container>
           <MyDataGrid
             handleClick={handleClickInsuranceProvidersDataGrid}
             header="Insurance provider applications"
-            rows={currentMembershipApplications.insuranceProviderApplications}
+            rows={formattedCurrentMembershipApplications.insuranceProviderApplications}
             columns={columns}
           />
         </Grid>
+      ) : (
+        <NoContent width="25%" message="Nothing just yet ..." />
       )}
     </Container>
   ) : state.status === "error" ? (
     <ErrorPage code={state.code} height="100%" />
-  ) : state.status === "loading" ? (
-    <LoadingAnimation />
   ) : (
-    state.status === "nocontent" && (
-      <NoContent width="50%" message="Nothing just yet ..." />
-    )
+    state.status === "loading" && <LoadingAnimation />
   );
 };
 

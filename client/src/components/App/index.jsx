@@ -109,7 +109,7 @@ const App = ({ state, setState }) => {
       const _userTx = await fetchUserTransactions(appContract, selectedAddress);
       const _flights = await fetchFlights(appContract);
       const _currentMembershipApplications =
-        await fetchCurrentMembershipApplications(appContract);
+        await fetchCurrentMembershipApplications(appContract, tokenContract, selectedAddress);
       const _settingsAmendmentProposal = await fetchSettingsAmendmentProposal(
         appContract
       );
