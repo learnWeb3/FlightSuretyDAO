@@ -111,7 +111,9 @@ const App = ({ state, setState }) => {
       const _currentMembershipApplications =
         await fetchCurrentMembershipApplications(appContract, tokenContract, selectedAddress);
       const _settingsAmendmentProposal = await fetchSettingsAmendmentProposal(
-        appContract
+        appContract,
+        tokenContract,
+        selectedAddress
       );
       const _insuranceProvidersProfits = await fetchInsuranceProvidersProfits(
         appContract,

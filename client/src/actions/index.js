@@ -218,7 +218,7 @@ const fetchInsuranceProvidersProfits = async (
           await fetchProfits(appContract, insuranceProviderAddress).then(
             ({ totalCummulatedProfits, myCumulatedProfits }) => ({
               id: insuranceProviderAddress,
-              label: insuranceProviderAddress,
+              label: insuranceProviderAddress.slice(0,3)+"..."+insuranceProviderAddress.slice(-3, -1),
               value: parseInt(myCumulatedProfits),
             })
           )
@@ -248,7 +248,7 @@ const fetchInsuranceProvidersFlights = async (appContract) => {
           ).then((flights) => ({
             value: flights.length,
             id: insuranceProviderAddress,
-            label: insuranceProviderAddress,
+            label: insuranceProviderAddress.slice(0,3)+"..."+insuranceProviderAddress.slice(-3, -1),
           }))
       )
     );
@@ -349,7 +349,8 @@ const fetchDAOIndicators = async (
   const {
     membershipFeeAmendmentProposals,
     insuranceCoverageAmendmentProposals,
-  } = await fetchSettingsAmendmentProposal(appContract);
+  } = await fetchSettingsAmendmentProposal(appContract,  tokenContract,
+    currentAddress);
   const feeSettingsAmendmentProposalCount =
     membershipFeeAmendmentProposals.length;
   const coverageSettingsAmendmentProposalCount =

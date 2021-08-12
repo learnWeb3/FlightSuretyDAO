@@ -161,7 +161,7 @@ const PageContent = ({ state, setState }) => {
           />
         </Grid>
       ) : (
-        <NoContent width="25%" message="Nothing just yet ..." />
+        <NoContent fontSize="6rem" message="Nothing just yet ..." />
       )}
 
       {formattedSettingsAmendmentProposal?.insuranceCoverageAmendmentProposals
@@ -179,7 +179,7 @@ const PageContent = ({ state, setState }) => {
           />
         </Grid>
       ) : (
-        <NoContent width="25%" message="Nothing just yet ..." />
+        <NoContent fontSize="6rem" message="Nothing just yet ..." />
       )}
     </Container>
   ) : state.status === "error" ? (

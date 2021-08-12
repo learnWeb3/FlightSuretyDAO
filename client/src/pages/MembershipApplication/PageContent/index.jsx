@@ -8,10 +8,12 @@ import NoContent from "../../../components/icons/NoContent";
 import { ErrorPage } from "../../../components/Error";
 import VoteMembership from "../../../components/VoteMembership/index.jsx/index";
 import moment from "moment";
+import MuiAlert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles(() => ({
-  header: {
-    marginBottom: 32,
+  alert: {
+    marginBottom: 24,
+    marginTop: 24,
   },
 }));
 
@@ -94,35 +96,52 @@ const PageContent = ({ state, setState }) => {
 
   return state.status === "loaded" ? (
     <Container>
-      <Typography variant="h4" component="h8" className={classes.header}>
+      <Typography variant="h4" component="h8">
         Membership application
       </Typography>
 
-      {formattedCurrentMembershipApplications?.oracleProvidersApplications.length > 0 ? (
+      <MuiAlert
+        className={classes.alert}
+        elevation={6}
+        variant="filled"
+        severity="info"
+      >
+        In this section you will find all the current membership applications
+        aka providers who are not yet activated. A fifty percent multiparty
+        consensus needs to be achieved among token holders in order for a new
+        provider to participate in the DAO
+      </MuiAlert>
+
+      {formattedCurrentMembershipApplications?.oracleProvidersApplications
+        .length > 0 ? (
         <Grid container>
           <MyDataGrid
             handleClick={handleClickOracleProvidersDataGrid}
             header="Oracle provider applications"
-            rows={formattedCurrentMembershipApplications.oracleProvidersApplications}
+            rows={
+              formattedCurrentMembershipApplications.oracleProvidersApplications
+            }
             columns={columns}
           />
         </Grid>
       ) : (
-        <NoContent width="25%" message="Nothing just yet ..." />
+        <NoContent fontSize="6rem" message="Nothing just yet ..." />
       )}
 
-      {formattedCurrentMembershipApplications?.insuranceProviderApplications.length >
-      0 ? (
+      {formattedCurrentMembershipApplications?.insuranceProviderApplications
+        .length > 0 ? (
         <Grid container>
           <MyDataGrid
             handleClick={handleClickInsuranceProvidersDataGrid}
             header="Insurance provider applications"
-            rows={formattedCurrentMembershipApplications.insuranceProviderApplications}
+            rows={
+              formattedCurrentMembershipApplications.insuranceProviderApplications
+            }
             columns={columns}
           />
         </Grid>
       ) : (
-        <NoContent width="25%" message="Nothing just yet ..." />
+        <NoContent fontSize="6rem" message="Nothing just yet ..." />
       )}
     </Container>
   ) : state.status === "error" ? (

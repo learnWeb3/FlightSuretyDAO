@@ -149,7 +149,7 @@ const PageContent = ({ state, setState }) => {
     <LoadingAnimation />
   ) : (
     state.status === "nocontent" && (
-      <NoContent width="50%" message="Nothing just yet ..." />
+      <NoContent fontSize="6rem" message="Nothing just yet ..." />
     )
   );
 };
