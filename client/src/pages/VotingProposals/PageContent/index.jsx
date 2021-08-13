@@ -20,6 +20,7 @@ const PageContent = ({ state, setState }) => {
   const classes = useStyles();
   const {
     // data
+    registration,
     settingsAmendmentProposal,
     // modal
     setModal,
@@ -59,7 +60,7 @@ const PageContent = ({ state, setState }) => {
   };
 
   useEffect(() => {
-    if (settingsAmendmentProposal) {
+    if (registration && settingsAmendmentProposal) {
       if (settingsAmendmentProposal) {
         const _formattedSettingsAmendmentProposal = {
           membershipFeeAmendmentProposals:
@@ -91,7 +92,7 @@ const PageContent = ({ state, setState }) => {
         setState({ status: "nocontent", code: null });
       }
     }
-  }, [settingsAmendmentProposal]);
+  }, [registration, settingsAmendmentProposal]);
 
   const columns = [
     {
@@ -99,47 +100,46 @@ const PageContent = ({ state, setState }) => {
       headerName: "proposed by",
       width: 200,
       headerClassName: "fontBold",
-     
-      cellClassName: (params)  => "noFocus",
+
+      cellClassName: (params) => "noFocus",
     },
     {
       field: "proposalID",
       headerName: "proposal ID",
       width: 200,
       headerClassName: "fontBold",
-     
     },
     {
       field: "proposedValue",
       headerName: "proposed value",
       width: 200,
       headerClassName: "fontBold",
-     
-      cellClassName: (params)  => "noFocus",
+
+      cellClassName: (params) => "noFocus",
     },
     {
       field: "timestamp",
       headerName: "date",
       width: 200,
       headerClassName: "fontBold",
-     
-      cellClassName: (params)  => "noFocus",
+
+      cellClassName: (params) => "noFocus",
     },
     {
       field: "currentVotes",
       headerName: "current votes",
       width: 200,
       headerClassName: "fontBold",
-     
-      cellClassName: (params)  => "noFocus",
+
+      cellClassName: (params) => "noFocus",
     },
     {
       field: "requiredVotes",
       headerName: "required votes",
       width: 200,
       headerClassName: "fontBold",
-     
-      cellClassName: (params)  => "noFocus",
+
+      cellClassName: (params) => "noFocus",
     },
   ];
 
@@ -163,29 +163,33 @@ const PageContent = ({ state, setState }) => {
           </Typography>
         </Grid>
         <Grid item xs={12} lg={3}>
-          <Button
-            id="membershipFeeAmendmentProposal"
-            variant="contained"
-            color="primary"
-            size="large"
-            onClick={handleClick}
-            fullWidth
-          >
-            PROPOSE A NEW FEE
-          </Button>
+          {registration.isTokenHolder && (
+            <Button
+              id="membershipFeeAmendmentProposal"
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={handleClick}
+              fullWidth
+            >
+              PROPOSE A NEW FEE
+            </Button>
+          )}
         </Grid>
 
         <Grid item xs={12} lg={3}>
-          <Button
-            id="insuranceCoverageRatioAmendmentProposal"
-            variant="contained"
-            color="primary"
-            size="large"
-            onClick={handleClick}
-            fullWidth
-          >
-            PROPOSE A NEW RATIO
-          </Button>
+          {registration.isTokenHolder && (
+            <Button
+              id="insuranceCoverageRatioAmendmentProposal"
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={handleClick}
+              fullWidth
+            >
+              PROPOSE A NEW RATIO
+            </Button>
+          )}
         </Grid>
       </Grid>
 

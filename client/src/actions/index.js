@@ -60,8 +60,8 @@ const fetchCurrentMembershipApplications = async (
           .totalSupply()
           .call({ from: selectedAddress })
           .then((totalSupply) => totalSupply / 2),
-          id: provider.oracleProvider,
-          address: provider.oracleProvider
+        id: provider.oracleProvider,
+        address: provider.oracleProvider,
       }))
     );
     return accounts;
@@ -85,7 +85,7 @@ const fetchCurrentMembershipApplications = async (
           .call({ from: selectedAddress })
           .then((totalSupply) => totalSupply / 2),
         id: provider.insuranceProvider,
-        address: provider.insuranceProvider
+        address: provider.insuranceProvider,
       }))
     );
     return accounts;
@@ -138,6 +138,55 @@ const fetchCurrentMembershipApplications = async (
   return {
     oracleProvidersApplications,
     insuranceProviderApplications,
+  };
+};
+
+const checkRegistration = async (
+  appContract,
+  tokenContract,
+  selectedAddress
+) => {
+  const registeredInsuranceProviders = await fetchRegisteredInsuranceProviders(
+    appContract
+  );
+  const registeredOracleProviders = await fetchRegisteredOracleProviders(
+    appContract
+  );
+  const activatedInsuranceProviders = await fetchActivatedInsuranceProviders(
+    appContract
+  );
+  const activatedOracleProviders = await fetchActivatedOracleProviders(
+    appContract
+  );
+  const tokenBalance = await tokenContract.methods
+    .balanceOf(selectedAddress)
+    .call({ from: selectedAddress });
+  const isOwner = await appContract.methods
+    .isOwner()
+    .call({ from: selectedAddress });
+  return {
+    isRegisteredInsuranceProvider: registeredInsuranceProviders.find(
+      (provider) => provider.insuranceProvider === selectedAddress
+    )
+      ? true
+      : false,
+    isRegisteredOracleProvider: registeredOracleProviders.find(
+      (provider) => provider.oracleProvider === selectedAddress
+    )
+      ? true
+      : false,
+    isActivatedInsuranceProvider: activatedInsuranceProviders.find(
+      (provider) => provider.insuranceProvider === selectedAddress
+    )
+      ? true
+      : false,
+    isActivatedOracleProvider: activatedOracleProviders.find(
+      (provider) => provider.oracleProvider === selectedAddress
+    )
+      ? true
+      : false,
+    isTokenHolder: tokenBalance > 0,
+    isOwner,
   };
 };
 
@@ -218,7 +267,10 @@ const fetchInsuranceProvidersProfits = async (
           await fetchProfits(appContract, insuranceProviderAddress).then(
             ({ totalCummulatedProfits, myCumulatedProfits }) => ({
               id: insuranceProviderAddress,
-              label: insuranceProviderAddress.slice(0,3)+"..."+insuranceProviderAddress.slice(-3, -1),
+              label:
+                insuranceProviderAddress.slice(0, 3) +
+                "..." +
+                insuranceProviderAddress.slice(-3, -1),
               value: parseInt(myCumulatedProfits),
             })
           )
@@ -248,7 +300,10 @@ const fetchInsuranceProvidersFlights = async (appContract) => {
           ).then((flights) => ({
             value: flights.length,
             id: insuranceProviderAddress,
-            label: insuranceProviderAddress.slice(0,3)+"..."+insuranceProviderAddress.slice(-3, -1),
+            label:
+              insuranceProviderAddress.slice(0, 3) +
+              "..." +
+              insuranceProviderAddress.slice(-3, -1),
           }))
       )
     );
@@ -349,8 +404,11 @@ const fetchDAOIndicators = async (
   const {
     membershipFeeAmendmentProposals,
     insuranceCoverageAmendmentProposals,
-  } = await fetchSettingsAmendmentProposal(appContract,  tokenContract,
-    currentAddress);
+  } = await fetchSettingsAmendmentProposal(
+    appContract,
+    tokenContract,
+    currentAddress
+  );
   const feeSettingsAmendmentProposalCount =
     membershipFeeAmendmentProposals.length;
   const coverageSettingsAmendmentProposalCount =
@@ -445,7 +503,7 @@ const registerInsuranceProvider = async (
   appContract,
   currentAddress,
   value,
-  gas = 150000
+  gas = 500000
 ) => {
   return await appContract.methods
     .registerInsuranceProvider()
@@ -575,6 +633,7 @@ export {
   fetchInsuranceProviderFlights,
   fetchInsuranceProvidersFlights,
   fetchCurrentMembershipApplications,
+  checkRegistration,
   fetchSettingsAmendmentProposal,
   fetchInsuranceProvidersProfits,
   fetchFundsIndicators,

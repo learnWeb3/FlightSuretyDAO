@@ -20,4 +20,8 @@ contract Ownable {
     function destructContract() external onlyOwner {
         selfdestruct(payable(owner));
     }
+
+    function isOwner() external view returns(bool _isOwner){
+        return msg.sender == owner;
+    }
 }

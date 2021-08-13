@@ -21,18 +21,24 @@ const PageContent = ({ state, setState }) => {
     // modal
     setModal,
     // data
+    registration,
     fundsIndicators,
     insuranceProvidersProfits,
     insuranceProvidersFlights,
   } = useContext(Context);
 
   useEffect(() => {
-    fundsIndicators &&
+    registration &&
+      fundsIndicators &&
       insuranceProvidersProfits &&
       insuranceProvidersFlights &&
       setState({ status: "loaded", code: null });
-      console.log(insuranceProvidersFlights)
-  }, [fundsIndicators, insuranceProvidersProfits, insuranceProvidersFlights]);
+  }, [
+    registration,
+    fundsIndicators,
+    insuranceProvidersProfits,
+    insuranceProvidersFlights,
+  ]);
 
   const handleClick = () => {
     setModal({ displayed: true, content: FlightRegistration });
@@ -50,15 +56,17 @@ const PageContent = ({ state, setState }) => {
           <Grid item lg={3}></Grid>
         </Hidden>
         <Grid item xs={12} lg={3}>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            onClick={handleClick}
-            fullWidth
-          >
-            REGISTER A NEW FLIGHT
-          </Button>
+          {registration?.isActivatedInsuranceProvider && (
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={handleClick}
+              fullWidth
+            >
+              REGISTER A NEW FLIGHT
+            </Button>
+          )}
         </Grid>
       </Grid>
       <Grid container spacing={4}>

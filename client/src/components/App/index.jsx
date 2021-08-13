@@ -17,6 +17,7 @@ import {
   fetchInsuranceProvidersProfits,
   fetchSettingsAmendmentProposal,
   fetchUserTransactions,
+  checkRegistration,
 } from "../../actions";
 import { useProvider } from "../../hooks";
 // contracts abis
@@ -27,7 +28,7 @@ import { web3Contract } from "../../web3";
 import Profile from "../../pages/Profile/index";
 import MembershipApplication from "../../pages/MembershipApplication/index";
 import Registration from "../../pages/Registration/index";
-import VotingProposals from '../../pages/VotingProposals/index';
+import VotingProposals from "../../pages/VotingProposals/index";
 
 const App = ({ state, setState }) => {
   const { provider, selectedAddress } = useProvider(setState);
@@ -56,6 +57,7 @@ const App = ({ state, setState }) => {
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [currentMembershipApplications, setCurrentMembershipApplications] =
     useState(null);
+  const [registration, setRegistration] = useState(null);
   const [settingsAmendmentProposal, setSettingsAmendmentProposal] =
     useState(null);
   const [insuranceProvidersProfits, setInsuranceProvidersProfits] =
@@ -109,12 +111,24 @@ const App = ({ state, setState }) => {
       const _userTx = await fetchUserTransactions(appContract, selectedAddress);
       const _flights = await fetchFlights(appContract);
       const _currentMembershipApplications =
-        await fetchCurrentMembershipApplications(appContract, tokenContract, selectedAddress);
+        await fetchCurrentMembershipApplications(
+          appContract,
+          tokenContract,
+          selectedAddress
+        );
       const _settingsAmendmentProposal = await fetchSettingsAmendmentProposal(
         appContract,
         tokenContract,
         selectedAddress
       );
+      const {
+        isRegisteredInsuranceProvider,
+        isRegisteredOracleProvider,
+        isActivatedInsuranceProvider,
+        isActivatedOracleProvider,
+        isTokenHolder,
+        isOwner,
+      } = await checkRegistration(appContract, tokenContract, selectedAddress);
       const _insuranceProvidersProfits = await fetchInsuranceProvidersProfits(
         appContract,
         selectedAddress
@@ -135,6 +149,14 @@ const App = ({ state, setState }) => {
       setUserTx(_userTx);
       setFLights(_flights);
       setCurrentMembershipApplications(_currentMembershipApplications);
+      setRegistration({
+        isRegisteredInsuranceProvider,
+        isRegisteredOracleProvider,
+        isActivatedInsuranceProvider,
+        isActivatedOracleProvider,
+        isTokenHolder,
+        isOwner,
+      });
       setSettingsAmendmentProposal(_settingsAmendmentProposal);
       setInsuranceProvidersProfits(_insuranceProvidersProfits);
       setFundsIndicators(_fundsIndicator);
@@ -181,6 +203,8 @@ const App = ({ state, setState }) => {
         insuranceProvidersFlights,
         setInsuranceProvidersFlights,
         currentMembershipApplications,
+        registration,
+        setRegistration,
         setCurrentMembershipApplications,
         settingsAmendmentProposal,
         setSettingsAmendmentProposal,

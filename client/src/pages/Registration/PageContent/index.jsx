@@ -12,6 +12,8 @@ import {
 import { ErrorPage } from "../../../components/Error";
 import LoadingAnimation from "../../../components/LoadingAnimation";
 import NoContent from "../../../components/icons/NoContent/index";
+import { useHistory } from "react-router-dom";
+
 
 const useStyles = makeStyles(() => ({
   flex: {
@@ -34,6 +36,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const PageContent = ({ state, setState }) => {
+  const history = useHistory()
   const classes = useStyles();
   const {
     // current Address
@@ -42,14 +45,28 @@ const PageContent = ({ state, setState }) => {
     appContract,
     // alert
     setAlert,
+    registration,
     // data refresh
     refreshCounter,
     setRefreshCounter,
   } = useContext(Context);
 
   useEffect(() => {
-    appContract && setState({ status: "loaded", code: null });
-  }, [appContract]);
+    if (appContract && registration) {
+      if (
+        registration.isRegisteredInsuranceProvider ||
+        registration.isOracleProvider
+      ) {
+        setState({
+          status: "error",
+          code: 403,
+          message: "Your address is already registered",
+        });
+      } else {
+        setState({ status: "loaded", code: null });
+      }
+    }
+  }, [registration, appContract]);
 
   const handleOracleProviderRegistration = async () => {
     try {
@@ -64,6 +81,7 @@ const PageContent = ({ state, setState }) => {
         type: "success",
       });
       setRefreshCounter(refreshCounter + 1);
+      history.push('/oracle-provider');
     } catch (error) {
       console.log(error);
       setAlert({
@@ -88,6 +106,7 @@ const PageContent = ({ state, setState }) => {
         type: "success",
       });
       setRefreshCounter(refreshCounter + 1);
+      history.push('/insurance-provider');
     } catch (error) {
       console.log(error);
       setAlert({
@@ -144,7 +163,7 @@ const PageContent = ({ state, setState }) => {
       </Hidden>
     </Grid>
   ) : state.status === "error" ? (
-    <ErrorPage code={state.code} height="100%" />
+    <ErrorPage code={state.code} height="100%" message={state.message} />
   ) : state.status === "loading" ? (
     <LoadingAnimation />
   ) : (

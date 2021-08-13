@@ -53,7 +53,7 @@ const useProvider = (setState) => {
         setProvider(web3);
         const _accounts = await web3.eth.getAccounts();
         _accounts.length > 0
-          ? _accounts.length > 0 && setSelectedAddress(_accounts[1])
+          ? _accounts.length > 0 && setSelectedAddress(_accounts[0])
           : setState({ status: "error", code: 500 });
       }
     };

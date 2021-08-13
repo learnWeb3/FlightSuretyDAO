@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Grid, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MenuLink from "./MenuLink";
+import Context from "../../context/index";
 
 const useStyles = makeStyles(() => ({
   navlink: {
@@ -26,31 +27,81 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Menu = () => {
+  const { registration } = useContext(Context);
   const classes = useStyles();
-  const links = [
-    { to: "/me", label: "My activity", order: 0 },
-    { to: "/passenger", label: "Subscribe an insurance", order: 1 },
-    { to: "/oracle-provider", label: "Oracle providers metrics", order: 2 },
-    {
-      to: "/insurance-provider",
-      label: "Insurance provider metrics",
-      order: 3,
-    },
-    { to: "/admin", label: "Admin Dashboard", order: 4 },
-    { to: "/dao", label: "Community metrics", order: 5 },
-    { to: "/membership", label: "Current membership applications", order: 6 },
-    { to: "/proposals", label: "Current setting proposals", order: 7 },
-    { to: "/register", label: "Register as a service provider", order: 7 },
-  ].sort((a, b) => a.order - b.order);
+  const [links, setLinks] = useState(null);
+  useEffect(() => {
+    registration &&
+      setLinks(
+        [
+          {
+            to: "/me",
+            label: "My activity",
+            order: 0,
+            display:
+              registration.isActivatedInsuranceProvider ||
+              registration.isActivatedOracleProvider ||
+              registration.isTokenHolder,
+          },
+          {
+            to: "/passenger",
+            label: "Subscribe an insurance",
+            order: 1,
+            display: true,
+          },
+          {
+            to: "/oracle-provider",
+            label: "Oracle providers metrics",
+            order: 2,
+            display: registration.isActivatedOracleProvider,
+          },
+          {
+            to: "/insurance-provider",
+            label: "Insurance provider metrics",
+            order: 3,
+            display: registration.isActivatedInsuranceProvider,
+          },
+          {
+            to: "/admin",
+            label: "Admin Dashboard",
+            order: 4,
+            display: registration.isOwner,
+          },
+          { to: "/dao", label: "Community metrics", order: 5, display: true },
+          {
+            to: "/membership",
+            label: "Current membership applications",
+            order: 6,
+            display: registration.isTokenHolder,
+          },
+          {
+            to: "/proposals",
+            label: "Current setting proposals",
+            order: 7,
+            display: registration.isTokenHolder,
+          },
+          {
+            to: "/register",
+            label: "Register as a service provider",
+            order: 7,
+            display:
+              !registration.isActivatedInsuranceProvider &&
+              !registration.isActivatedOracleProvider,
+          },
+        ].sort((a, b) => a.order - b.order)
+      );
+      console.log(registration)
+  }, [registration]);
   return (
     <Grid container className={classes.menuLeft}>
       <Typography variant="h4" component="li" className={classes.navlink}>
         The FlightSurety DAO
       </Typography>
 
-      {links.map(({ order, to, label }) => (
-        <MenuLink key={order} to={to} label={label} />
-      ))}
+      {links?.map(
+        ({ order, to, label, display }) =>
+          display && <MenuLink key={order} to={to} label={label} />
+      )}
     </Grid>
   );
 };

@@ -22,6 +22,7 @@ const PageContent = ({ state, setState }) => {
 
   const {
     // data
+    registration,
     currentMembershipApplications,
     // modal
     setModal,
@@ -52,40 +53,51 @@ const PageContent = ({ state, setState }) => {
   ] = useState(null);
 
   useEffect(() => {
-    if (currentMembershipApplications) {
-      {
-        const _formattedCurrentMembershipApplications = {
-          oracleProvidersApplications:
-            currentMembershipApplications.oracleProvidersApplications.length > 0
-              ? currentMembershipApplications.insuranceProviderApplications.map(
-                  (membershipApplication) => ({
-                    ...membershipApplication,
-                    timestamp: moment(membershipApplication.timestamp * 1000)
-                      .format("MMMM Do YYYY h:mm:ss a")
-                      .toString(),
-                  })
-                )
-              : [],
-          insuranceProviderApplications:
-            currentMembershipApplications.insuranceProviderApplications.length >
-            0
-              ? currentMembershipApplications.insuranceProviderApplications.map(
-                  (membershipApplication) => ({
-                    ...membershipApplication,
-                    timestamp: moment(membershipApplication.timestamp * 1000)
-                      .format("MMMM Do YYYY h:mm:ss a")
-                      .toString(),
-                  })
-                )
-              : [],
-        };
-        setFormattedCurrentMembershipApplications(
-          _formattedCurrentMembershipApplications
-        );
-        setState({ status: "loaded", code: null });
+    if (registration) {
+      if (registration.isTokenHolder) {
+        if (currentMembershipApplications) {
+          {
+            const _formattedCurrentMembershipApplications = {
+              oracleProvidersApplications:
+                currentMembershipApplications.oracleProvidersApplications
+                  .length > 0
+                  ? currentMembershipApplications.insuranceProviderApplications.map(
+                      (membershipApplication) => ({
+                        ...membershipApplication,
+                        timestamp: moment(
+                          membershipApplication.timestamp * 1000
+                        )
+                          .format("MMMM Do YYYY h:mm:ss a")
+                          .toString(),
+                      })
+                    )
+                  : [],
+              insuranceProviderApplications:
+                currentMembershipApplications.insuranceProviderApplications
+                  .length > 0
+                  ? currentMembershipApplications.insuranceProviderApplications.map(
+                      (membershipApplication) => ({
+                        ...membershipApplication,
+                        timestamp: moment(
+                          membershipApplication.timestamp * 1000
+                        )
+                          .format("MMMM Do YYYY h:mm:ss a")
+                          .toString(),
+                      })
+                    )
+                  : [],
+            };
+            setFormattedCurrentMembershipApplications(
+              _formattedCurrentMembershipApplications
+            );
+            setState({ status: "loaded", code: null });
+          }
+        }
+      } else {
+        setState({ status: "error", code: 403 });
       }
     }
-  }, [currentMembershipApplications]);
+  }, [registration, currentMembershipApplications]);
 
   const columns = [
     {
