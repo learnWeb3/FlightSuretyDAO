@@ -7,21 +7,38 @@ const useStyles = makeStyles(() => ({
     marginBottom: 24,
     marginTop: 24,
   },
+  root: {
+    "& .fontBold": {
+      fontWeight: 900,
+      textTransform: "uppercase",
+    },
+    "& .cursorPointer": {
+      cursor: "pointer",
+    },
+    "& .noFocus:focus-within":{
+      outline: "unset"
+    },
+    "& .noFocus:focus":{
+      outline: "unset"
+    }
+  },
 }));
 const MyDataGrid = ({ header, rows, columns, handleClick }) => {
   const classes = useStyles();
   return (
     <div style={{ display: "flex", width: "100%" }}>
-      <div style={{ flexGrow: 1 }}>
+      <div style={{ flexGrow: 1 }} className={classes.root}>
         <Typography variant="h5" component="h2" className={classes.header}>
           {header}
         </Typography>
         <DataGrid
+          style={{ backgroundColor: "#FFF" }}
           autoHeight
           onCellClick={handleClick}
           rows={rows}
           columns={columns}
-          pageSize={5}
+          pageSize={10}
+          getRowClassName={(params) => "cursorPointer"}
           disableSelectionOnClick
         />
       </div>

@@ -8,7 +8,7 @@ import NoContent from "../../../components/icons/NoContent";
 import { ErrorPage } from "../../../components/Error";
 import VoteMembership from "../../../components/VoteMembership/index.jsx/index";
 import moment from "moment";
-import MuiAlert from '@material-ui/lab/Alert';
+import MuiAlert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles(() => ({
   alert: {
@@ -88,10 +88,38 @@ const PageContent = ({ state, setState }) => {
   }, [currentMembershipApplications]);
 
   const columns = [
-    { field: "address", headerName: "address", width: 250 },
-    { field: "timestamp", headerName: "date", width: 250 },
-    { field: "currentVotes", headerName: "current votes", width: 250 },
-    { field: "requiredVotes", headerName: "required votes", width: 250 },
+    {
+      field: "address",
+      headerName: "address",
+      width: 250,
+      headerClassName: "fontBold",
+
+      cellClassName: (params) => "noFocus",
+    },
+    {
+      field: "timestamp",
+      headerName: "date",
+      width: 250,
+      headerClassName: "fontBold",
+
+      cellClassName: (params) => "noFocus",
+    },
+    {
+      field: "currentVotes",
+      headerName: "current votes",
+      width: 250,
+      headerClassName: "fontBold",
+
+      cellClassName: (params) => "noFocus",
+    },
+    {
+      field: "requiredVotes",
+      headerName: "required votes",
+      width: 250,
+      headerClassName: "fontBold",
+
+      cellClassName: (params) => "noFocus",
+    },
   ];
 
   return state.status === "loaded" ? (

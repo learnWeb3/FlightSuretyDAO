@@ -3,9 +3,10 @@ pragma solidity ^0.8.00;
 
 import "../Ownable/Ownable.sol";
 import "../CallerAuditable/CallerAuditable.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./ERC20.sol";
 
 contract FlightSuretyShares is ERC20, Ownable, CallerAuditable {
+    mapping(address => uint256) _tokenBase;
     modifier onlyOwnerOrAuthorizedCaller() {
         require(
             msg.sender == owner || authorizedCallers[msg.sender],

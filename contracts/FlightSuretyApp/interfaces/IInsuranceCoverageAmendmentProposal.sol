@@ -60,4 +60,10 @@ interface IInsuranceCoverageAmendmentProposal {
         external
         view
         returns (uint256 currentInsuranceCoverage);
+
+    // fetch a proposal createdAt attribute referencing the block number
+    function getProposalCreatedAt(uint256 _proposalID)
+        external
+        view
+        returns (uint256 createdAt);
 }

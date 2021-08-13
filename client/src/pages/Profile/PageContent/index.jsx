@@ -13,7 +13,7 @@ const useStyles = makeStyles(() => ({
   alert: {
     marginBottom: 24,
     marginTop: 24,
-  }
+  },
 }));
 
 const PageContent = ({ state, setState }) => {
@@ -45,10 +45,38 @@ const PageContent = ({ state, setState }) => {
   }, [userTx]);
 
   const columns = [
-    { field: "tx", headerName: "address", width: 250 },
-    { field: "timestamp", headerName: "date", width: 250 },
-    { field: "eventName", headerName: "event", width: 250 },
-    { field: "type", headerName: "status", width: 250 },
+    {
+      field: "tx",
+      headerName: "address",
+      width: 250,
+      headerClassName: "fontBold",
+     
+      cellClassName: (params)  => "noFocus",
+    },
+    {
+      field: "timestamp",
+      headerName: "date",
+      width: 250,
+      headerClassName: "fontBold",
+     
+      cellClassName: (params)  => "noFocus",
+    },
+    {
+      field: "eventName",
+      headerName: "event",
+      width: 250,
+      headerClassName: "fontBold",
+     
+      cellClassName: (params)  => "noFocus",
+    },
+    {
+      field: "type",
+      headerName: "status",
+      width: 250,
+      headerClassName: "fontBold",
+     
+      cellClassName: (params)  => "noFocus",
+    },
   ];
 
   const handleClickUserTxDataGrid = ({ value }) => {
@@ -57,14 +85,16 @@ const PageContent = ({ state, setState }) => {
 
   return state.status === "loaded" ? (
     <Container>
-      <Typography
-        variant="h4"
-        component="h8"
-      >
+      <Typography variant="h4" component="h8">
         Transaction history
       </Typography>
 
-      <MuiAlert className={classes.alert} elevation={6} variant="filled" severity="info">
+      <MuiAlert
+        className={classes.alert}
+        elevation={6}
+        variant="filled"
+        severity="info"
+      >
         In this section you will find all your transactions related to your
         activity on The FlightSurety DAO, transactions status and hash. At any
         time you can click on the table row showing your transaction details to

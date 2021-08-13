@@ -117,6 +117,15 @@ contract InsuranceCoverageAmendmentProposal is
         return _getInsuranceCoverageAmendmentCurrentProposalID();
     }
 
+     // fetch a proposal createdAt attribute referencing the block number
+    function getProposalCreatedAt(uint256 _proposalID)
+        external
+        view
+        returns (uint256 createdAt)
+    {
+        return _getProposalCreatedAt(_proposalID);
+    }
+
     function _activateInsuranceCoverageAmendmentProposal(uint256 _proposalID)
         internal
     {

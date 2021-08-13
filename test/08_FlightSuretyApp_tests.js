@@ -848,10 +848,6 @@ contract(FlightSuretyApp, async (accounts) => {
       filter: { flightID: flightID, owner: activatedInsuranceProviderOne },
     });
     assert.equal(eventLogs.length, 1);
-    console.log(
-      web3.utils.fromWei(afterClaimBalance, "ether"),
-      web3.utils.fromWei(beforeClaimBalance, "ether")
-    );
     assert.equal(
       new BigNumber(afterClaimBalance).isGreaterThan(
         new BigNumber(beforeClaimBalance)

@@ -100,6 +100,9 @@ contract FlightSuretyApp is Ownable {
         address contractAddress
     );
 
+    uint256 constant TOKEN_HOLDER_MINIMUM_BLOCK_REQUIREMENT = 10;
+    uint256 constant PROPOSAL_VALID_BLOCK_NUMBER = 200;
+
     IFlightSuretyData flightSuretyData;
     IInsuranceCoverageAmendmentProposal insuranceCoverageAmendmentProposal;
     IMembershipFeeAmendmentProposal membershipFeeAmendmentProposal;
@@ -132,6 +135,18 @@ contract FlightSuretyApp is Ownable {
             !membershipFeeAmendmentProposal
                 .hasVotedMembershipFeeAmendmentProposal(_caller, _proposalID),
             "caller has already voted"
+        );
+        _;
+    }
+
+    modifier requireProposalIsActive(uint256 proposalID) {
+        require(
+            block.number -
+                membershipFeeAmendmentProposal.getProposalCreatedAt(
+                    proposalID
+                ) <=
+                PROPOSAL_VALID_BLOCK_NUMBER,
+            "voting proposal has expired"
         );
         _;
     }
@@ -235,6 +250,15 @@ contract FlightSuretyApp is Ownable {
         require(
             flightSuretyShares.balanceOf(_caller) > 0,
             "caller must be token holder"
+        );
+        _;
+    }
+
+    modifier requireTokenHolderIsOldEnough(address _caller) {
+        require(
+            block.number - flightSuretyShares.ownershipBlockNum(_caller) >=
+                TOKEN_HOLDER_MINIMUM_BLOCK_REQUIREMENT,
+            "caller must be an old token holder"
         );
         _;
     }
@@ -506,6 +530,7 @@ contract FlightSuretyApp is Ownable {
     function voteInsuranceProviderMembership(address _account)
         external
         onlyTokenHolder(msg.sender)
+        requireTokenHolderIsOldEnough(msg.sender)
         requireTokenHolderHasNotVotedInsuranceProviderMembership(
             msg.sender,
             _account
@@ -538,6 +563,7 @@ contract FlightSuretyApp is Ownable {
     function voteOracleProviderMembership(address _account)
         external
         onlyTokenHolder(msg.sender)
+        requireTokenHolderIsOldEnough(msg.sender)
         requireTokenHolderHasNotVotedOracleProviderMembership(
             msg.sender,
             _account
@@ -699,10 +725,12 @@ contract FlightSuretyApp is Ownable {
     function voteMembershipFeeAmendmentProposal(uint256 _proposalID)
         external
         onlyTokenHolder(msg.sender)
+        requireTokenHolderIsOldEnough(msg.sender)
         requireTokenHolderHasNotVotedMembershipFeeAmendmentProposal(
             msg.sender,
             _proposalID
         )
+        requireProposalIsActive(_proposalID)
     {
         membershipFeeAmendmentProposal.voteMembershipFeeAmendmentProposal(
             _proposalID,
@@ -756,10 +784,12 @@ contract FlightSuretyApp is Ownable {
     function voteInsuranceCoverageAmendmentProposal(uint256 _proposalID)
         external
         onlyTokenHolder(msg.sender)
+        requireTokenHolderIsOldEnough(msg.sender)
         requireTokenHolderHasNotVotedInsuranceCoverageAmendmentProposal(
             msg.sender,
             _proposalID
         )
+        requireProposalIsActive(_proposalID)
     {
         insuranceCoverageAmendmentProposal
             .voteInsuranceCoverageAmendmentProposal(

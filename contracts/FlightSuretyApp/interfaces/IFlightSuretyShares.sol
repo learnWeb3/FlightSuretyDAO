@@ -16,6 +16,9 @@ interface IFlightSuretyShares {
     // is ERC20 : fetch the current balance of an account
     function balanceOf(address account) external view returns (uint256);
 
+    // is ERC20 : fetch the ownership block number of an address aka block num from witch the account has been credited of a certain amount of token
+    function ownershipBlockNum(address account) external view returns (uint256);
+
     // minting token
     function mint(address account, uint256 amount) external;
 

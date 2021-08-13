@@ -94,12 +94,53 @@ const PageContent = ({ state, setState }) => {
   }, [settingsAmendmentProposal]);
 
   const columns = [
-    { field: "caller", headerName: "proposed by", width: 200 },
-    { field: "proposalID", headerName: "proposal ID", width: 200 },
-    { field: "proposedValue", headerName: "proposed value", width: 200 },
-    { field: "timestamp", headerName: "date", width: 200 },
-    { field: "currentVotes", headerName: "current votes", width: 200 },
-    { field: "requiredVotes", headerName: "required votes", width: 200 },
+    {
+      field: "caller",
+      headerName: "proposed by",
+      width: 200,
+      headerClassName: "fontBold",
+     
+      cellClassName: (params)  => "noFocus",
+    },
+    {
+      field: "proposalID",
+      headerName: "proposal ID",
+      width: 200,
+      headerClassName: "fontBold",
+     
+    },
+    {
+      field: "proposedValue",
+      headerName: "proposed value",
+      width: 200,
+      headerClassName: "fontBold",
+     
+      cellClassName: (params)  => "noFocus",
+    },
+    {
+      field: "timestamp",
+      headerName: "date",
+      width: 200,
+      headerClassName: "fontBold",
+     
+      cellClassName: (params)  => "noFocus",
+    },
+    {
+      field: "currentVotes",
+      headerName: "current votes",
+      width: 200,
+      headerClassName: "fontBold",
+     
+      cellClassName: (params)  => "noFocus",
+    },
+    {
+      field: "requiredVotes",
+      headerName: "required votes",
+      width: 200,
+      headerClassName: "fontBold",
+     
+      cellClassName: (params)  => "noFocus",
+    },
   ];
 
   const handleClick = (event) => {

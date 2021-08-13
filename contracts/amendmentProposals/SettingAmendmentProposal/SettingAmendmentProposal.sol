@@ -20,7 +20,7 @@ contract SettingAmendmentProposal {
     ) internal {
         Proposal memory _proposal = Proposal({
             proposedValue: _proposedValue,
-            createdAt: block.timestamp
+            createdAt: block.number
         });
 
         currentProposalID++;
@@ -71,5 +71,13 @@ contract SettingAmendmentProposal {
                 _side,
                 consensusTreshold
             );
+    }
+
+    function _getProposalCreatedAt(uint256 _proposalID)
+        internal
+        view
+        returns (uint256 createdAt)
+    {
+        return proposals[_proposalID].createdAt;
     }
 }
