@@ -23,6 +23,13 @@ const fetchInsurances = async (appContract) => {
   return await getPastEvents(appContract, "NewInsurance");
 };
 
+// fetch specific user insurances
+const fetchUserInsurances = async (appContract, selectedAddress) => {
+  return await getPastEvents(appContract, "NewInsurance", {
+    passenger: selectedAddress,
+  });
+};
+
 // profits aka registred insurance cumulated value - payout cumulated value
 const fetchProfits = async (appContract, insuranceProvider) => {
   const totalCumulatedInsuranceValue = await getPastEvents(
@@ -119,6 +126,7 @@ export {
   fetchRegisteredOracleProviders,
   fetchActivatedOracleProviders,
   fetchInsurances,
+  fetchUserInsurances,
   fetchProfits,
   fetchDefaultRates,
 };

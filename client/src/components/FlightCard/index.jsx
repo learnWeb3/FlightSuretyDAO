@@ -15,6 +15,7 @@ import clsx from "clsx";
 import moment from "moment";
 import Context from "../../context/index";
 import InsuranceSubscription from "../InsuranceSubscription/index";
+import InsuranceClaim from "../InsuranceClaim/index";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -49,15 +50,21 @@ const useStyles = makeStyles(() => ({
 }));
 
 const FlightCard = ({
+  btnSubscribeInsuranceDisabled = false,
+  btnClaimInsuranceDisabled = true,
   flightID,
   flightRef,
   estimatedDeparture,
   estimatedArrival,
   insuranceProvider,
   rate,
-  btnDisabled,
+  isLate = null,
+  realArrival = null,
+  realDeparture = null,
+  settled = null,
 }) => {
-  const {appContract, setSelectedFlight, setModal } = useContext(Context);
+  const { appContract, setSelectedFlight, setSelectedInsurance, setModal } =
+    useContext(Context);
   const classes = useStyles();
   const matches = useMediaQuery("(max-width:600px)");
   const ethRate = appContract.utils.fromWei(rate, "ether");
@@ -74,19 +81,48 @@ const FlightCard = ({
     .duration(estimatedArrival * 1000 - estimatedDeparture * 1000)
     .asHours();
 
-  const handleClick = () => {
-    setSelectedFlight({
-      flightID,
-      flightRef,
-      estimatedDeparture,
-      estimatedArrival,
-      insuranceProvider,
-      rate,
-    });
-    setModal({
-      displayed: true,
-      content: InsuranceSubscription,
-    });
+  const handleClick = (event) => {
+    if (event.target.parentElement) {
+      const mappingIdToUserAction = {
+        subscribeInsurance: () =>
+          setSelectedFlight({
+            flightID,
+            flightRef,
+            estimatedDeparture,
+            estimatedArrival,
+            insuranceProvider,
+            rate,
+          }),
+        claimInsurance: () =>
+          setSelectedInsurance({
+            flightID,
+            flightRef,
+            estimatedDeparture,
+            estimatedArrival,
+            insuranceProvider,
+            rate,
+            isLate,
+            realArrival,
+            realDeparture,
+            settled,
+          }),
+      };
+      const mappingIdToModalContent = {
+        subscribeInsurance: () =>
+          setModal({
+            displayed: true,
+            content: InsuranceSubscription,
+          }),
+        claimInsurance: () =>
+          setModal({
+            displayed: true,
+            content: InsuranceClaim,
+          }),
+      };
+      const id = event.target.parentElement.id;
+      mappingIdToUserAction[id]();
+      mappingIdToModalContent[id]();
+    }
   };
   return (
     <Grid item xs={12}>
@@ -148,8 +184,9 @@ const FlightCard = ({
                 Flight rate : {ethRate} Eth
               </Typography>
             )}
-            {!btnDisabled && (
+            {!btnSubscribeInsuranceDisabled && (
               <Button
+                id="subscribeInsurance"
                 variant="outlinedPrimary"
                 color="secondary"
                 size="large"
@@ -157,6 +194,19 @@ const FlightCard = ({
                 onClick={handleClick}
               >
                 GET INSURANCE
+              </Button>
+            )}
+
+            {!btnClaimInsuranceDisabled && settled && (
+              <Button
+                id="claimInsurance"
+                variant="outlinedPrimary"
+                color="secondary"
+                size="large"
+                className={matches && classes.btnFullWidth}
+                onClick={handleClick}
+              >
+                CLAIM INSURANCE
               </Button>
             )}
           </Grid>

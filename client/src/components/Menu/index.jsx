@@ -90,7 +90,6 @@ const Menu = () => {
           },
         ].sort((a, b) => a.order - b.order)
       );
-      console.log(registration)
   }, [registration]);
   return (
     <Grid container className={classes.menuLeft}>

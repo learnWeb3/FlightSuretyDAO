@@ -13,7 +13,7 @@ import {
 } from "@material-ui/core";
 import FlightCard from "../FlightCard/index";
 import Context from "../../context/index";
-import { registerInsurance } from "../../actions";
+import { claimInsurance, registerInsurance } from "../../actions";
 import { useComponentState } from "../../hooks";
 
 const useStyles = makeStyles(() => ({
@@ -43,14 +43,14 @@ const useStyles = makeStyles(() => ({
     height: "100vh",
   },
 }));
-const InsuranceSubscription = () => {
+const InsuranceClaim = () => {
   const {
     // contracts
     appContract,
     // current address
     selectedAddress,
     // data
-    selectedFlight,
+    selectedInsurance,
     // refresh
     refreshCounter,
     setRefreshCounter,
@@ -62,13 +62,12 @@ const InsuranceSubscription = () => {
   const matches = useMediaQuery("(max-width:600px)");
   const classes = useStyles();
   const [isAgreed, setAggreed] = useState(false);
-  const handleSubscribe = async () => {
+  const handleClaim = async () => {
     try {
-      await registerInsurance(
+      await claimInsurance(
         appContract,
         selectedAddress,
-        selectedFlight.flightID,
-        `${selectedFlight.rate}`
+        selectedInsurance.flightID,
       );
       setModal({ displayed: false, content: null });
       setAlert({
@@ -110,7 +109,7 @@ const InsuranceSubscription = () => {
                 className={classes.header}
                 gutterBottom
               >
-                Your insurance
+                Your insurance contract
               </Typography>
             </Grid>
             <Grid item xs={12}>
@@ -124,14 +123,20 @@ const InsuranceSubscription = () => {
                 Your flight
               </Typography>
 
-              {selectedFlight && (
+              {selectedInsurance && (
                 <FlightCard
                   btnSubscribeInsuranceDisabled={true}
-                  flightRef={selectedFlight.flightRef}
-                  estimatedDeparture={selectedFlight.estimatedDeparture}
-                  estimatedArrival={selectedFlight.estimatedArrival}
-                  insuranceProvider={selectedFlight.insuranceProvider}
-                  rate={selectedFlight.rate}
+                  flightRef={selectedInsurance.flightRef}
+                  estimatedDeparture={selectedInsurance.estimatedDeparture}
+                  estimatedArrival={selectedInsurance.estimatedArrival}
+                  insuranceProvider={selectedInsurance.insuranceProvider}
+                  rate={selectedInsurance.rate}
+                  isLate={selectedInsurance.isLate}
+                  realArrival={selectedInsurance.realArrival}
+                  realDeparture={selectedInsurance.realDeparture}
+                  settled={selectedInsurance.settled}
+                  btnClaimInsuranceDisabled={true}
+                  btnSubscribeInsuranceDisabled={true}
                 />
               )}
             </Grid>
@@ -153,7 +158,8 @@ const InsuranceSubscription = () => {
                   className={classes.header}
                   gutterBottom
                 >
-                  Insurance amount : {appContract.utils.fromWei(selectedFlight.rate)} Eth
+                  Insurance amount :{" "}
+                  {appContract.utils.fromWei(selectedInsurance.rate)} Eth
                 </Typography>
 
                 <FormControlLabel
@@ -177,9 +183,9 @@ const InsuranceSubscription = () => {
                 size="large"
                 className={classes.btnFullWidth}
                 disabled={!isAgreed}
-                onClick={handleSubscribe}
+                onClick={handleClaim}
               >
-                SUBSCRIBE
+                CLAIM
               </Button>
             </Grid>
 
@@ -204,4 +210,4 @@ const InsuranceSubscription = () => {
   );
 };
 
-export default InsuranceSubscription;
+export default InsuranceClaim;

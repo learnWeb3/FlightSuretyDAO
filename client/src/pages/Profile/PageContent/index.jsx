@@ -8,8 +8,15 @@ import NoContent from "../../../components/icons/NoContent";
 import { ErrorPage } from "../../../components/Error";
 import moment from "moment";
 import MuiAlert from "@material-ui/lab/Alert";
+import FiltersArea from "../../../components/FiltersArea/index";
+import FlightCard from "../../../components/FlightCard";
 
 const useStyles = makeStyles(() => ({
+  flightContainer: { display: "flex", justifyContent: "center" },
+  container: {
+    marginBottom: 24,
+    marginTop: 24,
+  },
   alert: {
     marginBottom: 24,
     marginTop: 24,
@@ -23,12 +30,15 @@ const PageContent = ({ state, setState }) => {
   const {
     // data
     userTx,
+    userInsuranceContracts,
+    // filters
+    isFilterFlightToActive,
     // modal
     setModal,
   } = useContext(Context);
 
   useEffect(() => {
-    if (userTx) {
+    if (userTx && userInsuranceContracts) {
       if (userTx.length > 0) {
         const _formattedUserdTx = userTx.map((tx) => ({
           ...tx,
@@ -39,10 +49,10 @@ const PageContent = ({ state, setState }) => {
         setFormattedUserTx(_formattedUserdTx);
         setState({ status: "loaded", code: null });
       } else {
-        setState({ status: "nocontent", code: null });
+        setState({ status: "loaded", code: null });
       }
     }
-  }, [userTx]);
+  }, [userTx, userInsuranceContracts]);
 
   const columns = [
     {
@@ -50,32 +60,32 @@ const PageContent = ({ state, setState }) => {
       headerName: "address",
       width: 250,
       headerClassName: "fontBold",
-     
-      cellClassName: (params)  => "noFocus",
+
+      cellClassName: (params) => "noFocus",
     },
     {
       field: "timestamp",
       headerName: "date",
       width: 250,
       headerClassName: "fontBold",
-     
-      cellClassName: (params)  => "noFocus",
+
+      cellClassName: (params) => "noFocus",
     },
     {
       field: "eventName",
       headerName: "event",
       width: 250,
       headerClassName: "fontBold",
-     
-      cellClassName: (params)  => "noFocus",
+
+      cellClassName: (params) => "noFocus",
     },
     {
       field: "type",
       headerName: "status",
       width: 250,
       headerClassName: "fontBold",
-     
-      cellClassName: (params)  => "noFocus",
+
+      cellClassName: (params) => "noFocus",
     },
   ];
 
@@ -84,34 +94,108 @@ const PageContent = ({ state, setState }) => {
   };
 
   return state.status === "loaded" ? (
-    <Container>
-      <Typography variant="h4" component="h8">
-        Transaction history
-      </Typography>
+    <>
+      <Container className={classes.container}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          My Activity
+        </Typography>
+      </Container>
+      <Container className={classes.container}>
+        <Typography variant="h5" component="h2">
+          Transaction history
+        </Typography>
 
-      <MuiAlert
-        className={classes.alert}
-        elevation={6}
-        variant="filled"
-        severity="info"
-      >
-        In this section you will find all your transactions related to your
-        activity on The FlightSurety DAO, transactions status and hash. At any
-        time you can click on the table row showing your transaction details to
-        get more insights on the Etherscan block explorer
-      </MuiAlert>
+        <MuiAlert
+          className={classes.alert}
+          elevation={6}
+          variant="filled"
+          severity="info"
+        >
+          In this section you will find all your transactions related to your
+          activity on The FlightSurety DAO, transactions status and hash. At any
+          time you can click on the table row showing your transaction details
+          to get more insights on the Etherscan block explorer
+        </MuiAlert>
 
-      {formattedUserTx?.length > 0 && (
-        <Grid container>
-          <MyDataGrid
-            handleClick={handleClickUserTxDataGrid}
-            header="Your transactions to the Flight surety DAO"
-            rows={formattedUserTx}
-            columns={columns}
-          />
+        {formattedUserTx?.length > 0 && (
+          <Grid container>
+            <MyDataGrid
+              handleClick={handleClickUserTxDataGrid}
+              header="Your transactions to the Flight surety DAO"
+              rows={formattedUserTx}
+              columns={columns}
+            />
+          </Grid>
+        )}
+      </Container>
+      <Container className={classes.container}>
+        <Typography variant="h5" component="h2">
+          My insurances contract
+        </Typography>
+
+        <MuiAlert
+          className={classes.alert}
+          elevation={6}
+          variant="filled"
+          severity="info"
+        >
+          In this section you will find all the insurances contracts you have
+          subscribed to and their respective status
+        </MuiAlert>
+
+        <FiltersArea />
+        <Grid container className={classes.flightContainer}>
+          {userInsuranceContracts ? (
+            userInsuranceContracts
+              ?.filter(
+                (flight) =>
+                  flight.estimatedDeparture * 1000 >= Date.now() ===
+                  isFilterFlightToActive
+              )
+              .map(
+                ({
+                  flightID,
+                  flightRef,
+                  estimatedDeparture,
+                  estimatedArrival,
+                  insuranceProvider,
+                  rate,
+                  isLate,
+                  realArrival,
+                  realDeparture,
+                  settled,
+                }) => (
+                  <FlightCard
+                    key={flightID}
+                    flightID={flightID}
+                    flightRef={flightRef}
+                    estimatedDeparture={estimatedDeparture}
+                    estimatedArrival={estimatedArrival}
+                    insuranceProvider={insuranceProvider}
+                    rate={rate}
+                    isLate={isLate}
+                    realArrival={realArrival}
+                    realDeparture={realDeparture}
+                    settled={settled}
+                    btnClaimInsuranceDisabled={false}
+                    btnSubscribeInsuranceDisabled={true}
+                  />
+                )
+              )
+          ) : (
+            <LoadingAnimation />
+          )}
+
+          {userInsuranceContracts?.filter(
+            (flight) =>
+              flight.estimatedDeparture * 1000 >= Date.now() ===
+              isFilterFlightToActive
+          ).length === 0 && (
+            <NoContent width="100%" message="Nothing just yet ..." />
+          )}
         </Grid>
-      )}
-    </Container>
+      </Container>
+    </>
   ) : state.status === "error" ? (
     <ErrorPage code={state.code} height="100%" />
   ) : state.status === "loading" ? (

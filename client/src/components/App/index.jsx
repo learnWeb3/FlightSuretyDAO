@@ -18,6 +18,7 @@ import {
   fetchSettingsAmendmentProposal,
   fetchUserTransactions,
   checkRegistration,
+  fetchUserInsurancesContracts,
 } from "../../actions";
 import { useProvider } from "../../hooks";
 // contracts abis
@@ -53,8 +54,10 @@ const App = ({ state, setState }) => {
   const [refreshCounter, setRefreshCounter] = useState(0);
   // data
   const [userTx, setUserTx] = useState(null);
+  const [userInsuranceContracts, setUserInsuranceContracts] = useState(null);
   const [flights, setFLights] = useState(null);
   const [selectedFlight, setSelectedFlight] = useState(null);
+  const [selectedInsurance, setSelectedInsurance] = useState(null);
   const [currentMembershipApplications, setCurrentMembershipApplications] =
     useState(null);
   const [registration, setRegistration] = useState(null);
@@ -109,6 +112,11 @@ const App = ({ state, setState }) => {
       oracleContract
     ) => {
       const _userTx = await fetchUserTransactions(appContract, selectedAddress);
+      const _userInsuranceContracts = await fetchUserInsurancesContracts(
+        appContract,
+        oracleContract,
+        selectedAddress
+      );
       const _flights = await fetchFlights(appContract);
       const _currentMembershipApplications =
         await fetchCurrentMembershipApplications(
@@ -147,6 +155,7 @@ const App = ({ state, setState }) => {
         appContract
       );
       setUserTx(_userTx);
+      setUserInsuranceContracts(_userInsuranceContracts);
       setFLights(_flights);
       setCurrentMembershipApplications(_currentMembershipApplications);
       setRegistration({
@@ -195,11 +204,14 @@ const App = ({ state, setState }) => {
         setAlert,
         // data
         userTx,
+        userInsuranceContracts,
         setUserTx,
         flights,
         setFLights,
         selectedFlight,
         setSelectedFlight,
+        selectedInsurance,
+        setSelectedInsurance,
         insuranceProvidersFlights,
         setInsuranceProvidersFlights,
         currentMembershipApplications,

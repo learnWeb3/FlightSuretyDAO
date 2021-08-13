@@ -7,6 +7,7 @@ import {
   fetchInsurances,
   fetchProfits,
   fetchDefaultRates,
+  fetchUserInsurances,
 } from "./helpers.js";
 
 /**======================================================================================================================================== */
@@ -491,6 +492,50 @@ const fetchUserTransactions = async (appContract, selectedAddress) => {
     : userTx;
 };
 
+// fetch current insurances contracts
+
+const fetchUserInsurancesContracts = async (
+  appContract,
+  oracleContract,
+  selectedAddress
+) => {
+  const userInsurances = await fetchUserInsurances(
+    appContract,
+    selectedAddress
+  );
+  if (userInsurances.length > 0) {
+    return await Promise.all(
+      userInsurances.map(async ({ flightID }) => {
+        const flightData = await getPastEvents(appContract, "NewFlight", {
+          flightID,
+        });
+        const updatedFlightData = await getPastEvents(
+          oracleContract,
+          "UpdatedFlight",
+          { flightID }
+        );
+        const returnedFlight = flightData[0];
+        return {
+          ...returnedFlight,
+          settled: updatedFlightData.length > 0,
+          realDeparture:
+            updatedFlightData.length > 0
+              ? updatedFlightData[0].realDeparture
+              : null,
+          realArrival:
+            updatedFlightData.length > 0
+              ? updatedFlightData[0].realArrival
+              : null,
+          isLate:
+            updatedFlightData.length > 0 ? updatedFlightData[0].isLate : null,
+        };
+      })
+    );
+  } else {
+    return [];
+  }
+};
+
 /**======================================================================================================================================== */
 // WRITE TO THE BLOCKCHAIN
 /**======================================================================================================================================== */
@@ -577,6 +622,17 @@ const registerInsurance = async (
     .send({ from: currentAddress, value, gas });
 };
 
+const claimInsurance = async (
+  appContract,
+  currentAddress,
+  flightID,
+  gas = 500000
+) => {
+  return await appContract.methods
+    .claimInsurance(flightID)
+    .send({ from: currentAddress, gas });
+};
+
 /* Settings amendment proposals*/
 
 const registerMembershipFeeAmendmentProposal = async (
@@ -639,6 +695,7 @@ export {
   fetchFundsIndicators,
   fetchDAOIndicators,
   fetchUserTransactions,
+  fetchUserInsurancesContracts,
   // WRITE TO THE BLOCKCHAIN
   registerInsuranceProvider,
   registerOracleProvider,
@@ -646,6 +703,7 @@ export {
   voteOracleProviderMembership,
   registerFlight,
   registerInsurance,
+  claimInsurance,
   registerMembershipFeeAmendmentProposal,
   voteMembershipFeeAmendmentProposal,
   registerInsuranceCoverageAmendmentProposal,
