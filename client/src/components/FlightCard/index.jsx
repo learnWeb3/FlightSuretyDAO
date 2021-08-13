@@ -84,7 +84,7 @@ const FlightCard = ({
   const handleClick = (event) => {
     if (event.target.parentElement) {
       const mappingIdToUserAction = {
-        subscribeInsurance: () =>
+       ["subscribeInsurance"+flightID]: () =>
           setSelectedFlight({
             flightID,
             flightRef,
@@ -93,7 +93,7 @@ const FlightCard = ({
             insuranceProvider,
             rate,
           }),
-        claimInsurance: () =>
+        ["claimInsurance"+flightID]: () =>
           setSelectedInsurance({
             flightID,
             flightRef,
@@ -108,12 +108,12 @@ const FlightCard = ({
           }),
       };
       const mappingIdToModalContent = {
-        subscribeInsurance: () =>
+        ["subscribeInsurance"+flightID]: () =>
           setModal({
             displayed: true,
             content: InsuranceSubscription,
           }),
-        claimInsurance: () =>
+          ["claimInsurance"+flightID]: () =>
           setModal({
             displayed: true,
             content: InsuranceClaim,
@@ -186,7 +186,7 @@ const FlightCard = ({
             )}
             {!btnSubscribeInsuranceDisabled && (
               <Button
-                id="subscribeInsurance"
+                id={"subscribeInsurance"+flightID}
                 variant="outlinedPrimary"
                 color="secondary"
                 size="large"
@@ -199,7 +199,7 @@ const FlightCard = ({
 
             {!btnClaimInsuranceDisabled && settled && (
               <Button
-                id="claimInsurance"
+                id={"claimInsurance"+flightID}
                 variant="outlinedPrimary"
                 color="secondary"
                 size="large"

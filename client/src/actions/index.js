@@ -601,7 +601,7 @@ const registerFlight = async (
   appContract,
   currentAddress,
   { flightRef, estimatedDeparture, estimatedArrival, rate },
-  gas = 150000
+  gas = 500000
 ) => {
   return await appContract.methods
     .registerFlight(flightRef, estimatedDeparture, estimatedArrival, rate)
