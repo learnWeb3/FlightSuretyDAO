@@ -6,8 +6,6 @@ const rl = readline.createInterface({
 // dotenv
 const envPath = process.cwd() + "/../.env";
 require("dotenv").config({ path: envPath });
-// node cron
-const cron = require("node-cron");
 // environnent variables
 const { PROVIDER_URL } = process.env;
 // init cron tasks helper function
