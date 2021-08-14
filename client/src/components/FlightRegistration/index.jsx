@@ -1,6 +1,5 @@
 import React, { useContext, useState } from "react";
 import Context from "../../context/index";
-import { useComponentState } from "../../hooks";
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import {
@@ -59,13 +58,12 @@ const FlightRegistration = () => {
     setRefreshCounter,
   } = useContext(Context);
   const matches = useMediaQuery("(max-width:600px)");
-  const { state, setState } = useComponentState();
   const classes = useStyles();
   const [isAgreed, setAggreed] = useState(false);
   const [formData, setFormData] = useState({
     flightRef: null,
-    estimatedDeparture: Date.now(),
-    estimatedArrival: Date.now(),
+    estimatedDeparture: Date.now() + 3600 * 1 * 1000,
+    estimatedArrival: Date.now() + 3600 * 2 * 1000,
     rate: null,
   });
   const [errors, setErrors] = useState({
@@ -100,6 +98,7 @@ const FlightRegistration = () => {
       });
       setRefreshCounter(refreshCounter + 1);
     } catch (error) {
+      console.error(error);
       setAlert({
         displayed: true,
         message:

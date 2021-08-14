@@ -164,9 +164,10 @@ const PageContent = ({ state, setState }) => {
                   realArrival,
                   realDeparture,
                   settled,
-                }) => (
+                }, index) => (
                   <FlightCard
-                    key={flightID}
+                    key={flightID+index}
+                    cardID={flightID+index}
                     flightID={flightID}
                     flightRef={flightRef}
                     estimatedDeparture={estimatedDeparture}

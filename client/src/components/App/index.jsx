@@ -19,6 +19,7 @@ import {
   fetchUserTransactions,
   checkRegistration,
   fetchUserInsurancesContracts,
+  fetchOracleRequestForFlightSettlementData,
 } from "../../actions";
 import { useProvider } from "../../hooks";
 // contracts abis
@@ -69,10 +70,15 @@ const App = ({ state, setState }) => {
   const [daoIndicators, setDAOIndicators] = useState(null);
   const [insuranceProvidersFlights, setInsuranceProvidersFlights] =
     useState(null);
+  const [
+    oracleflightsRequestsforSettlementData,
+    setOracleFlightsRequestsforSettlementData,
+  ] = useState(null);
 
   useEffect(() => {
     const initializeContracts = async (provider) => {
       const networkID = await provider.eth.net.getId();
+      console.log(FlightSuretyApp.networks[networkID].address);
       setAppContract(
         web3Contract(
           provider,
@@ -118,6 +124,8 @@ const App = ({ state, setState }) => {
         selectedAddress
       );
       const _flights = await fetchFlights(appContract);
+      const _oracleflightsRequestsforSettlementData =
+        await fetchOracleRequestForFlightSettlementData(oracleContract);
       const _currentMembershipApplications =
         await fetchCurrentMembershipApplications(
           appContract,
@@ -157,6 +165,9 @@ const App = ({ state, setState }) => {
       setUserTx(_userTx);
       setUserInsuranceContracts(_userInsuranceContracts);
       setFLights(_flights);
+      setOracleFlightsRequestsforSettlementData(
+        _oracleflightsRequestsforSettlementData
+      );
       setCurrentMembershipApplications(_currentMembershipApplications);
       setRegistration({
         isRegisteredInsuranceProvider,
@@ -208,6 +219,8 @@ const App = ({ state, setState }) => {
         setUserTx,
         flights,
         setFLights,
+        oracleflightsRequestsforSettlementData,
+        setOracleFlightsRequestsforSettlementData,
         selectedFlight,
         setSelectedFlight,
         selectedInsurance,

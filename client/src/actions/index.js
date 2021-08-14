@@ -22,7 +22,26 @@ const fetchCurrentMembershipFee = async (appContract, selectedAddress) =>
 
 // fetch all flights created to insure a new passengers (new insurance pick up index page)
 const fetchFlights = async (appContract) => {
-  return await getPastEvents(appContract, "NewFlight");
+  console.log(await getPastEvents(appContract, "NewFlight").then(async (flights) => {
+    return await Promise.all(
+      flights.map(async (flight) => ({
+        ...flight,
+        ...(await appContract.methods
+          .getFlightSettlementData(flight.flightID)
+          .call()),
+      }))
+    );
+  }));
+  return await getPastEvents(appContract, "NewFlight").then(async (flights) => {
+    return await Promise.all(
+      flights.map(async (flight) => ({
+        ...flight,
+        ...(await appContract.methods
+          .getFlightSettlementData(flight.flightID)
+          .call()),
+      }))
+    );
+  });
 };
 
 // fetch a specific flight to insure a new passenger (new insurance confirmation)
@@ -536,6 +555,12 @@ const fetchUserInsurancesContracts = async (
   }
 };
 
+// fetch flights requests for settlement data
+
+const fetchOracleRequestForFlightSettlementData = async (oracleContract) => {
+  return await getPastEvents(oracleContract, "NewRequest");
+};
+
 /**======================================================================================================================================== */
 // WRITE TO THE BLOCKCHAIN
 /**======================================================================================================================================== */
@@ -696,6 +721,7 @@ export {
   fetchDAOIndicators,
   fetchUserTransactions,
   fetchUserInsurancesContracts,
+  fetchOracleRequestForFlightSettlementData,
   // WRITE TO THE BLOCKCHAIN
   registerInsuranceProvider,
   registerOracleProvider,

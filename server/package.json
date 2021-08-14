@@ -1,0 +1,20 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon ./app.js",
+    "start": "node ./app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "node-cron": "^3.0.0",
+    "nodemon": "^2.0.12",
+    "truffle-hdwallet-provider": "^1.0.17",
+    "web3": "^1.5.1"
+  }
+}

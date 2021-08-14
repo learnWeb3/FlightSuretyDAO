@@ -621,6 +621,70 @@ contract FlightSuretyApp is Ownable {
         );
     }
 
+    function getFlightInitialData(uint256 _flightID)
+        external
+        view
+        returns (
+            string memory flightRef,
+            uint64 estimatedDeparture,
+            uint64 estimatedArrival,
+            address insuranceProvider,
+            uint256 rate
+        )
+    {
+        (
+            flightRef,
+            estimatedDeparture,
+            estimatedArrival,
+            ,
+            ,
+            ,
+            insuranceProvider,
+            ,
+            rate
+        ) = flightSuretyData.getFlight(_flightID);
+        return (
+            flightRef,
+            estimatedDeparture,
+            estimatedArrival,
+            insuranceProvider,
+            rate
+        );
+    }
+
+    function getFlightSettlementData(uint256 _flightID)
+        external
+        view
+        returns (
+            string memory flightRef,
+            uint64 realDeparture,
+            uint64 realArrival,
+            bool isLate,
+            address insuranceProvider,
+            uint256 insuredValue
+        )
+    {
+        (
+            flightRef,
+            ,
+            ,
+            realDeparture,
+            realArrival,
+            isLate,
+            insuranceProvider,
+            insuredValue,
+
+        ) = flightSuretyData.getFlight(_flightID);
+        return (
+            flightRef,
+            realDeparture,
+            realArrival,
+            isLate,
+            insuranceProvider,
+            insuredValue
+        );
+    }
+
     /* insurances management */
 
     function registerInsurance(uint256 _flightID)

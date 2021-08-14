@@ -59,9 +59,10 @@ const PageContent = ({ state, setState }) => {
                 estimatedArrival,
                 insuranceProvider,
                 rate,
-              }) => (
+              }, index) => (
                 <FlightCard
-                  key={flightID}
+                  key={flightID+index}
+                  cardID={flightID+index}
                   flightID={flightID}
                   flightRef={flightRef}
                   estimatedDeparture={estimatedDeparture}

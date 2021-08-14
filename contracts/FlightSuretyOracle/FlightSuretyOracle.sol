@@ -29,6 +29,7 @@ contract FlightSuretyOracle is Ownable, Random {
     event NewRequest(
         uint256 indexed requestID,
         uint256 indexed flightID,
+        uint256 indexed activatedIndex,
         string flightRef
     );
     event FailedRequest(
@@ -123,7 +124,7 @@ contract FlightSuretyOracle is Ownable, Random {
             activatedIndex: _randomIndex,
             responseCount: 0
         });
-        emit NewRequest(currentRequestID, _flightID, _flightRef);
+        emit NewRequest(currentRequestID, _flightID, _randomIndex, _flightRef);
     }
 
     // update responses to a request and validate the accepted outcome according to multiparty consensus rules
