@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Context from "../../../context/index";
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
@@ -13,6 +13,7 @@ import {
   TextField,
   useMediaQuery,
 } from "@material-ui/core";
+import MuiAlert from "@material-ui/lab/Alert";
 import {
   voteInsuranceProviderMembership,
   voteOracleProviderMembership,
@@ -46,33 +47,51 @@ const useStyles = makeStyles(() => ({
   },
 }));
 const VoteMembership = ({ type, votee }) => {
-  const { 
+  const {
     // contract
-    appContract, 
+    appContract,
     // current address
-    selectedAddress, 
+    selectedAddress,
+    // data
+    userTx,
     // modal
     setModal,
-    // alert 
+    // alert
     setAlert,
     // data refresh
     refreshCounter,
     setRefreshCounter,
-   } = useContext(Context);
+  } = useContext(Context);
   const classes = useStyles();
   const matches = useMediaQuery("(max-width:600px)");
+  const onlyLg = useMediaQuery("(min-width:1200px");
   const [isAgreed, setAggreed] = useState(false);
   const [formData, setFormData] = useState({
     voter: selectedAddress,
     votee,
   });
-
   const [errors, setErrors] = useState({
     flightRef: false,
     estimatedDeparture: false,
     estimatedArrival: false,
     rate: false,
   });
+
+  const [isVoted, setIsVoted] = useState(null);
+  useEffect(() => {
+    setIsVoted(
+      userTx?.find((tx) =>
+        (tx.eventName === "NewVoteInsuranceProvider" &&
+          tx.voter === selectedAddress &&
+          tx.votee === votee) ||
+        (tx.eventName === "NewVoteOracleProvider" &&
+          tx.voter === selectedAddress &&
+          tx.votee === votee)
+          ? true
+          : false
+      )
+    );
+  }, [userTx]);
   const handleRegister = async () => {
     try {
       if (type === "insuranceProvider") {
@@ -88,7 +107,7 @@ const VoteMembership = ({ type, votee }) => {
           formData.votee
         );
       }
-      setModal({displayed: false, content: null});
+      setModal({ displayed: false, content: null });
       setAlert({
         displayed: true,
         message: "Your transaction has been processed successfully",
@@ -96,7 +115,7 @@ const VoteMembership = ({ type, votee }) => {
       });
       setRefreshCounter(refreshCounter + 1);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       setAlert({
         displayed: true,
         message:
@@ -130,7 +149,23 @@ const VoteMembership = ({ type, votee }) => {
             matches ? clsx(classes.root, classes.fullHeight) : classes.root
           }
         >
-          <Grid container spacing={4} className={classes.overflow}>
+          <Grid
+            container
+            spacing={4}
+            className={
+              !onlyLg
+                ? clsx(classes.overflow, classes.overflowHeightMd)
+                : clsx(classes.overflow, classes.overflowHeightLg)
+            }
+          >
+            {isVoted && (
+              <Grid item xs={12}>
+                <MuiAlert elevation={6} variant="filled" severity="info">
+                  You have already voted up this member
+                </MuiAlert>
+              </Grid>
+            )}
+
             <Grid item xs={12}>
               <Typography
                 variant="h4"
@@ -171,34 +206,40 @@ const VoteMembership = ({ type, votee }) => {
               />
             </Grid>
 
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={isAgreed}
-                    onChange={() => setAggreed(!isAgreed)}
-                    name="terms-of-use"
-                    color="primary"
+            {!isVoted && (
+              <>
+                <Grid item xs={12}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isAgreed}
+                        onChange={() => setAggreed(!isAgreed)}
+                        name="terms-of-use"
+                        color="primary"
+                      />
+                    }
+                    label="I have read and agree to the terms of use"
                   />
-                }
-                label="I have read and agree to the terms of use"
-              />
-            </Grid>
+                </Grid>
 
-            <Grid item xs={12} lg={6}>
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                className={classes.fullWidth}
-                disabled={
-                  isAgreed && formData.voter && formData.votee ? false : true
-                }
-                onClick={handleRegister}
-              >
-                VOTE
-              </Button>
-            </Grid>
+                <Grid item xs={12} lg={6}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    className={classes.fullWidth}
+                    disabled={
+                      isAgreed && formData.voter && formData.votee
+                        ? false
+                        : true
+                    }
+                    onClick={handleRegister}
+                  >
+                    VOTE
+                  </Button>
+                </Grid>
+              </>
+            )}
 
             <Grid item xs={12} lg={6}>
               <Button

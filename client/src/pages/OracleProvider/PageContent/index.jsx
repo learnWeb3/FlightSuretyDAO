@@ -8,6 +8,10 @@ import NoContent from "../../../components/icons/NoContent";
 import LoadingAnimation from "../../../components/LoadingAnimation/index";
 import { ErrorPage } from "../../../components/Error";
 import MuiAlert from "@material-ui/lab/Alert";
+import {
+  fetchFlightSettlementResponses,
+  fetchFlightSettlementRequests,
+} from "../../../actions";
 
 const useStyles = makeStyles(() => ({
   flightContainer: { display: "flex", justifyContent: "center" },
@@ -25,42 +29,95 @@ const useStyles = makeStyles(() => ({
 const PageContent = ({ state, setState }) => {
   const classes = useStyles();
   const {
+    // contract
+    oracleContract,
     // data
+    registration,
     flights,
     oracleflightsRequestsforSettlementData,
+    oracleIndexes,
     // filters
     isFilterFlightToActive,
   } = useContext(Context);
 
-  const [formattedFlights, setFormattedFlights] = useState(null)
+  const [formattedFlights, setFormattedFlights] = useState(null);
 
   useEffect(() => {
-    if (flights && oracleflightsRequestsforSettlementData) {
-      if (flights.length === 0) {
-        setState({ status: "nocontent", code: null });
-      } else {
-        const _formattedFlights = flights.map((flight) => {
-          const request = oracleflightsRequestsforSettlementData.find(
-            (request) => request.flightID === flight.flightID
-          );
-          return {
-            ...flight,
-            oracleActivatedIndex: request ? request.activatedIndex : null,
-            oracleRequestIsPresent: request ? true : false,
+    if (
+      oracleContract &&
+      registration &&
+      flights &&
+      oracleflightsRequestsforSettlementData &&
+      oracleIndexes
+    ) {
+      if (registration.isActivatedOracleProvider) {
+        if (flights.length === 0) {
+          setState({ status: "nocontent", code: null });
+        } else {
+          const formatAndSetFlights = async () => {
+            const _formattedFlights = await Promise.all(
+              flights.map(async (flight) => {
+                const request = oracleflightsRequestsforSettlementData.find(
+                  (request) => request.flightID === flight.flightID
+                );
+                const oracleActivatedIndex = request
+                  ? request.activatedIndex
+                  : null;
+                const oracleRequestIsPresent = request ? true : false;
+                const settlementRequests = await fetchFlightSettlementRequests(
+                  oracleContract,
+                  flight.flightID
+                ).then((requests) =>
+                  requests.sort((a, b) => a.blockNumber - b.blockNumber)
+                );
+                const settlementResponses =
+                  await fetchFlightSettlementResponses(
+                    oracleContract,
+                    flight.flightID
+                  ).then((responses) =>
+                    responses.sort((a, b) => a.blockNumber - b.blockNumber)
+                  );
+                const settlementConsensusTreshold = 5;
+                const settlementResponseCount = settlementResponses.length;
+                return {
+                  ...flight,
+                  oracleActivatedIndex,
+                  oracleRequestIsPresent,
+                  settlementResponses,
+                  settlementRequests,
+                  settlementResponseCount,
+                  settlementConsensusTreshold,
+                };
+              })
+            );
+            setFormattedFlights(_formattedFlights);
+            setState({ status: "loaded", code: null });
           };
+          formatAndSetFlights();
+        }
+      } else {
+        setState({
+          status: "error",
+          code: 403,
+          message:
+            "You must be an activated oracle provider to acces this page",
         });
-        setFormattedFlights(_formattedFlights);
-        setState({ status: "loaded", code: null });
       }
     }
-  }, [flights, oracleflightsRequestsforSettlementData]);
+  }, [
+    oracleContract,
+    flights,
+    oracleflightsRequestsforSettlementData,
+    oracleIndexes,
+    registration,
+  ]);
 
   return state.status === "loaded" ? (
     <Container>
       <Grid container>
         <Grid item xs={12} lg={6}>
           <Typography variant="h4" component="h1">
-            Oracle provider metrics
+            Oracle provider dashboard
           </Typography>
         </Grid>
         <Grid
@@ -71,8 +128,8 @@ const PageContent = ({ state, setState }) => {
         >
           <Chip
             variant="contained"
-            color="secondary"
-            label="Oracle index "
+            color="primary"
+            label={`Oracle indexes : ${oracleIndexes?.index1}-${oracleIndexes?.index2}-${oracleIndexes?.index3}`}
           />
         </Grid>
       </Grid>
@@ -107,8 +164,12 @@ const PageContent = ({ state, setState }) => {
                   estimatedArrival,
                   insuranceProvider,
                   rate,
-                  oracleRequestIsPresent,
                   oracleActivatedIndex,
+                  oracleRequestIsPresent,
+                  settlementResponses,
+                  settlementResponseCount,
+                  settlementConsensusTreshold,
+                  settlementRequests,
                 },
                 index
               ) => (
@@ -125,6 +186,10 @@ const PageContent = ({ state, setState }) => {
                   btnCreateRequestDisabled={false}
                   oracleRequestIsPresent={oracleRequestIsPresent}
                   oracleActivatedIndex={oracleActivatedIndex}
+                  settlementResponses={settlementResponses}
+                  settlementResponseCount={settlementResponseCount}
+                  settlementConsensusTreshold={settlementConsensusTreshold}
+                  settlementRequests={settlementRequests}
                 />
               )
             )

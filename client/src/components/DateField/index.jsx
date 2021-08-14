@@ -17,12 +17,13 @@ const DateField = ({
   handleChange,
   required,
   error,
+  minDate = Date.now()
 }) => {
   const classes = useStyles();
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <DateTimePicker
-        minDate={Date.now()}
+        minDate={minDate}
         margin="normal"
         id={id}
         label={label}

@@ -15,13 +15,15 @@ contract FlightSuretyOracle is Ownable, Random {
         uint256 activatedIndex;
         uint256 responseCount;
     }
-
+    // consensus is reached after x similar answers
     uint256 constant ACCEPTED_ANSWER_TRESHOLD = 5;
+    // one hour flight delay
+    uint256 constant AUTHORIZED_FLIGHT_DELAY = 3600;
     uint256 currentRequestID;
     mapping(uint256 => Request) requests;
     mapping(uint256 => mapping(uint256 => uint256)) responses;
     mapping(uint256 => mapping(address => bool)) responseCallers;
-    mapping(uint256 => uint256[3]) acceptedAnswer;
+    mapping(uint256 => uint256[2]) acceptedAnswer;
     IFlightSuretyDataOracle flightSuretyData;
     IOracleProviderRoleOracle oracleProviderRole;
 
@@ -32,22 +34,20 @@ contract FlightSuretyOracle is Ownable, Random {
         uint256 indexed activatedIndex,
         string flightRef
     );
-    event FailedRequest(
-        uint256 indexed requestID,
-        uint256 indexed flightID,
-        string flightRef
-    );
+    event FailedRequest(uint256 indexed requestID, uint256 indexed flightID);
     // responses related events
     event NewResponse(
         uint256 indexed requestID,
+        uint256 indexed flightID,
+        address indexed oracleProvider,
         uint256 realDeparture,
-        uint256 realArrival,
-        uint256 isLate
+        uint256 realArrival
     );
     event AcceptedResponse(
-        uint256 _realArrival,
-        uint256 _realDeparture,
-        uint256 _isLate
+        uint256 indexed flightID,
+        uint256 realArrival,
+        uint256 realDeparture,
+        bool isLate
     );
     // flights related events
     event UpdatedFlight(
@@ -75,6 +75,17 @@ contract FlightSuretyOracle is Ownable, Random {
                 oracleProvidersIndexes[2] ==
                 requests[_requestID].activatedIndex,
             "oracle provider indexes must match request indexes"
+        );
+        _;
+    }
+
+    modifier requireOracleProviderHasNotAnsweredRequest(
+        uint256 requestID,
+        address caller
+    ) {
+        require(
+            !responseCallers[requestID][caller],
+            "caller has already answered"
         );
         _;
     }
@@ -129,24 +140,29 @@ contract FlightSuretyOracle is Ownable, Random {
 
     // update responses to a request and validate the accepted outcome according to multiparty consensus rules
     function respondToRequest(
-        address _caller,
         uint256 _requestID,
         uint256 _realDeparture,
-        uint256 _realArrival,
-        uint256 _isLate
+        uint256 _realArrival
     )
         external
         onlyActivatedOracleProvider(msg.sender)
         requireFlightExists(requests[_requestID].flightID)
+        requireOracleProviderHasNotAnsweredRequest(_requestID, msg.sender)
     {
+        uint256 flightID = requests[_requestID].flightID;
         _updateResponses(
-            _caller,
+            msg.sender,
+            _requestID,
+            _realDeparture,
+            _realArrival
+        );
+        _acceptResponse(
+            msg.sender,
             _requestID,
             _realDeparture,
             _realArrival,
-            _isLate
+            flightID
         );
-        _acceptResponse(_requestID, _realDeparture, _realArrival, _isLate);
     }
 
     // update responses to a request incrementing each outcomes to decide which response makes consensus among the selected set of oracle provider
@@ -154,14 +170,12 @@ contract FlightSuretyOracle is Ownable, Random {
         address _caller,
         uint256 _requestID,
         uint256 _realDeparture,
-        uint256 _realArrival,
-        uint256 _isLate
+        uint256 _realArrival
     ) internal {
         requests[_requestID].responseCount++;
         responseCallers[_requestID][_caller] = true;
         responses[_requestID][_realDeparture]++;
         responses[_requestID][_realArrival]++;
-        responses[_requestID][_isLate]++;
         if (
             responses[_requestID][acceptedAnswer[_requestID][0]] >
             responses[_requestID][_realDeparture]
@@ -175,65 +189,114 @@ contract FlightSuretyOracle is Ownable, Random {
         ) {
             acceptedAnswer[_requestID][1] = _realArrival;
         }
-
-        if (
-            responses[_requestID][acceptedAnswer[_requestID][2]] >
-            responses[_requestID][_isLate]
-        ) {
-            acceptedAnswer[_requestID][2] = _isLate;
-        }
     }
 
     // accept or reject an accepted response as the final one according to a set treshold constant
     function _acceptResponse(
+        address _caller,
         uint256 _requestID,
         uint256 _realDeparture,
         uint256 _realArrival,
-        uint256 _isLate
+        uint256 flightID
     ) internal {
         if (
             responses[_requestID][acceptedAnswer[_requestID][0]] >=
             ACCEPTED_ANSWER_TRESHOLD &&
             responses[_requestID][acceptedAnswer[_requestID][1]] >=
-            ACCEPTED_ANSWER_TRESHOLD &&
-            responses[_requestID][acceptedAnswer[_requestID][2]] >=
             ACCEPTED_ANSWER_TRESHOLD
         ) {
-            uint256 _flightID = requests[_requestID].flightID;
-            (, , , , , bool isLate, , uint256 insuredValue) = flightSuretyData
-                .getFlight(_flightID);
+            // get flight
+            (
+                ,
+                uint64 _estimatedDeparture,
+                uint64 _estimatedArrival,
+                ,
+                ,
+                ,
+                ,
+                uint256 insuredValue
+            ) = flightSuretyData.getFlight(flightID);
             // update flight attributes
-            _updateFlight(_requestID, _realDeparture, _realArrival, _isLate);
+            bool _isLate = _updateFlight(
+                _requestID,
+                _estimatedDeparture,
+                _estimatedArrival,
+                _realDeparture,
+                _realArrival
+            );
             // update total insured value if flight is not late (no funds to cover anymore)
-            _updateTotalInsuredValue(isLate, insuredValue);
-            emit NewResponse(_requestID, _realDeparture, _realArrival, _isLate);
-            emit AcceptedResponse(_realArrival, _realDeparture, _isLate);
-            emit UpdatedFlight(_flightID, _realDeparture, _realArrival, isLate);
+            _updateTotalInsuredValue(_isLate, insuredValue);
+            emit NewResponse(
+                _requestID,
+                flightID,
+                _caller,
+                _realDeparture,
+                _realArrival
+            );
+            emit AcceptedResponse(
+                flightID,
+                _realArrival,
+                _realDeparture,
+                _isLate
+            );
+            emit UpdatedFlight(flightID, _realDeparture, _realArrival, _isLate);
         } else {
             if (requests[_requestID].responseCount > ACCEPTED_ANSWER_TRESHOLD) {
                 uint256 _flightID = requests[_requestID].flightID;
-                string memory _flightRef = requests[_requestID].flightRef;
-                emit FailedRequest(_requestID, _flightID, _flightRef);
+                emit FailedRequest(_requestID, _flightID);
             }
-            emit NewResponse(_requestID, _realDeparture, _realArrival, _isLate);
+            emit NewResponse(
+                _requestID,
+                flightID,
+                _caller,
+                _realDeparture,
+                _realArrival
+            );
+        }
+    }
+
+    // check if a flight is late
+    function checkFlightIsLate(
+        uint256 _estimatedDeparture,
+        uint256 _estimatedArrival,
+        uint256 _realDeparture,
+        uint256 _realArrival
+    ) internal pure returns (bool isLate) {
+        uint256 realFlightDuration = _realArrival - _realDeparture;
+        uint256 estimatedFlightDuration = _estimatedArrival -
+            _estimatedDeparture;
+        if (
+            realFlightDuration - AUTHORIZED_FLIGHT_DELAY >
+            estimatedFlightDuration
+        ) {
+            return true;
+        } else {
+            return false;
         }
     }
 
     // update flight data
     function _updateFlight(
         uint256 _requestID,
+        uint256 _estimatedDeparture,
+        uint256 _estimatedArrival,
         uint256 _realDeparture,
-        uint256 _realArrival,
-        uint256 _isLate
-    ) internal {
+        uint256 _realArrival
+    ) internal returns (bool _isLate) {
+        _isLate = checkFlightIsLate(
+            _estimatedDeparture,
+            _estimatedArrival,
+            _realDeparture,
+            _realArrival
+        );
         uint256 _flightID = requests[_requestID].flightID;
-        bool isLate = (_isLate == 1) ? true : false;
         flightSuretyData.updateFlight(
             _flightID,
             uint64(_realDeparture),
             uint64(_realArrival),
-            isLate
+            _isLate
         );
+        return _isLate;
     }
 
     // update insured value if flight is not late (no funds to cover anymore)

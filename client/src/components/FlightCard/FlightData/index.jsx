@@ -43,6 +43,10 @@ const FlightData = ({
     btnClaimInsuranceDisabled,
     btnCreateRequestDisabled,
     oracleRequestIsPresent,
+    settlementResponses,
+    settlementResponseCount,
+    settlementConsensusTreshold,
+    settlementRequests,
     // flightData
     flightRef,
     insuranceProvider,
@@ -54,7 +58,7 @@ const FlightData = ({
     isLate,
   },
 }) => {
-  const { setSelectedFlight, setSelectedInsurance, setModal } =
+  const { oracleIndexes, setSelectedFlight, setSelectedInsurance, setModal } =
     useContext(Context);
   const matches = useMediaQuery("(max-width:600px)");
   const classes = useStyles();
@@ -92,6 +96,10 @@ const FlightData = ({
             estimatedArrival,
             insuranceProvider,
             rate,
+            settlementResponses,
+            settlementResponseCount,
+            settlementConsensusTreshold,
+            settlementRequests,
           }),
       };
       const mappingIdToModalContent = {
@@ -189,27 +197,21 @@ const FlightData = ({
             </Button>
           )}
 
-          {!btnCreateRequestDisabled && oracleRequestIsPresent && (
-            <Button
-              id={"requestFlightSettlement" + cardID}
-              variant="outlinedPrimary"
-              color="secondary"
-              size="large"
-              fullWidth={matches}
-              onClick={handleClick}
-            >
-              SETTLE FLIGHT
-            </Button>
-          )}
-
-          {!btnCreateRequestDisabled && !oracleRequestIsPresent && (
-            <Chip
-              variant="outlined"
-              color="secondary"
-              label="pending settlement request"
-              className={classes.chip}
-            />
-          )}
+          {!btnCreateRequestDisabled &&
+            oracleRequestIsPresent &&
+            oracleActivatedIndex &&
+            Object.values(oracleIndexes).includes(oracleActivatedIndex) && (
+              <Button
+                id={"requestFlightSettlement" + cardID}
+                variant="outlinedPrimary"
+                color="secondary"
+                size="large"
+                fullWidth={matches}
+                onClick={handleClick}
+              >
+                PROVIDE SETTLEMENT DATA
+              </Button>
+            )}
         </Grid>
       </Grid>
     </Grid>

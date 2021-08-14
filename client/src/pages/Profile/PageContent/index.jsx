@@ -121,7 +121,7 @@ const PageContent = ({ state, setState }) => {
           <Grid container>
             <MyDataGrid
               handleClick={handleClickUserTxDataGrid}
-              header="Your transactions to the Flight surety DAO"
+              header="Your transactions"
               rows={formattedUserTx}
               columns={columns}
             />

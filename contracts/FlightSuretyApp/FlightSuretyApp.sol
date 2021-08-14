@@ -889,6 +889,17 @@ contract FlightSuretyApp is Ownable {
         }
     }
 
+     // fetch the oracle provider indexes
+    function getOracleIndexes() external view onlyActivatedOracleProvider(msg.sender)
+        returns (
+            uint256 index1,
+            uint256 index2,
+            uint256 index3
+        ){
+            (index1, index2, index3) = oracleProviderRole.getOracleIndexes(msg.sender);
+            return (index1, index2, index3);
+        }
+
     function _incrementTotalInsuredValue(uint256 _addedValue) internal {
         uint256 currentTotalInsuredValue = flightSuretyData
             .getTotalInsuredValue();

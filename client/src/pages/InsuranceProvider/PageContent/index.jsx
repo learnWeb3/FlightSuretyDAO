@@ -49,7 +49,7 @@ const PageContent = ({ state, setState }) => {
       <Grid container spacing={4}>
         <Grid item xs={12} lg={6}>
           <Typography variant="h4" component="h1">
-            Insurance provider metrics
+            Insurance provider dashboard
           </Typography>
         </Grid>
         <Hidden mdDown>

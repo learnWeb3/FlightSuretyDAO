@@ -26,8 +26,13 @@ const useStyles = makeStyles(() => ({
   },
   overflow: {
     overflow: "auto",
-    height: "100%",
     padding: 24,
+  },
+  overflowHeightLg: {
+    maxHeight: "75vh",
+  },
+  overflowHeightMd: {
+    height: "100vh",
   },
   root: {
     padding: 24,
@@ -60,6 +65,7 @@ const ProposalRegistration = ({ type }) => {
     setRefreshCounter,
   } = useContext(Context);
   const matches = useMediaQuery("(max-width:600px)");
+const onlyLg = useMediaQuery("(min-width:1200px");
   const classes = useStyles();
   const [isAgreed, setAggreed] = useState(false);
   const [proposedValue, setProposedValue] = useState(null);
@@ -120,7 +126,15 @@ const ProposalRegistration = ({ type }) => {
             matches ? clsx(classes.root, classes.fullHeight) : classes.root
           }
         >
-          <Grid container spacing={4} className={classes.overflow}>
+          <Grid
+            container
+            spacing={4}
+            className={
+              !onlyLg
+                ? clsx(classes.overflow, classes.overflowHeightMd)
+                : clsx(classes.overflow, classes.overflowHeightLg)
+            }
+          >
             <Grid item xs={12}>
               <Typography
                 variant="h4"

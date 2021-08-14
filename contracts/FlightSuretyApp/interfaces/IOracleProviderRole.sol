@@ -15,10 +15,11 @@ interface IOracleProviderRole {
     // check if an oracle provider is registered
     function isRegisteredOracleProvider(address _caller)
         external
+        view
         returns (bool);
 
     // check if an oracle provider is activated
-    function isActivatedOracleProvider(address _caller) external returns (bool);
+    function isActivatedOracleProvider(address _caller) external view returns (bool);
 
     // check if a given caller has voted for the oracle provider membership of an other address
     function hasVotedOracleProviderMembership(address _account, address _caller)
@@ -27,7 +28,7 @@ interface IOracleProviderRole {
         returns (bool);
 
     // check if an address currently voted for oracle provider membership has reached consensus among the community
-      function hasReachedConsensusOracleProviderMembership(
+    function hasReachedConsensusOracleProviderMembership(
         bool _side,
         address _caller,
         uint256 consensusTreshold
@@ -38,6 +39,16 @@ interface IOracleProviderRole {
         external
         view
         returns (uint256 count);
+
+    // fetch the oracle provider indexes
+    function getOracleIndexes(address account)
+        external
+        view
+        returns (
+            uint256 index1,
+            uint256 index2,
+            uint256 index3
+        );
 
     // fetch current activated oracle provider count
     function getActivatedOracleProvidersCount()
@@ -52,8 +63,11 @@ interface IOracleProviderRole {
     function renounceOracleProvider(address _caller, address _account) external;
 
     // vote for an oracle provider activation and membership
-    function voteOracleProviderMembership(address _caller, address _account,  uint256 _voteWeight)
-        external;
+    function voteOracleProviderMembership(
+        address _caller,
+        address _account,
+        uint256 _voteWeight
+    ) external;
 
     // activate an oracle provider
     function activateOracleProvider(address _account) external;

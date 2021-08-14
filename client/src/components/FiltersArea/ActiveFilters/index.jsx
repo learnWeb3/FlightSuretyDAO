@@ -15,14 +15,14 @@ const ActiveFilters = ({ isFilterFlightToActive, setFilterFlightToActive }) => {
         <FormControlLabel
           value="end"
           control={<Radio color="primary" />}
-          label="active"
+          label="current"
           onChange={() => setFilterFlightToActive(true)}
           checked={isFilterFlightToActive ? true : false}
         />
         <FormControlLabel
           value="end"
           control={<Radio color="primary" />}
-          label="settled"
+          label="past"
           onChange={() => setFilterFlightToActive(false)}
           checked={!isFilterFlightToActive ? true : false}
         />

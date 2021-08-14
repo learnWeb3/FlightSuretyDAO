@@ -7,14 +7,14 @@ import FiltersArea from "../../../components/FiltersArea";
 import NoContent from "../../../components/icons/NoContent";
 import LoadingAnimation from "../../../components/LoadingAnimation/index";
 import { ErrorPage } from "../../../components/Error";
-import MuiAlert from '@material-ui/lab/Alert';
+import MuiAlert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles(() => ({
-  flightContainer : {display: "flex", justifyContent: "center"},
+  flightContainer: { display: "flex", justifyContent: "center" },
   alert: {
     marginBottom: 24,
     marginTop: 24,
-  }
+  },
 }));
 
 const PageContent = ({ state, setState }) => {
@@ -38,8 +38,14 @@ const PageContent = ({ state, setState }) => {
         Insure my flight
       </Typography>
 
-      <MuiAlert className={classes.alert} elevation={6} variant="filled" severity="info">
-        In this section you will find all the available flights registered on our smart contracts and secured by the ethereum network
+      <MuiAlert
+        className={classes.alert}
+        elevation={6}
+        variant="filled"
+        severity="info"
+      >
+        In this section you will find all the available flights registered on
+        our smart contracts and secured by the ethereum network
       </MuiAlert>
 
       <FiltersArea />
@@ -52,23 +58,28 @@ const PageContent = ({ state, setState }) => {
                 isFilterFlightToActive
             )
             .map(
-              ({
-                flightID,
-                flightRef,
-                estimatedDeparture,
-                estimatedArrival,
-                insuranceProvider,
-                rate,
-              }, index) => (
+              (
+                {
+                  flightID,
+                  flightRef,
+                  estimatedDeparture,
+                  estimatedArrival,
+                  insuranceProvider,
+                  rate,
+                  insuredValue,
+                },
+                index
+              ) => (
                 <FlightCard
-                  key={flightID+index}
-                  cardID={flightID+index}
+                  key={flightID + index}
+                  cardID={flightID + index}
                   flightID={flightID}
                   flightRef={flightRef}
                   estimatedDeparture={estimatedDeparture}
                   estimatedArrival={estimatedArrival}
                   insuranceProvider={insuranceProvider}
                   rate={rate}
+                  insuredValue={insuredValue}
                 />
               )
             )

@@ -13,7 +13,7 @@ interface IOracleProviderRoleOracle {
     /** oracle providers management (CHECK + ADD + REMOVE + VOTE) */
 
     // check if an oracle provider is activated
-    function isActivatedOracleProvider(address _caller) external returns (bool);
+    function isActivatedOracleProvider(address _caller) external view returns (bool);
 
     // fetch oracle providers indexes
     function getOracleProviderIndexes(address _caller)

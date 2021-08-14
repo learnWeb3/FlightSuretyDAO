@@ -20,11 +20,9 @@ contract FlightSuretyDataBase {
         uint256 insuredValue;
         uint256 rate;
     }
-
     uint256 currentFlightID;
     mapping(uint256 => Flight) flights;
     uint256 currentInsuranceID;
     mapping(uint256 => Insurance) insurances;
     uint256 totalInsuredValue;
-
 }

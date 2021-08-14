@@ -34,7 +34,7 @@ interface IInsuranceCoverageAmendmentProposal {
     function hasVotedInsuranceCoverageAmendmentProposal(
         address _caller,
         uint256 _proposalID
-    ) external returns (bool _hasVoted);
+    ) external view returns (bool _hasVoted);
 
     // fetch the current vote count for an insurance coverage amendment proposal
     function getVoteCountInsuranceCoverageAmendmentProposal(

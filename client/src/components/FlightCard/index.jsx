@@ -27,12 +27,17 @@ const FlightCard = ({
   estimatedArrival,
   insuranceProvider,
   rate,
+  insuredValue,
   isLate = null,
   realArrival = null,
   realDeparture = null,
   settled = null,
   oracleRequestIsPresent = null,
   oracleActivatedIndex = null,
+  settlementResponses = null,
+  settlementResponseCount = null,
+  settlementConsensusTreshold = null,
+  settlementRequests=null
 }) => {
   const { appContract } = useContext(Context);
   const classes = useStyles();
@@ -58,13 +63,20 @@ const FlightCard = ({
 
           <Grid item xs={12} lg={9}>
             <Grid container>
-              <FlightStatus flightData={{
+              <FlightStatus
+                flightData={{
+                  // flight data
                   estimatedDeparture,
                   estimatedArrival,
+                  insuredValue,
                   settled,
                   isLate,
-                  oracleActivatedIndex
-              }} />
+                  // user actions
+                  oracleActivatedIndex,
+                  btnCreateRequestDisabled,
+                  oracleRequestIsPresent,
+                }}
+              />
 
               <FlightData
                 flightData={{
@@ -85,6 +97,10 @@ const FlightCard = ({
                   btnClaimInsuranceDisabled,
                   btnCreateRequestDisabled,
                   oracleRequestIsPresent,
+                  settlementResponses,
+                  settlementResponseCount,
+                  settlementConsensusTreshold,
+                  settlementRequests,
                   // flightData
                   flightRef,
                   insuranceProvider,

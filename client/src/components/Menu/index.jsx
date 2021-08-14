@@ -51,13 +51,13 @@ const Menu = () => {
           },
           {
             to: "/oracle-provider",
-            label: "Oracle providers metrics",
+            label: "Oracle providers dashboard",
             order: 2,
             display: registration.isActivatedOracleProvider,
           },
           {
             to: "/insurance-provider",
-            label: "Insurance provider metrics",
+            label: "Insurance provider dashboard",
             order: 3,
             display: registration.isActivatedInsuranceProvider,
           },
@@ -67,7 +67,7 @@ const Menu = () => {
             order: 4,
             display: registration.isOwner,
           },
-          { to: "/dao", label: "Community metrics", order: 5, display: true },
+          { to: "/dao", label: "Community dashboard", order: 5, display: true },
           {
             to: "/membership",
             label: "Current membership applications",

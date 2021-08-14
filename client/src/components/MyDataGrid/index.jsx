@@ -28,7 +28,7 @@ const MyDataGrid = ({ header, rows, columns, handleClick }) => {
   return (
     <div style={{ display: "flex", width: "100%" }}>
       <div style={{ flexGrow: 1 }} className={classes.root}>
-        <Typography variant="h5" component="h2" className={classes.header}>
+        <Typography variant="subtitle1" component="p" className={classes.header}>
           {header}
         </Typography>
         <DataGrid

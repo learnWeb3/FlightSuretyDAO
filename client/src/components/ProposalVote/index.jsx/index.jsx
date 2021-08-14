@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Context from "../../../context/index";
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
@@ -13,6 +13,7 @@ import {
   TextField,
   useMediaQuery,
 } from "@material-ui/core";
+import MuiAlert from "@material-ui/lab/Alert";
 import {
   voteInsuranceCoverageAmendmentProposal,
   voteInsuranceProviderMembership,
@@ -28,8 +29,13 @@ const useStyles = makeStyles(() => ({
   },
   overflow: {
     overflow: "auto",
-    height: "100%",
     padding: 24,
+  },
+  overflowHeightLg: {
+    maxHeight: "75vh",
+  },
+  overflowHeightMd: {
+    height: "100vh",
   },
   root: {
     padding: 24,
@@ -53,6 +59,8 @@ const ProposalVote = ({ type, proposalID, proposedValue }) => {
     appContract,
     // current address
     selectedAddress,
+    // data
+    userTx,
     // modal
     setModal,
     // alert
@@ -63,7 +71,26 @@ const ProposalVote = ({ type, proposalID, proposedValue }) => {
   } = useContext(Context);
   const classes = useStyles();
   const matches = useMediaQuery("(max-width:600px)");
+  const onlyLg = useMediaQuery("(min-width:1200px");
   const [isAgreed, setAggreed] = useState(false);
+  const [isVoted, setIsVoted] = useState(null);
+
+  useEffect(() => {
+    userTx &&
+      setIsVoted(
+        userTx?.find((tx) =>
+          (tx.eventName === "NewVoteInsuranceCoverageAmendmentProposal" &&
+            tx.voter === selectedAddress &&
+            tx.proposalID === proposalID) ||
+          (tx.eventName === "NewVoteMembershipFeeAmendmentProposal" &&
+            tx.voter === selectedAddress &&
+            tx.proposalID === proposalID)
+            ? true
+            : false
+        )
+      );
+  }, [userTx]);
+
   const handleRegister = async () => {
     try {
       if (type === "membershipFeeAmendmentProposal") {
@@ -112,7 +139,23 @@ const ProposalVote = ({ type, proposalID, proposedValue }) => {
             matches ? clsx(classes.root, classes.fullHeight) : classes.root
           }
         >
-          <Grid container spacing={4} className={classes.overflow}>
+          <Grid
+            container
+            spacing={4}
+            className={
+              !onlyLg
+                ? clsx(classes.overflow, classes.overflowHeightMd)
+                : clsx(classes.overflow, classes.overflowHeightLg)
+            }
+          >
+            {isVoted && (
+              <Grid item xs={12}>
+                <MuiAlert elevation={6} variant="filled" severity="info">
+                  You have already voted up this proposal
+                </MuiAlert>
+              </Grid>
+            )}
+
             <Grid item xs={12}>
               <Typography
                 variant="h4"
@@ -128,6 +171,7 @@ const ProposalVote = ({ type, proposalID, proposedValue }) => {
                   : ""}
               </Typography>
             </Grid>
+
             <Grid item xs={12}>
               <TextField
                 className={classes.fullWidth}
@@ -158,32 +202,36 @@ const ProposalVote = ({ type, proposalID, proposedValue }) => {
                 disabled={true}
               />
             </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={isAgreed}
-                    onChange={() => setAggreed(!isAgreed)}
-                    name="terms-of-use"
-                    color="primary"
+            {!isVoted && (
+              <>
+                <Grid item xs={12}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isAgreed}
+                        onChange={() => setAggreed(!isAgreed)}
+                        name="terms-of-use"
+                        color="primary"
+                      />
+                    }
+                    label="I have read and agree to the terms of use"
                   />
-                }
-                label="I have read and agree to the terms of use"
-              />
-            </Grid>
+                </Grid>
 
-            <Grid item xs={12} lg={6}>
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                className={classes.fullWidth}
-                disabled={isAgreed ? false : true}
-                onClick={handleRegister}
-              >
-                VOTE
-              </Button>
-            </Grid>
+                <Grid item xs={12} lg={6}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    className={classes.fullWidth}
+                    disabled={isAgreed ? false : true}
+                    onClick={handleRegister}
+                  >
+                    VOTE
+                  </Button>
+                </Grid>
+              </>
+            )}
 
             <Grid item xs={12} lg={6}>
               <Button

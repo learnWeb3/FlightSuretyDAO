@@ -22,16 +22,6 @@ const fetchCurrentMembershipFee = async (appContract, selectedAddress) =>
 
 // fetch all flights created to insure a new passengers (new insurance pick up index page)
 const fetchFlights = async (appContract) => {
-  console.log(await getPastEvents(appContract, "NewFlight").then(async (flights) => {
-    return await Promise.all(
-      flights.map(async (flight) => ({
-        ...flight,
-        ...(await appContract.methods
-          .getFlightSettlementData(flight.flightID)
-          .call()),
-      }))
-    );
-  }));
   return await getPastEvents(appContract, "NewFlight").then(async (flights) => {
     return await Promise.all(
       flights.map(async (flight) => ({
@@ -447,9 +437,15 @@ const fetchDAOIndicators = async (
   };
 };
 
+/**CURRENT USER RELATED DATA */
+
 // get all user transactions
-const fetchUserTransactions = async (appContract, selectedAddress) => {
-  const mappingEventNameToIndexedKey = {
+const fetchUserTransactions = async (
+  appContract,
+  oracleContract,
+  selectedAddress
+) => {
+  const appContractMappingEventNameToIndexedKey = {
     RegisteredInsuranceProvider: "insuranceProvider",
     RegisteredOracleProvider: "oracleProvider",
     NewVoteInsuranceProvider: "voter",
@@ -465,16 +461,21 @@ const fetchUserTransactions = async (appContract, selectedAddress) => {
     UnauthorizedCaller: "contractOwner",
   };
 
+  const oracleContractMappingEventNameToIndexedKey = {
+    NewResponse: "oracleProvider",
+  };
+
   const userTx = [];
 
-  const userTxSets = await Promise.all(
-    Object.keys(mappingEventNameToIndexedKey).map(
+  const userTxSetsOracleContract = await Promise.all(
+    Object.keys(oracleContractMappingEventNameToIndexedKey).map(
       async (eventName) =>
-        await appContract
+        await oracleContract
           .getPastEvents(eventName, {
             fromBlock: 0,
             filter: {
-              [mappingEventNameToIndexedKey[eventName]]: selectedAddress,
+              [appContractMappingEventNameToIndexedKey[eventName]]:
+                selectedAddress,
             },
           })
           .then(async (events) =>
@@ -495,6 +496,7 @@ const fetchUserTransactions = async (appContract, selectedAddress) => {
                       timestamp,
                       eventName,
                       type,
+                      ...event.returnValues,
                     };
                   })
                 )
@@ -504,7 +506,52 @@ const fetchUserTransactions = async (appContract, selectedAddress) => {
     )
   );
 
-  userTxSets.map((set) => set.length > 0 && set.map((tx) => userTx.push(tx)));
+  const userTxSetsAppContract = await Promise.all(
+    Object.keys(appContractMappingEventNameToIndexedKey).map(
+      async (eventName) =>
+        await appContract
+          .getPastEvents(eventName, {
+            fromBlock: 0,
+            filter: {
+              [appContractMappingEventNameToIndexedKey[eventName]]:
+                selectedAddress,
+            },
+          })
+          .then(async (events) =>
+            events.length > 0
+              ? await Promise.all(
+                  events.map(async (event) => {
+                    const tx = event.transactionHash;
+                    const blockNumber = event.blockNumber;
+                    const { timestamp } = await appContract.eth.getBlock(
+                      blockNumber
+                    );
+                    const type = event.type;
+                    const eventName = event.event;
+                    return {
+                      id: tx,
+                      tx,
+                      blockNumber,
+                      timestamp,
+                      eventName,
+                      type,
+                      ...event.returnValues,
+                    };
+                  })
+                )
+              : events
+          )
+          .then((userTx) => userTx)
+    )
+  );
+
+  userTxSetsAppContract.map(
+    (set) => set.length > 0 && set.map((tx) => userTx.push(tx))
+  );
+
+  userTxSetsOracleContract.map(
+    (set) => set.length > 0 && set.map((tx) => userTx.push(tx))
+  );
 
   return userTx.length > 1
     ? userTx.sort((a, b) => b.timestamp - a.timestamp)
@@ -555,10 +602,33 @@ const fetchUserInsurancesContracts = async (
   }
 };
 
+/** ORACLE RELATED DATA */
+
 // fetch flights requests for settlement data
 
 const fetchOracleRequestForFlightSettlementData = async (oracleContract) => {
   return await getPastEvents(oracleContract, "NewRequest");
+};
+
+// fetch the current user indexes if he an activated oracle provider
+const fetchOracleIndexes = async (appContract, selectedAddress) => {
+  try {
+    return await appContract.methods
+      .getOracleIndexes()
+      .call({ from: selectedAddress });
+  } catch (error) {
+    return null;
+  }
+};
+
+// fetch current settlemnt responses for a given flight ID
+const fetchFlightSettlementResponses = async (oracleContract, flightID) => {
+  return await getPastEvents(oracleContract, "NewResponse", { flightID });
+};
+
+// fetch the current requests for a given flight ID
+const fetchFlightSettlementRequests = async (oracleContract, flightID) => {
+  return await getPastEvents(oracleContract, "NewRequest", { flightID });
 };
 
 /**======================================================================================================================================== */
@@ -619,6 +689,19 @@ const voteOracleProviderMembership = async (
   return await appContract.methods
     .voteOracleProviderMembership(votee)
     .send({ from: currentAddress, gas });
+};
+
+const respondToRequest = async (
+  oracleContract,
+  selectedAddress,
+  requestID,
+  realDeparture,
+  realArrival,
+  gas = 500000
+) => {
+  return await oracleContract.methods
+    .respondToRequest(requestID, realDeparture, realArrival)
+    .send({ from: selectedAddress, gas });
 };
 /* flights management */
 
@@ -707,7 +790,8 @@ const voteInsuranceCoverageAmendmentProposal = async (
 };
 
 export {
-  // READ FROM THE BLOCKCHAIN
+  /**READ FROM THE BLOCKCHAIN */
+  // metrics and indicators
   fetchCurrentMembershipFee,
   fetchFlights,
   fetchFlight,
@@ -719,19 +803,29 @@ export {
   fetchInsuranceProvidersProfits,
   fetchFundsIndicators,
   fetchDAOIndicators,
+  // current user related data
   fetchUserTransactions,
   fetchUserInsurancesContracts,
+  // oracle related data
   fetchOracleRequestForFlightSettlementData,
-  // WRITE TO THE BLOCKCHAIN
+  fetchOracleIndexes,
+  fetchFlightSettlementResponses,
+  fetchFlightSettlementRequests,
+  /** WRITE TO THE BLOCKCHAIN */
+  // as any user
   registerInsuranceProvider,
   registerOracleProvider,
-  voteInsuranceProviderMembership,
-  voteOracleProviderMembership,
-  registerFlight,
   registerInsurance,
   claimInsurance,
   registerMembershipFeeAmendmentProposal,
   voteMembershipFeeAmendmentProposal,
   registerInsuranceCoverageAmendmentProposal,
   voteInsuranceCoverageAmendmentProposal,
+  // as a token holder
+  voteInsuranceProviderMembership,
+  voteOracleProviderMembership,
+  // as an insurance provider
+  registerFlight,
+  // as an oracle provider
+  respondToRequest,
 };

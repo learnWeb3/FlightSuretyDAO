@@ -20,6 +20,7 @@ import {
   checkRegistration,
   fetchUserInsurancesContracts,
   fetchOracleRequestForFlightSettlementData,
+  fetchOracleIndexes,
 } from "../../actions";
 import { useProvider } from "../../hooks";
 // contracts abis
@@ -74,11 +75,11 @@ const App = ({ state, setState }) => {
     oracleflightsRequestsforSettlementData,
     setOracleFlightsRequestsforSettlementData,
   ] = useState(null);
+  const [oracleIndexes, setOracleIndexes] = useState();
 
   useEffect(() => {
     const initializeContracts = async (provider) => {
       const networkID = await provider.eth.net.getId();
-      console.log(FlightSuretyApp.networks[networkID].address);
       setAppContract(
         web3Contract(
           provider,
@@ -117,7 +118,7 @@ const App = ({ state, setState }) => {
       tokenContract,
       oracleContract
     ) => {
-      const _userTx = await fetchUserTransactions(appContract, selectedAddress);
+      const _userTx = await fetchUserTransactions(appContract, oracleContract, selectedAddress);
       const _userInsuranceContracts = await fetchUserInsurancesContracts(
         appContract,
         oracleContract,
@@ -145,6 +146,9 @@ const App = ({ state, setState }) => {
         isTokenHolder,
         isOwner,
       } = await checkRegistration(appContract, tokenContract, selectedAddress);
+      const _oracleIndexes = isActivatedOracleProvider
+        ? await fetchOracleIndexes(appContract, selectedAddress)
+        : null;
       const _insuranceProvidersProfits = await fetchInsuranceProvidersProfits(
         appContract,
         selectedAddress
@@ -177,6 +181,7 @@ const App = ({ state, setState }) => {
         isTokenHolder,
         isOwner,
       });
+      setOracleIndexes(_oracleIndexes);
       setSettingsAmendmentProposal(_settingsAmendmentProposal);
       setInsuranceProvidersProfits(_insuranceProvidersProfits);
       setFundsIndicators(_fundsIndicator);
@@ -221,6 +226,8 @@ const App = ({ state, setState }) => {
         setFLights,
         oracleflightsRequestsforSettlementData,
         setOracleFlightsRequestsforSettlementData,
+        oracleIndexes,
+        setOracleIndexes,
         selectedFlight,
         setSelectedFlight,
         selectedInsurance,

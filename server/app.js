@@ -51,7 +51,6 @@ cron.schedule("* * * * *", async () => {
       FlightSuretyOracleInterface.abi
     );
     // user address
-    console.log(httpProvider.addresses);
     // const userAddress = httpProvider.addresses[0];
     const userAddress = await web3WSS.eth
       .getAccounts()
@@ -70,27 +69,14 @@ cron.schedule("* * * * *", async () => {
           oracleRequestIsPresent,
           oracleActivatedIndex,
         }) => {
-          console.log(
-            estimatedDeparture,
-            estimatedArrival,
-            flightID,
-            flightRef,
-            oracleRequestIsPresent,
-            oracleActivatedIndex
-          );
-          if (estimatedArrival * 1000 > Date.now() && !oracleRequestIsPresent) {
+          if (estimatedArrival * 1000 < Date.now() && !oracleRequestIsPresent) {
             const tx = await oracleContract.methods
               .createRequest(flightID, flightRef)
               .send({ from: userAddress, gas: 500000 });
             console.log(
               `New settlement request for flight ${flightID} successfully created on oracle contract`
             );
-            console.log(tx)
-            //console.log(`Transaction hash: ${tx.transactionHash}`)
-          } else {
-            console.log(
-              `request for the flightID ${flightID} activated oracle index ${oracleActivatedIndex}`
-            );
+            console.log(`Transaction hash: ${tx.transactionHash}`);
           }
         }
       )

@@ -33,7 +33,7 @@ interface IMembershipFeeAmendmentProposal {
     function hasVotedMembershipFeeAmendmentProposal(
         address _caller,
         uint256 _proposalID
-    ) external returns (bool _hasVoted);
+    ) external view returns (bool _hasVoted);
 
     // fetch the current vote count for a membership fee amendment proposal
     function getVoteCountMembershipFeeAmendmentProposal(
