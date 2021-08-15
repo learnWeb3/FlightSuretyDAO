@@ -61714,12 +61714,868 @@
         }
       },
       "links": {},
-      "address": "0xeC63156f8cD4CdadDf931B24AEae8263f9BF80e0",
-      "transactionHash": "0x49ce337fd6ea07bbd2a25910f01819cf596021a75ec671562975c4d960fc25db"
+      "address": "0x59fEbD1e9be6d45504dA8B4bf6bBc7A43a382096",
+      "transactionHash": "0x233d6d9351fae5d0c8c5f583a4a6d7a85c94ff94fb64e88fa4066c4470408101"
+    },
+    "1629031785770": {
+      "events": {
+        "0x13d4caf5982979691a014920086fb5cac4da0ce48f86c7b4c0d0cadbef27fae4": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "proposalID",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "insuranceCoverage",
+              "type": "uint256"
+            }
+          ],
+          "name": "ActivatedInsuranceCoverageAmendmentProposal",
+          "type": "event"
+        },
+        "0x5dbffd047c48d57a7d972a24d9fe3ced4753a2b27c6b277fc905b1607ab99afe": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "insuranceProvider",
+              "type": "address"
+            }
+          ],
+          "name": "ActivatedInsuranceProvider",
+          "type": "event"
+        },
+        "0x1b454f919e7ff592d633a0d62845314e86de1463aa34dea4aab7c0ab6945a73d": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "proposalID",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "lockedMembershipFee",
+              "type": "uint256"
+            }
+          ],
+          "name": "ActivatedMembershipFeeAmendmentProposal",
+          "type": "event"
+        },
+        "0x5e06803b8b6ec4a58bfd8973f079830b31cbb81e939420c22febecc8acdb3f8d": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "oracleProvider",
+              "type": "address"
+            }
+          ],
+          "name": "ActivatedOracleProvider",
+          "type": "event"
+        },
+        "0x49162bd91fa9e98bc15e1a54c488b20acf9a442cfd08a398bbdd552db92e98e7": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "contractOwner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "caller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "contractAddress",
+              "type": "address"
+            }
+          ],
+          "name": "AuthorizedCaller",
+          "type": "event"
+        },
+        "0x67cabf62aee63d11db89c260f398a37186342310f4a0df30da1341719878147a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "flightID",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "insuranceProvider",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "estimatedDeparture",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "estimatedArrival",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "flightRef",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "rate",
+              "type": "uint256"
+            }
+          ],
+          "name": "NewFlight",
+          "type": "event"
+        },
+        "0x92de6a95faf2432685c9d5eaf71891cadcf05e0b18ec223068412a8cb52ebb60": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "passenger",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "insuranceProvider",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "insuranceID",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "flightID",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "insuredValue",
+              "type": "uint256"
+            }
+          ],
+          "name": "NewInsurance",
+          "type": "event"
+        },
+        "0x455712cb79d839f8ca6a0ab7a15765738906c98f331d0ee1fff1ff591550f2b6": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "proposalID",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "caller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "insuranceCoverage",
+              "type": "uint256"
+            }
+          ],
+          "name": "NewInsuranceCoverageAmendmentProposal",
+          "type": "event"
+        },
+        "0x35f1d4a02bce65638da910c669076031fb59178f55931d6d2f1a8a035e382f99": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "proposalID",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "caller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "proposedMembershipFee",
+              "type": "uint256"
+            }
+          ],
+          "name": "NewMembershipFeeAmendmentProposal",
+          "type": "event"
+        },
+        "0x8bcc9e02955c4d671e14fe3bd5031c47f36b1591d090a4c7df99aa82d830d783": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "insuranceProvider",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "insuranceID",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "flightID",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "insuredValue",
+              "type": "uint256"
+            }
+          ],
+          "name": "NewPayout",
+          "type": "event"
+        },
+        "0x7906920cd6c70de2c0c6380adfa74d93af1ff8f5e5b03d1605194fef988add79": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "proposalID",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "voter",
+              "type": "address"
+            }
+          ],
+          "name": "NewVoteInsuranceCoverageAmendmentProposal",
+          "type": "event"
+        },
+        "0xa9d2bc6dc1b37950fdc57b26b1bcc905538ce9c54a8d46b9a043b61f61d84db9": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "voter",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "bool",
+              "name": "side",
+              "type": "bool"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "votee",
+              "type": "address"
+            }
+          ],
+          "name": "NewVoteInsuranceProvider",
+          "type": "event"
+        },
+        "0x0450a2b5feaa1ee53edb36ef2d8854b1a508547d111e43b5b1ead1b090a5daa2": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "proposalID",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "voter",
+              "type": "address"
+            }
+          ],
+          "name": "NewVoteMembershipFeeAmendmentProposal",
+          "type": "event"
+        },
+        "0x1b3fee018a3b7e52d087ea8e3f391b759e9e934802971c8f99e51ffdcb27d444": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "voter",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "bool",
+              "name": "side",
+              "type": "bool"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "votee",
+              "type": "address"
+            }
+          ],
+          "name": "NewVoteOracleProvider",
+          "type": "event"
+        },
+        "0xcfbd886b9409cf70d4b4a060d1e556397e323b33a7000b106b281cc43b0c2641": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "insuranceProvider",
+              "type": "address"
+            }
+          ],
+          "name": "RegisteredInsuranceProvider",
+          "type": "event"
+        },
+        "0x0418be85575ebac30df5dffbfd641fbbdaafb2b1806fc3637eb7062a70bed932": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "oracleProvider",
+              "type": "address"
+            }
+          ],
+          "name": "RegisteredOracleProvider",
+          "type": "event"
+        },
+        "0x870dce51cd8ca322d0c034b5ff6f13eb9c8e6d827bc65d8936fd2bce8c06b367": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "insuranceProvider",
+              "type": "address"
+            }
+          ],
+          "name": "RemovedInsuranceProvider",
+          "type": "event"
+        },
+        "0xa2d227fe32ab3ac5018974d2c30e7aa46e9d757785bef731091423e47a3bba0e": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "oracleProvider",
+              "type": "address"
+            }
+          ],
+          "name": "RemovedOracleProvider",
+          "type": "event"
+        },
+        "0xeefee6ee18d218075d0332898b2f8dbd4d9d18666bb47b86fd5bb8ddf7b188c0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "contractOwner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "caller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "contractAddress",
+              "type": "address"
+            }
+          ],
+          "name": "UnauthorizedCaller",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x7B8838Af6f2aC43EE5d5af7d22e9400Ee20e7387",
+      "transactionHash": "0x645a27bdd546d7842b073e9c6865e7798c696d67e6ae848fc0519fe35a6c8149"
+    },
+    "1629034334036": {
+      "events": {
+        "0x13d4caf5982979691a014920086fb5cac4da0ce48f86c7b4c0d0cadbef27fae4": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "proposalID",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "insuranceCoverage",
+              "type": "uint256"
+            }
+          ],
+          "name": "ActivatedInsuranceCoverageAmendmentProposal",
+          "type": "event"
+        },
+        "0x5dbffd047c48d57a7d972a24d9fe3ced4753a2b27c6b277fc905b1607ab99afe": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "insuranceProvider",
+              "type": "address"
+            }
+          ],
+          "name": "ActivatedInsuranceProvider",
+          "type": "event"
+        },
+        "0x1b454f919e7ff592d633a0d62845314e86de1463aa34dea4aab7c0ab6945a73d": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "proposalID",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "lockedMembershipFee",
+              "type": "uint256"
+            }
+          ],
+          "name": "ActivatedMembershipFeeAmendmentProposal",
+          "type": "event"
+        },
+        "0x5e06803b8b6ec4a58bfd8973f079830b31cbb81e939420c22febecc8acdb3f8d": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "oracleProvider",
+              "type": "address"
+            }
+          ],
+          "name": "ActivatedOracleProvider",
+          "type": "event"
+        },
+        "0x49162bd91fa9e98bc15e1a54c488b20acf9a442cfd08a398bbdd552db92e98e7": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "contractOwner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "caller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "contractAddress",
+              "type": "address"
+            }
+          ],
+          "name": "AuthorizedCaller",
+          "type": "event"
+        },
+        "0x67cabf62aee63d11db89c260f398a37186342310f4a0df30da1341719878147a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "flightID",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "insuranceProvider",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "estimatedDeparture",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "estimatedArrival",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "flightRef",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "rate",
+              "type": "uint256"
+            }
+          ],
+          "name": "NewFlight",
+          "type": "event"
+        },
+        "0x92de6a95faf2432685c9d5eaf71891cadcf05e0b18ec223068412a8cb52ebb60": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "passenger",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "insuranceProvider",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "insuranceID",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "flightID",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "insuredValue",
+              "type": "uint256"
+            }
+          ],
+          "name": "NewInsurance",
+          "type": "event"
+        },
+        "0x455712cb79d839f8ca6a0ab7a15765738906c98f331d0ee1fff1ff591550f2b6": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "proposalID",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "caller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "insuranceCoverage",
+              "type": "uint256"
+            }
+          ],
+          "name": "NewInsuranceCoverageAmendmentProposal",
+          "type": "event"
+        },
+        "0x35f1d4a02bce65638da910c669076031fb59178f55931d6d2f1a8a035e382f99": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "proposalID",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "caller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "proposedMembershipFee",
+              "type": "uint256"
+            }
+          ],
+          "name": "NewMembershipFeeAmendmentProposal",
+          "type": "event"
+        },
+        "0x8bcc9e02955c4d671e14fe3bd5031c47f36b1591d090a4c7df99aa82d830d783": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "insuranceProvider",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "insuranceID",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "flightID",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "insuredValue",
+              "type": "uint256"
+            }
+          ],
+          "name": "NewPayout",
+          "type": "event"
+        },
+        "0x7906920cd6c70de2c0c6380adfa74d93af1ff8f5e5b03d1605194fef988add79": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "proposalID",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "voter",
+              "type": "address"
+            }
+          ],
+          "name": "NewVoteInsuranceCoverageAmendmentProposal",
+          "type": "event"
+        },
+        "0xa9d2bc6dc1b37950fdc57b26b1bcc905538ce9c54a8d46b9a043b61f61d84db9": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "voter",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "bool",
+              "name": "side",
+              "type": "bool"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "votee",
+              "type": "address"
+            }
+          ],
+          "name": "NewVoteInsuranceProvider",
+          "type": "event"
+        },
+        "0x0450a2b5feaa1ee53edb36ef2d8854b1a508547d111e43b5b1ead1b090a5daa2": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "proposalID",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "voter",
+              "type": "address"
+            }
+          ],
+          "name": "NewVoteMembershipFeeAmendmentProposal",
+          "type": "event"
+        },
+        "0x1b3fee018a3b7e52d087ea8e3f391b759e9e934802971c8f99e51ffdcb27d444": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "voter",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "bool",
+              "name": "side",
+              "type": "bool"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "votee",
+              "type": "address"
+            }
+          ],
+          "name": "NewVoteOracleProvider",
+          "type": "event"
+        },
+        "0xcfbd886b9409cf70d4b4a060d1e556397e323b33a7000b106b281cc43b0c2641": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "insuranceProvider",
+              "type": "address"
+            }
+          ],
+          "name": "RegisteredInsuranceProvider",
+          "type": "event"
+        },
+        "0x0418be85575ebac30df5dffbfd641fbbdaafb2b1806fc3637eb7062a70bed932": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "oracleProvider",
+              "type": "address"
+            }
+          ],
+          "name": "RegisteredOracleProvider",
+          "type": "event"
+        },
+        "0x870dce51cd8ca322d0c034b5ff6f13eb9c8e6d827bc65d8936fd2bce8c06b367": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "insuranceProvider",
+              "type": "address"
+            }
+          ],
+          "name": "RemovedInsuranceProvider",
+          "type": "event"
+        },
+        "0xa2d227fe32ab3ac5018974d2c30e7aa46e9d757785bef731091423e47a3bba0e": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "oracleProvider",
+              "type": "address"
+            }
+          ],
+          "name": "RemovedOracleProvider",
+          "type": "event"
+        },
+        "0xeefee6ee18d218075d0332898b2f8dbd4d9d18666bb47b86fd5bb8ddf7b188c0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "contractOwner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "caller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "contractAddress",
+              "type": "address"
+            }
+          ],
+          "name": "UnauthorizedCaller",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0xecA937fabBFfc52FA8F1d7ad434483FbE77509D2",
+      "transactionHash": "0xe5856a27e462be394160152d11bc12731478cc198fcb1caaa77c6ac8d05bab1e"
     }
   },
   "schemaVersion": "3.4.2",
-  "updatedAt": "2021-08-15T11:32:18.960Z",
+  "updatedAt": "2021-08-15T13:33:03.531Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

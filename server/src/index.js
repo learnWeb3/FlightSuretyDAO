@@ -161,4 +161,4 @@ const initCronTasks = (MNEMONIC, PROVIDER_URL) => {
   });
 };
 
-module.exports = { initCronTasks };
+module.exports = { initCronTasks, web3Contract };

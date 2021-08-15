@@ -117,12 +117,12 @@ const SettleFlight = () => {
   const handleDepartureDateChange = (date) => {
     setFormData({
       ...formData,
-      realDeparture: Math.ceil(date.getTime() / 1000),
+      realDeparture: date.getTime(),
     });
   };
 
   const handleArrivalDateChange = (date) => {
-    setFormData({ ...formData, realArrival: Math.ceil(date.getTime() / 1000) });
+    setFormData({ ...formData, realArrival: date.getTime() });
   };
 
   const handleSettle = async () => {
@@ -132,8 +132,8 @@ const SettleFlight = () => {
         oracleContract,
         selectedAddress,
         formattedRequestID,
-        formData.realDeparture,
-        formData.realArrival
+        Math.ceil(formData.realDeparture / 1000),
+        Math.ceil(formData.realArrival / 1000)
       );
       setModal({ displayed: false, content: null });
       setAlert({
@@ -262,21 +262,21 @@ const SettleFlight = () => {
                     error={errors.realDeparture}
                     label={"Departure date"}
                     id={"departure-date"}
-                    selectedDate={formData.realDeparture}
+                    selectedDate={formData.realDeparture * 1000}
                     handleChange={handleDepartureDateChange}
                     required={true}
-                    minDate={formData.realDeparture}
+                    minDate={formData.realDeparture * 1000}
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <DateField
                     label={"Arrival date"}
                     id={"arrival-date"}
-                    selectedDate={formData.realArrival}
+                    selectedDate={formData.realArrival * 1000}
                     handleChange={handleArrivalDateChange}
                     required={true}
                     error={errors.realArrival}
-                    minDate={formData.realArrival}
+                    minDate={formData.realArrival * 1000}
                   />
                 </Grid>
                 {!isVoted && (
