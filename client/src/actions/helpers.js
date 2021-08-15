@@ -30,6 +30,14 @@ const fetchUserInsurances = async (appContract, selectedAddress) => {
   });
 };
 
+// fetch specific user claims
+const fetchUserClaims = async (appContract, selectedAddress, flightID) => {
+  return await getPastEvents(appContract, "NewPayout", {
+    owner: selectedAddress,
+    flightID,
+  });
+};
+
 // profits aka registred insurance cumulated value - payout cumulated value
 const fetchProfits = async (appContract, insuranceProvider) => {
   const totalCumulatedInsuranceValue = await getPastEvents(
@@ -43,7 +51,7 @@ const fetchProfits = async (appContract, insuranceProvider) => {
         )
       : 0;
   });
-  
+
   const myCumulatedInsuranceValue = await getPastEvents(
     appContract,
     "NewInsurance",
@@ -127,6 +135,7 @@ export {
   fetchActivatedOracleProviders,
   fetchInsurances,
   fetchUserInsurances,
+  fetchUserClaims,
   fetchProfits,
   fetchDefaultRates,
 };

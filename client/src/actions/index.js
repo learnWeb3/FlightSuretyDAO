@@ -8,6 +8,7 @@ import {
   fetchProfits,
   fetchDefaultRates,
   fetchUserInsurances,
+  fetchUserClaims,
 } from "./helpers.js";
 
 /**======================================================================================================================================== */
@@ -604,7 +605,7 @@ const fetchUserInsurancesContracts = async (
   );
   if (userInsurances.length > 0) {
     return await Promise.all(
-      userInsurances.map(async ({ flightID }) => {
+      userInsurances.map(async ({ flightID, insuranceID, ...rest }) => {
         const flightData = await getPastEvents(appContract, "NewFlight", {
           flightID,
         });
@@ -613,10 +614,17 @@ const fetchUserInsurancesContracts = async (
           "UpdatedFlight",
           { flightID }
         );
+        const claims = await fetchUserClaims(
+          appContract,
+          selectedAddress,
+          flightID,
+          insuranceID
+        );
+        const settled =claims.find((claim)=>claim.insuranceID === insuranceID) ? true : false
         const returnedFlight = flightData[0];
         return {
           ...returnedFlight,
-          settled: updatedFlightData.length > 0,
+          settled,
           realDeparture:
             updatedFlightData.length > 0
               ? updatedFlightData[0].realDeparture
@@ -627,6 +635,8 @@ const fetchUserInsurancesContracts = async (
               : null,
           isLate:
             updatedFlightData.length > 0 ? updatedFlightData[0].isLate : null,
+          insuranceID,
+          ...rest,
         };
       })
     );

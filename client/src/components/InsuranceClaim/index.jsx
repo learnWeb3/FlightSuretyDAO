@@ -72,7 +72,7 @@ const InsuranceClaim = () => {
       await claimInsurance(
         appContract,
         selectedAddress,
-        selectedInsurance.flightID
+        selectedInsurance.insuranceID
       );
       setModal({ displayed: false, content: null });
       setAlert({
@@ -190,16 +190,18 @@ const InsuranceClaim = () => {
             </Grid>
 
             <Grid item xs={12} lg={6}>
-              <Button
-                variant="contained"
-                color="primary"
-                variant="contained"
-                className={classes.btnFullWidth}
-                disabled={!isAgreed}
-                onClick={handleClaim}
-              >
-                CLAIM
-              </Button>
+              {selectedInsurance?.insuranceID && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  variant="contained"
+                  className={classes.btnFullWidth}
+                  disabled={!isAgreed}
+                  onClick={handleClaim}
+                >
+                  CLAIM
+                </Button>
+              )}
             </Grid>
 
             <Grid item xs={12} lg={6}>

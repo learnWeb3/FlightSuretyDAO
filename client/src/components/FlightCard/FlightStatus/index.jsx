@@ -54,11 +54,20 @@ const FlightStatus = ({
         />
       )}
 
-      {settled && isLate && (
+      {!settled && isLate && (
         <Chip
           variant="default"
           color="primary"
           label="pending claim"
+          className={classes.chip}
+        />
+      )}
+
+{settled && isLate && (
+        <Chip
+          variant="default"
+          color="primary"
+          label="claimed"
           className={classes.chip}
         />
       )}

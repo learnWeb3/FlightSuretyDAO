@@ -37,7 +37,8 @@ const FlightCard = ({
   settlementResponses = null,
   settlementResponseCount = null,
   settlementConsensusTreshold = null,
-  settlementRequests=null
+  settlementRequests=null,
+  insuranceID=null
 }) => {
   const { appContract } = useContext(Context);
   const classes = useStyles();
@@ -79,6 +80,7 @@ const FlightCard = ({
               />
 
               <FlightData
+                insuranceID={insuranceID}
                 flightData={{
                   // id
                   cardID,

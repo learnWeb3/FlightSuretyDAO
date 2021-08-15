@@ -55,9 +55,9 @@ contract FlightSuretyApp is Ownable {
     event NewPayout(
         address indexed owner,
         address indexed insuranceProvider,
-        uint256 indexed insuranceID,
-        uint256 flightID,
-        uint256 insuredValue
+        uint256 indexed flightID,
+        uint256 insuredValue,
+        uint256 insuranceID
     );
 
     // settings amendment proposal related events
@@ -740,20 +740,19 @@ contract FlightSuretyApp is Ownable {
         // update insurance to claimed
         flightSuretyData.setInsuranceToClaimed(_insuranceID);
         // update total insured value as funds are about to be sent (unlocking funds to take new insurance contracts)
-        uint256 currentTotalInsuredValue = flightSuretyData
-            .getTotalInsuredValue();
         flightSuretyData.setTotalInsuredValue(
-            currentTotalInsuredValue.sub(insuredValue)
+            flightSuretyData.getTotalInsuredValue().sub(insuredValue)
         );
         // calculate the amount to transfer according to the insurance coverage policy
-        uint256 amountToTransfer = _calculateInsuredValueBenefits(insuredValue);
-        payable(msg.sender).transfer(amountToTransfer);
+        payable(msg.sender).transfer(
+            _calculateInsuredValueBenefits(insuredValue)
+        );
         emit NewPayout(
             msg.sender,
             insuranceProvider,
-            _insuranceID,
             flightID,
-            insuredValue
+            insuredValue,
+            _insuranceID
         );
     }
 

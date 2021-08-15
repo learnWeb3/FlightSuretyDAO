@@ -18,14 +18,14 @@ contract Random {
         uint256 rand1;
         uint256 rand2;
         uint256 rand3;
-        rand1 = _rand(20);
-        rand2 = _rand(20);
+        rand1 = _rand(5);
+        rand2 = _rand(5);
         while (rand2 == rand1) {
-            rand2 = _rand(20);
+            rand2 = _rand(5);
         }
-        rand3 = _rand(20);
+        rand3 = _rand(5);
         while (rand3 == rand2 || rand3 == rand1) {
-            rand3 = _rand(20);
+            rand3 = _rand(5);
         }
 
         return [rand1, rand2, rand3];

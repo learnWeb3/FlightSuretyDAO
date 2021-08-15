@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import Context from "../../../context";
-import { Button, Chip, Grid, useMediaQuery } from "@material-ui/core";
+import { Button, Grid, useMediaQuery } from "@material-ui/core";
 import { Typography } from "@material-ui/core";
 import TypoIcon from "./TypoIcon";
 import FlightRoundedIcon from "@material-ui/icons/FlightRounded";
@@ -25,6 +25,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const FlightData = ({
+  insuranceID,
   flightData: {
     // id
     cardID,
@@ -58,8 +59,13 @@ const FlightData = ({
     isLate,
   },
 }) => {
-  const { oracleIndexes, setSelectedFlight, setSelectedInsurance, setModal, userTx } =
-    useContext(Context);
+  const {
+    oracleIndexes,
+    setSelectedFlight,
+    setSelectedInsurance,
+    setModal,
+    userTx,
+  } = useContext(Context);
   const matches = useMediaQuery("(max-width:600px)");
   const classes = useStyles();
 
@@ -77,6 +83,7 @@ const FlightData = ({
           }),
         ["claimInsurance" + cardID]: () =>
           setSelectedInsurance({
+            insuranceID,
             flightID,
             flightRef,
             estimatedDeparture,
@@ -184,8 +191,7 @@ const FlightData = ({
               </Button>
             )}
 
-
-          {!btnClaimInsuranceDisabled && settled && (
+          {!btnClaimInsuranceDisabled && !settled && isLate && (
             <Button
               id={"claimInsurance" + cardID}
               variant="outlinedPrimary"

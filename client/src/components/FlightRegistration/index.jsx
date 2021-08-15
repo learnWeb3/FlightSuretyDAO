@@ -84,8 +84,12 @@ const FlightRegistration = () => {
       const { flightRef, estimatedDeparture, estimatedArrival, rate } =
         formData;
       const weiRate = appContract.utils.toWei(rate, "ether");
-      const estimatedDepartureSeconds = Math.ceil(estimatedDeparture / 1000);
-      const estimatedArrivalSeconds = Math.ceil(estimatedArrival / 1000);
+      const estimatedDepartureSeconds =
+        Math.floor(parseInt(estimatedDeparture.toString().slice(0, -3)) / 60) *
+        60;
+      const estimatedArrivalSeconds =
+        Math.floor(parseInt(estimatedArrival.toString().slice(0, -3)) / 60) *
+        60;
       await registerFlight(appContract, selectedAddress, {
         flightRef,
         estimatedDeparture: estimatedDepartureSeconds,

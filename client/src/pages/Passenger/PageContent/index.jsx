@@ -84,6 +84,7 @@ const PageContent = ({ state, setState }) => {
                       insuranceProvider={insuranceProvider}
                       rate={rate}
                       insuredValue={insuredValue}
+                      btnClaimInsuranceDisabled={true}
                     />
                   )
                 )

@@ -156,7 +156,7 @@ const PageContent = ({ state, setState }) => {
           In this section you will find all the insurances contracts you have
           subscribed to and their respective status
         </MuiAlert>
-
+        
         <FiltersArea />
         <Grid container className={classes.flightContainer}>
           {userInsuranceContracts ? (
@@ -179,6 +179,7 @@ const PageContent = ({ state, setState }) => {
                     realArrival,
                     realDeparture,
                     settled,
+                    insuranceID
                   },
                   index
                 ) => (
@@ -197,6 +198,7 @@ const PageContent = ({ state, setState }) => {
                     settled={settled}
                     btnClaimInsuranceDisabled={false}
                     btnSubscribeInsuranceDisabled={true}
+                    insuranceID={insuranceID}
                   />
                 )
               )

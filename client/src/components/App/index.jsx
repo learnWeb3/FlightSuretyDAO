@@ -134,8 +134,6 @@ const App = ({ state, setState }) => {
         oracleContract,
         selectedAddress
       );
-      const flights = await getPastEvents(oracleContract, "NewResponse")
-      console.log(flights);
       const _flights = await fetchFlights(appContract);
       const _oracleflightsRequestsforSettlementData =
         await fetchOracleRequestForFlightSettlementData(oracleContract);

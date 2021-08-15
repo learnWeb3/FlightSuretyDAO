@@ -132,8 +132,12 @@ const SettleFlight = () => {
         oracleContract,
         selectedAddress,
         formattedRequestID,
-        Math.ceil(formData.realDeparture / 1000),
-        Math.ceil(formData.realArrival / 1000)
+        Math.floor(
+          parseInt(formData.realDeparture.toString().slice(0, -3)) / 60
+        ) * 60,
+        Math.floor(
+          parseInt(formData.realArrival.toString().slice(0, -3)) / 60
+        ) * 60
       );
       setModal({ displayed: false, content: null });
       setAlert({
@@ -262,21 +266,21 @@ const SettleFlight = () => {
                     error={errors.realDeparture}
                     label={"Departure date"}
                     id={"departure-date"}
-                    selectedDate={formData.realDeparture * 1000}
+                    selectedDate={formData.realDeparture}
                     handleChange={handleDepartureDateChange}
                     required={true}
-                    minDate={formData.realDeparture * 1000}
+                    minDate={formData.realDeparture}
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <DateField
                     label={"Arrival date"}
                     id={"arrival-date"}
-                    selectedDate={formData.realArrival * 1000}
+                    selectedDate={formData.realArrival}
                     handleChange={handleArrivalDateChange}
                     required={true}
                     error={errors.realArrival}
-                    minDate={formData.realArrival * 1000}
+                    minDate={formData.realArrival}
                   />
                 </Grid>
                 {!isVoted && (
