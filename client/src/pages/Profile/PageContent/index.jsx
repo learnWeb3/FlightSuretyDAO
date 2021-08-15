@@ -31,6 +31,7 @@ const PageContent = ({ state, setState }) => {
     // data
     userTx,
     userInsuranceContracts,
+    registration,
     // filters
     isFilterFlightToActive,
     // modal
@@ -38,19 +39,32 @@ const PageContent = ({ state, setState }) => {
   } = useContext(Context);
 
   useEffect(() => {
-    if (userTx && userInsuranceContracts) {
-      if (userTx.length > 0) {
-        const _formattedUserdTx = userTx.map((tx) => ({
-          ...tx,
-          timestamp: moment(tx.timestamp * 1000)
-            .format("MMMM Do YYYY h:mm:ss a")
-            .toString(),
-        }));
-        setFormattedUserTx(_formattedUserdTx);
-        setState({ status: "loaded", code: null });
-      } else {
-        setState({ status: "loaded", code: null });
+    if (
+      registration?.isActivatedInsuranceProvider ||
+      registration?.isActivatedOracleProvider ||
+      registration?.isTokenHolder
+    ) {
+      if (userTx && userInsuranceContracts) {
+        if (userTx.length > 0) {
+          const _formattedUserdTx = userTx.map((tx) => ({
+            ...tx,
+            timestamp: moment(tx.timestamp * 1000)
+              .format("MMMM Do YYYY h:mm:ss a")
+              .toString(),
+          }));
+          setFormattedUserTx(_formattedUserdTx);
+          setState({ status: "loaded", code: null });
+        } else {
+          setState({ status: "loaded", code: null });
+        }
       }
+    } else {
+      setState({
+        status: "error",
+        code: 403,
+        message:
+          "You have to be registred or a token holder to access this ressource",
+      });
     }
   }, [userTx, userInsuranceContracts]);
 
@@ -153,21 +167,24 @@ const PageContent = ({ state, setState }) => {
                   isFilterFlightToActive
               )
               .map(
-                ({
-                  flightID,
-                  flightRef,
-                  estimatedDeparture,
-                  estimatedArrival,
-                  insuranceProvider,
-                  rate,
-                  isLate,
-                  realArrival,
-                  realDeparture,
-                  settled,
-                }, index) => (
+                (
+                  {
+                    flightID,
+                    flightRef,
+                    estimatedDeparture,
+                    estimatedArrival,
+                    insuranceProvider,
+                    rate,
+                    isLate,
+                    realArrival,
+                    realDeparture,
+                    settled,
+                  },
+                  index
+                ) => (
                   <FlightCard
-                    key={flightID+index}
-                    cardID={flightID+index}
+                    key={flightID + index}
+                    cardID={flightID + index}
                     flightID={flightID}
                     flightRef={flightRef}
                     estimatedDeparture={estimatedDeparture}
@@ -198,7 +215,7 @@ const PageContent = ({ state, setState }) => {
       </Container>
     </>
   ) : state.status === "error" ? (
-    <ErrorPage code={state.code} height="100%" />
+    <ErrorPage code={state.code} height="100%" message={state.message} />
   ) : state.status === "loading" ? (
     <LoadingAnimation />
   ) : (

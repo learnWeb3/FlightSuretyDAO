@@ -35,72 +35,78 @@ import VotingProposals from "../../pages/VotingProposals/index";
 
 const App = ({ state, setState }) => {
   const { provider, selectedAddress } = useProvider(setState);
-  // contracts
-  const [appContract, setAppContract] = useState(null);
-  const [tokenContract, setTokenContract] = useState(null);
-  const [oracleContract, setOracleContract] = useState(null);
-  // filters
+  /** contracts **/
+  const [contracts, setContracts] = useState(null);
+  /** data refresh */
+  const [refreshCounter, setRefreshCounter] = useState(0);
+  /** data **/
+  // current user related data
+  const [userTx, setUserTx] = useState(null);
+  const [userInsuranceContracts, setUserInsuranceContracts] = useState(null);
+  const [registration, setRegistration] = useState(null);
+  const [oracleIndexes, setOracleIndexes] = useState();
+  // registered flights
+  const [flights, setFLights] = useState(null);
+  // current registered yet not activated members
+  const [currentMembershipApplications, setCurrentMembershipApplications] =
+    useState(null);
+  // insurance related data
+  const [insuranceProvidersProfits, setInsuranceProvidersProfits] =
+    useState(null);
+  const [insuranceProvidersFlights, setInsuranceProvidersFlights] =
+    useState(null);
+  // oracle dashboard related data
+  const [
+    oracleflightsRequestsforSettlementData,
+    setOracleFlightsRequestsforSettlementData,
+  ] = useState(null);
+  // community dashboard (token) indicators
+  const [fundsIndicators, setFundsIndicators] = useState(null);
+  const [daoIndicators, setDAOIndicators] = useState(null);
+  // settings amendment proposals
+  const [settingsAmendmentProposal, setSettingsAmendmentProposal] =
+    useState(null);
+  // currently selected data for modal displau
+  const [selectedFlight, setSelectedFlight] = useState(null);
+  const [selectedInsurance, setSelectedInsurance] = useState(null);
+
+  /** filters **/
   const [isFilterFlightToActive, setFilterFlightToActive] = useState(true);
-  // modal
+
+  /** modal **/
   const [modal, setModal] = useState({
     displayed: false,
     content: null,
   });
-  // snackbar
+
+  /** snackbar **/
   const [alert, setAlert] = useState({
     displayed: false,
     message: "",
     type: "",
   });
-  // data refresh
-  const [refreshCounter, setRefreshCounter] = useState(0);
-  // data
-  const [userTx, setUserTx] = useState(null);
-  const [userInsuranceContracts, setUserInsuranceContracts] = useState(null);
-  const [flights, setFLights] = useState(null);
-  const [selectedFlight, setSelectedFlight] = useState(null);
-  const [selectedInsurance, setSelectedInsurance] = useState(null);
-  const [currentMembershipApplications, setCurrentMembershipApplications] =
-    useState(null);
-  const [registration, setRegistration] = useState(null);
-  const [settingsAmendmentProposal, setSettingsAmendmentProposal] =
-    useState(null);
-  const [insuranceProvidersProfits, setInsuranceProvidersProfits] =
-    useState(null);
-  const [fundsIndicators, setFundsIndicators] = useState(null);
-  const [daoIndicators, setDAOIndicators] = useState(null);
-  const [insuranceProvidersFlights, setInsuranceProvidersFlights] =
-    useState(null);
-  const [
-    oracleflightsRequestsforSettlementData,
-    setOracleFlightsRequestsforSettlementData,
-  ] = useState(null);
-  const [oracleIndexes, setOracleIndexes] = useState();
 
   useEffect(() => {
     const initializeContracts = async (provider) => {
       const networkID = await provider.eth.net.getId();
-      setAppContract(
-        web3Contract(
+
+      setContracts({
+        appContract: web3Contract(
           provider,
           FlightSuretyApp.networks[networkID].address,
           FlightSuretyApp.abi
-        )
-      );
-      setOracleContract(
-        web3Contract(
+        ),
+        oracleContract: web3Contract(
           provider,
           FlightSuretyOracle.networks[networkID].address,
           FlightSuretyOracle.abi
-        )
-      );
-      setTokenContract(
-        web3Contract(
+        ),
+        tokenContract: web3Contract(
           provider,
           FlightSuretyShares.networks[networkID].address,
           FlightSuretyShares.abi
-        )
-      );
+        ),
+      });
     };
 
     if (provider) {
@@ -115,10 +121,14 @@ const App = ({ state, setState }) => {
   useEffect(() => {
     const fetchAndSetAppData = async (
       appContract,
-      tokenContract,
-      oracleContract
+      oracleContract,
+      tokenContract
     ) => {
-      const _userTx = await fetchUserTransactions(appContract, oracleContract, selectedAddress);
+      const _userTx = await fetchUserTransactions(
+        appContract,
+        oracleContract,
+        selectedAddress
+      );
       const _userInsuranceContracts = await fetchUserInsurancesContracts(
         appContract,
         oracleContract,
@@ -188,22 +198,24 @@ const App = ({ state, setState }) => {
       setDAOIndicators(_daoIndicators);
       setInsuranceProvidersFlights(_insuranceProvidersFlights);
     };
-    if (appContract && oracleContract && tokenContract) {
+    if (contracts) {
       try {
-        fetchAndSetAppData(appContract, tokenContract, oracleContract);
+        fetchAndSetAppData(
+          contracts.appContract,
+          contracts.oracleContract,
+          contracts.tokenContract
+        );
       } catch (error) {
         setState({ status: "error", code: 500 });
       }
     }
-  }, [appContract, oracleContract, tokenContract, refreshCounter]);
+  }, [contracts, refreshCounter]);
 
   return (
     <Context.Provider
       value={{
         // contracts
-        appContract,
-        tokenContract,
-        oracleContract,
+        ...contracts,
         // data refresh
         refreshCounter,
         setRefreshCounter,

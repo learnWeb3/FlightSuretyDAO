@@ -16,6 +16,7 @@ rl.question("Please enter your ether wallet mnemonic: \n", (MNEMONIC) => {
     (MNEMONIC && MNEMONIC.match(/\w+/g)?.length === 12) ||
     MNEMONIC.match(/\w+/g)?.length === 24
   ) {
+    console.log("Thanks, verifying wallet mnemonic...")
     initCronTasks(MNEMONIC, PROVIDER_URL);
   } else {
     console.log("Invalid mnemonic aborting ...");

@@ -60,7 +60,7 @@ const initWeb3Contracts = async (MNEMONIC, PROVIDER_URL) => {
   // const userAddress = httpProvider.addresses[0];
   const userAddress = await web3WSS.eth
     .getAccounts()
-    .then((account) => account[2]);
+    .then((account) => account[1]);
   return {
     networkID,
     userAddress,

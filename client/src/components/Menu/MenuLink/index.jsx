@@ -8,8 +8,8 @@ const useStyles = makeStyles(() => ({
   navlink: {
     display: "flex",
     alignItems: "center",
-    padding: 24,
     color: "#FFF",
+    marginTop: 16,
     textDecoration: "none",
     listStyleType: "none",
     "& svg": {

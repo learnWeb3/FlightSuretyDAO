@@ -43,14 +43,19 @@ const PageContent = ({ state, setState }) => {
   const [formattedFlights, setFormattedFlights] = useState(null);
 
   useEffect(() => {
+    console.log(oracleIndexes);
     if (
-      oracleContract &&
-      registration &&
-      flights &&
-      oracleflightsRequestsforSettlementData &&
-      oracleIndexes
+      (oracleContract && flights && oracleflightsRequestsforSettlementData,
+      flights && registration)
     ) {
-      if (registration.isActivatedOracleProvider) {
+      if (!registration?.isActivatedOracleProvider) {
+        setState({
+          status: "error",
+          code: 403,
+          message:
+            "You must be an activated oracle provider to acces this page",
+        });
+      } else {
         if (flights.length === 0) {
           setState({ status: "nocontent", code: null });
         } else {
@@ -95,13 +100,6 @@ const PageContent = ({ state, setState }) => {
           };
           formatAndSetFlights();
         }
-      } else {
-        setState({
-          status: "error",
-          code: 403,
-          message:
-            "You must be an activated oracle provider to acces this page",
-        });
       }
     }
   }, [
@@ -207,7 +205,7 @@ const PageContent = ({ state, setState }) => {
       </Grid>
     </Container>
   ) : state.status === "error" ? (
-    <ErrorPage code={state.code} height="100%" />
+    <ErrorPage code={state.code} height="100%" message={state.message} />
   ) : state.status === "loading" ? (
     <LoadingAnimation />
   ) : (

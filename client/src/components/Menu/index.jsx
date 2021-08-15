@@ -1,8 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Grid, Typography } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MenuLink from "./MenuLink";
 import Context from "../../context/index";
+import TypoIcon from "../FlightCard/FlightData/TypoIcon/index";
+import FlightRoundedIcon from "@material-ui/icons/FlightRounded";
 
 const useStyles = makeStyles(() => ({
   navlink: {
@@ -93,10 +95,15 @@ const Menu = () => {
   }, [registration]);
   return (
     <Grid container className={classes.menuLeft}>
-      <Typography variant="h4" component="li" className={classes.navlink}>
-        The FlightSurety DAO
-      </Typography>
-
+      <TypoIcon
+        text={"FlightSurety DAO"}
+        variant={"h5"}
+        icon={FlightRoundedIcon}
+        iconFontSize={"medium"}
+        color={"#FFF"}
+        marginBottom={32}
+        textColor={"#FFF"}
+      />
       {links?.map(
         ({ order, to, label, display }) =>
           display && <MenuLink key={order} to={to} label={label} />

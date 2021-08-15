@@ -22,7 +22,7 @@ const NoContent = ({ fontSize, message }) => {
   const classes = useStyles();
   return (
     <div className={classes.flex}>
-      <ErrorOutlineRoundedIcon style={{ fontSize }} />
+      <ErrorOutlineRoundedIcon style={{ fontSize, color: "#3f51b5" }} />
       {message && (
         <Alert severity="info" className={classes.alert}>
           {message}
