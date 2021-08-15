@@ -27,7 +27,7 @@ const PageContent = ({ state, setState }) => {
 
   return state.status === "loaded" ? (
     <Container>
-      <Typography variant="h4" component="h1" className={classes.header}>
+      <Typography variant="h5" component="h1" className={classes.header}>
         FlightSurety DAO dashboard
       </Typography>
       <Grid container spacing={4}>

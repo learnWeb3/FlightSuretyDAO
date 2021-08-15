@@ -192,7 +192,7 @@ const ProposalRegistration = ({ type }) => {
                   <Button
                     variant="contained"
                     color="primary"
-                    size="large"
+                    variant="contained"
                     className={classes.fullWidth}
                     disabled={isAgreed && proposedValue ? false : true}
                     onClick={handleRegister}
@@ -214,7 +214,7 @@ const ProposalRegistration = ({ type }) => {
               <Button
                 variant="contained"
                 color="secondary"
-                size="large"
+                variant="contained"
                 className={classes.fullWidth}
                 onClick={handleCancel}
               >

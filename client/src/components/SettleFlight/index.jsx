@@ -59,6 +59,7 @@ const SettleFlight = () => {
     // data
     selectedFlight,
     userTx,
+    daoIndicators,
     // refresh
     refreshCounter,
     setRefreshCounter,
@@ -100,7 +101,8 @@ const SettleFlight = () => {
         userTx?.find(
           (tx) =>
             tx.eventName === "NewResponse" &&
-            parseInt(tx.requestID) === formData.requestID
+            parseInt(tx.requestID) === formData.requestID &&
+            tx.oracleProvider.toLowerCase() === selectedAddress.toLowerCase()
         )
           ? true
           : false
@@ -113,28 +115,25 @@ const SettleFlight = () => {
   });
 
   const handleDepartureDateChange = (date) => {
-    setFormData({ ...formData, realDeparture: date.getTime() });
+    setFormData({
+      ...formData,
+      realDeparture: Math.ceil(date.getTime() / 1000),
+    });
   };
 
   const handleArrivalDateChange = (date) => {
-    setFormData({ ...formData, realArrival: date.getTime() });
+    setFormData({ ...formData, realArrival: Math.ceil(date.getTime() / 1000) });
   };
 
   const handleSettle = async () => {
     try {
-      const formattedRealDeparture = parseInt(
-        formData.realDeparture.toString().slice(0, -3)
-      );
-      const formattedRealArrival = parseInt(
-        formData.realArrival.toString().slice(0, -3)
-      );
       const formattedRequestID = parseInt(formData.requestID);
       await respondToRequest(
         oracleContract,
         selectedAddress,
         formattedRequestID,
-        formattedRealDeparture,
-        formattedRealArrival
+        formData.realDeparture,
+        formData.realArrival
       );
       setModal({ displayed: false, content: null });
       setAlert({
@@ -235,11 +234,14 @@ const SettleFlight = () => {
               </Typography>
               <Paper className={classes.insurance}>
                 <Grid item xs={12}>
-                  <LinearProgressWithLabel
-                    value={Math.ceil(
-                      (selectedFlight?.settlementResponseCount * 100) / 5
-                    )}
-                  />
+                  {daoIndicators && (
+                    <LinearProgressWithLabel
+                      value={Math.ceil(
+                        (selectedFlight?.settlementResponseCount * 100) /
+                          daoIndicators.acceptedAnswerTreshold
+                      )}
+                    />
+                  )}
                 </Grid>
               </Paper>
             </Grid>
@@ -297,7 +299,7 @@ const SettleFlight = () => {
                 <Button
                   variant="contained"
                   color="primary"
-                  size="large"
+                  variant="contained"
                   className={classes.btnFullWidth}
                   disabled={!isAgreed}
                   onClick={handleSettle}
@@ -311,7 +313,7 @@ const SettleFlight = () => {
               <Button
                 variant="contained"
                 color="secondary"
-                size="large"
+                variant="contained"
                 className={classes.btnFullWidth}
                 onClick={handleCancel}
               >

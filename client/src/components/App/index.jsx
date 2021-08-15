@@ -27,7 +27,7 @@ import { useProvider } from "../../hooks";
 import FlightSuretyApp from "../../contracts/FlightSuretyApp.json";
 import FlightSuretyShares from "../../contracts/FlightSuretyShares.json";
 import FlightSuretyOracle from "../../contracts/FlightSuretyOracle.json";
-import { web3Contract } from "../../web3";
+import { getPastEvents, web3Contract } from "../../web3";
 import Profile from "../../pages/Profile/index";
 import MembershipApplication from "../../pages/MembershipApplication/index";
 import Registration from "../../pages/Registration/index";
@@ -109,14 +109,14 @@ const App = ({ state, setState }) => {
       });
     };
 
-    if (provider) {
+    if (provider && selectedAddress) {
       try {
         initializeContracts(provider);
       } catch (error) {
         setState({ status: "error", code: 500 });
       }
     }
-  }, [provider]);
+  }, [provider, selectedAddress]);
 
   useEffect(() => {
     const fetchAndSetAppData = async (
@@ -134,6 +134,8 @@ const App = ({ state, setState }) => {
         oracleContract,
         selectedAddress
       );
+      const flights = await getPastEvents(oracleContract, "NewResponse")
+      console.log(flights);
       const _flights = await fetchFlights(appContract);
       const _oracleflightsRequestsforSettlementData =
         await fetchOracleRequestForFlightSettlementData(oracleContract);
@@ -172,6 +174,8 @@ const App = ({ state, setState }) => {
       const _daoIndicators = await fetchDAOIndicators(
         tokenContract,
         appContract,
+        oracleContract,
+        selectedAddress,
         selectedAddress
       );
       const _insuranceProvidersFlights = await fetchInsuranceProvidersFlights(

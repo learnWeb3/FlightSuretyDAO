@@ -130,11 +130,17 @@ const FlightRegistration = () => {
   };
 
   const handleDepartureDateChange = (date) => {
-    setFormData({ ...formData, estimatedDeparture: date.getTime() });
+    setFormData({
+      ...formData,
+      estimatedDeparture: Math.ceil(date.getTime() / 1000),
+    });
   };
 
   const handleArrivalDateChange = (date) => {
-    setFormData({ ...formData, estimatedArrival: date.getTime() });
+    setFormData({
+      ...formData,
+      estimatedArrival: Math.ceil(date.getTime() / 1000),
+    });
   };
 
   return (
@@ -227,7 +233,7 @@ const FlightRegistration = () => {
               <Button
                 variant="contained"
                 color="primary"
-                size="large"
+                variant="contained"
                 className={classes.fullWidth}
                 disabled={
                   isAgreed &&
@@ -248,7 +254,7 @@ const FlightRegistration = () => {
               <Button
                 variant="contained"
                 color="secondary"
-                size="large"
+                variant="contained"
                 className={classes.fullWidth}
                 onClick={handleCancel}
               >

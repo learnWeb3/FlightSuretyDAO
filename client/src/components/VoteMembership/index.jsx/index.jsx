@@ -230,7 +230,7 @@ const VoteMembership = ({ type, votee }) => {
                       <Button
                         variant="contained"
                         color="primary"
-                        size="large"
+                        variant="contained"
                         className={classes.fullWidth}
                         disabled={
                           isAgreed && formData.voter && formData.votee
@@ -258,7 +258,7 @@ const VoteMembership = ({ type, votee }) => {
               <Button
                 variant="contained"
                 color="secondary"
-                size="large"
+                variant="contained"
                 className={classes.fullWidth}
                 onClick={handleCancel}
               >

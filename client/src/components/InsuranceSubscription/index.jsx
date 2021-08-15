@@ -188,7 +188,7 @@ const InsuranceSubscription = () => {
               <Button
                 variant="contained"
                 color="primary"
-                size="large"
+                variant="contained"
                 className={classes.btnFullWidth}
                 disabled={!isAgreed}
                 onClick={handleSubscribe}
@@ -201,7 +201,7 @@ const InsuranceSubscription = () => {
               <Button
                 variant="contained"
                 color="secondary"
-                size="large"
+                variant="contained"
                 className={classes.btnFullWidth}
                 onClick={handleCancel}
               >

@@ -8,6 +8,7 @@ const useStyles = makeStyles(() => ({
     alignItems: "center",
     justifyContent: "center",
     padding: 24,
+    backgroundColor: "#fefefe"
   },
 }));
 
@@ -16,7 +17,7 @@ const FlightIcon = () => {
   return (
     <Hidden mdDown>
       <Grid item xs={12} lg={3} className={classes.flightIcon}>
-        <FlightRoundedIcon fontSize="large" />
+        <FlightRoundedIcon fontvariant="contained" />
       </Grid>
     </Hidden>
   );

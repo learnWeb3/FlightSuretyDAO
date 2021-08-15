@@ -136,7 +136,7 @@ const PageContent = ({ state, setState }) => {
 
   return state.status === "loaded" ? (
     <Container>
-      <Typography variant="h4" component="h2">
+      <Typography variant="h5" component="h1">
         Membership application
       </Typography>
 

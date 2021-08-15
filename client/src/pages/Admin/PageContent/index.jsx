@@ -36,7 +36,7 @@ const PageContent = ({ state, setState }) => {
     <Container>
       <Grid container spacing={4}>
         <Grid item xs={12} lg={6}>
-          <Typography variant="h4" component="h1">
+          <Typography variant="h5" component="h1">
             Aministrator Dashboard
           </Typography>
         </Grid>
@@ -47,7 +47,7 @@ const PageContent = ({ state, setState }) => {
           <Button
             variant="contained"
             color="primary"
-            size="large"
+            variant="contained"
             onClick={handleClick}
             fullWidth
           >

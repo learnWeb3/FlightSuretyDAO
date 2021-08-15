@@ -60,7 +60,7 @@ const initWeb3Contracts = async (MNEMONIC, PROVIDER_URL) => {
   // const userAddress = httpProvider.addresses[0];
   const userAddress = await web3WSS.eth
     .getAccounts()
-    .then((account) => account[1]);
+    .then((account) => account[2]);
   return {
     networkID,
     userAddress,
@@ -102,6 +102,7 @@ const fetchFlights = async (appContract, oracleContract) => {
 };
 
 const initCronTasks = (MNEMONIC, PROVIDER_URL) => {
+  let taskNumber = 0;
   cron.schedule("* * * * *", async () => {
     try {
       // init web3 contracts and addresses
@@ -113,7 +114,11 @@ const initCronTasks = (MNEMONIC, PROVIDER_URL) => {
         oracleContract,
         appContract,
       } = await initWeb3Contracts(MNEMONIC, PROVIDER_URL);
-      console.log("running cron tasks");
+      taskNumber += 1;
+      console.log(
+        "================================================================"
+      );
+      console.log(`running cron tasks ${taskNumber}`);
       console.log(`current network id: ${networkID}`);
       console.log(`current user address: ${userAddress}`);
       console.log(`FlightSuretyApp contract Address: ${appContractAddress}`);

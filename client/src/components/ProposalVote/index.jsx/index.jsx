@@ -224,7 +224,7 @@ const ProposalVote = ({ type, proposalID, proposedValue }) => {
                       <Button
                         variant="contained"
                         color="primary"
-                        size="large"
+                        variant="contained"
                         className={classes.fullWidth}
                         disabled={isAgreed ? false : true}
                         onClick={handleRegister}
@@ -248,7 +248,7 @@ const ProposalVote = ({ type, proposalID, proposedValue }) => {
               <Button
                 variant="contained"
                 color="secondary"
-                size="large"
+                variant="contained"
                 className={classes.fullWidth}
                 onClick={handleCancel}
               >

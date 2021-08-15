@@ -14,10 +14,12 @@ import {
 } from "../../../actions";
 
 const useStyles = makeStyles(() => ({
+  pageContainer: {
+    height: "90%",
+  },
   flightContainer: { display: "flex", justifyContent: "center" },
   oracleProviderIndexContainer: {
     display: "flex",
-    justifyContent: "center",
     alignItems: "center",
   },
   alert: {
@@ -45,7 +47,6 @@ const PageContent = ({ state, setState }) => {
   const [formattedFlights, setFormattedFlights] = useState(null);
 
   useEffect(() => {
-    console.log(oracleIndexes);
     if (
       (oracleContract && flights && oracleflightsRequestsforSettlementData,
       flights && registration)
@@ -114,108 +115,117 @@ const PageContent = ({ state, setState }) => {
     registration,
   ]);
 
-  return state.status === "loaded" ? (
-    <Container>
+  return (
+    <Container className={classes.pageContainer}>
       <Grid container>
         <Grid item xs={12} lg={6}>
-          <Typography variant="h4" component="h1">
+          <Typography variant="h5" component="h1">
             Oracle provider dashboard
           </Typography>
         </Grid>
+
         <Grid
           item
           xs={12}
           lg={6}
           className={classes.oracleProviderIndexContainer}
         >
-          <Chip
-            variant="contained"
-            color="primary"
-            label={`Oracle indexes : ${oracleIndexes?.index1}-${oracleIndexes?.index2}-${oracleIndexes?.index3}`}
-          />
+          {oracleIndexes && (
+            <Chip
+              variant="contained"
+              color="primary"
+              label={`My indexes : ${oracleIndexes?.index1}-${oracleIndexes?.index2}-${oracleIndexes?.index3}`}
+            />
+          )}
         </Grid>
       </Grid>
 
-      <MuiAlert
-        className={classes.alert}
-        elevation={6}
-        variant="filled"
-        severity="info"
-      >
-        In this section you will find all the available flights registered on
-        our smart contracts and secured by the ethereum network, you will be
-        able to create a secure request updating the flight real data wired
-        through our Oracle contract
-      </MuiAlert>
+      {state.status === "loaded" && (
+        <>
+          <MuiAlert
+            className={classes.alert}
+            elevation={6}
+            variant="filled"
+            severity="info"
+          >
+            In this section you will find all the available flights registered
+            on our smart contracts and secured by the ethereum network, you will
+            be able to create a secure request updating the flight real data
+            wired through our Oracle contract
+          </MuiAlert>
 
-      <FiltersArea />
-      <Grid container className={classes.flightContainer}>
-        {formattedFlights ? (
-          formattedFlights
-            ?.filter(
+          <FiltersArea />
+          <Grid container className={classes.flightContainer}>
+            {formattedFlights ? (
+              formattedFlights
+                ?.filter(
+                  (flight) =>
+                    flight.estimatedDeparture * 1000 >= Date.now() ===
+                    isFilterFlightToActive
+                )
+                .map(
+                  (
+                    {
+                      flightID,
+                      flightRef,
+                      estimatedDeparture,
+                      estimatedArrival,
+                      insuranceProvider,
+                      rate,
+                      oracleActivatedIndex,
+                      oracleRequestIsPresent,
+                      settlementResponses,
+                      settlementResponseCount,
+                      settlementConsensusTreshold,
+                      settlementRequests,
+                    },
+                    index
+                  ) => (
+                    <FlightCard
+                      key={flightID + index}
+                      cardID={flightID + index}
+                      flightID={flightID}
+                      flightRef={flightRef}
+                      estimatedDeparture={estimatedDeparture}
+                      estimatedArrival={estimatedArrival}
+                      insuranceProvider={insuranceProvider}
+                      rate={rate}
+                      btnSubscribeInsuranceDisabled={true}
+                      btnCreateRequestDisabled={false}
+                      oracleRequestIsPresent={oracleRequestIsPresent}
+                      oracleActivatedIndex={oracleActivatedIndex}
+                      settlementResponses={settlementResponses}
+                      settlementResponseCount={settlementResponseCount}
+                      settlementConsensusTreshold={settlementConsensusTreshold}
+                      settlementRequests={settlementRequests}
+                    />
+                  )
+                )
+            ) : (
+              <LoadingAnimation />
+            )}
+
+            {flights?.filter(
               (flight) =>
                 flight.estimatedDeparture * 1000 >= Date.now() ===
                 isFilterFlightToActive
-            )
-            .map(
-              (
-                {
-                  flightID,
-                  flightRef,
-                  estimatedDeparture,
-                  estimatedArrival,
-                  insuranceProvider,
-                  rate,
-                  oracleActivatedIndex,
-                  oracleRequestIsPresent,
-                  settlementResponses,
-                  settlementResponseCount,
-                  settlementConsensusTreshold,
-                  settlementRequests,
-                },
-                index
-              ) => (
-                <FlightCard
-                  key={flightID + index}
-                  cardID={flightID + index}
-                  flightID={flightID}
-                  flightRef={flightRef}
-                  estimatedDeparture={estimatedDeparture}
-                  estimatedArrival={estimatedArrival}
-                  insuranceProvider={insuranceProvider}
-                  rate={rate}
-                  btnSubscribeInsuranceDisabled={true}
-                  btnCreateRequestDisabled={false}
-                  oracleRequestIsPresent={oracleRequestIsPresent}
-                  oracleActivatedIndex={oracleActivatedIndex}
-                  settlementResponses={settlementResponses}
-                  settlementResponseCount={settlementResponseCount}
-                  settlementConsensusTreshold={settlementConsensusTreshold}
-                  settlementRequests={settlementRequests}
-                />
-              )
-            )
-        ) : (
-          <LoadingAnimation />
-        )}
+            ).length === 0 && (
+              <NoContent width="100%" message="Nothing just yet ..." />
+            )}
+          </Grid>
+        </>
+      )}
 
-        {flights?.filter(
-          (flight) =>
-            flight.estimatedDeparture * 1000 >= Date.now() ===
-            isFilterFlightToActive
-        ).length === 0 && (
-          <NoContent width="100%" message="Nothing just yet ..." />
-        )}
-      </Grid>
+      {state.status === "error" && (
+        <ErrorPage code={state.code} height="100%" message={state.message} />
+      )}
+
+      {state.status === "loading" && <LoadingAnimation />}
+
+      {state.status === "nocontent" && (
+        <NoContent fontSize="6rem" message="Nothing just yet ..." />
+      )}
     </Container>
-  ) : state.status === "error" ? (
-    <ErrorPage code={state.code} height="100%" message={state.message} />
-  ) : state.status === "loading" ? (
-    <LoadingAnimation />
-  ) : (
-    state.status === "nocontent" && (
-      <NoContent fontSize="6rem" message="Nothing just yet ..." />
-    )
   );
 };
 

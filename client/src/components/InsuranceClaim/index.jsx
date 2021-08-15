@@ -193,7 +193,7 @@ const InsuranceClaim = () => {
               <Button
                 variant="contained"
                 color="primary"
-                size="large"
+                variant="contained"
                 className={classes.btnFullWidth}
                 disabled={!isAgreed}
                 onClick={handleClaim}
@@ -206,7 +206,7 @@ const InsuranceClaim = () => {
               <Button
                 variant="contained"
                 color="secondary"
-                size="large"
+                variant="contained"
                 className={classes.btnFullWidth}
                 onClick={handleCancel}
               >

@@ -22,33 +22,33 @@ const FlightStatus = ({
     oracleRequestIsPresent,
   },
 }) => {
-  const { appContract } = useContext(Context);
+  const { appContract, daoIndicators } = useContext(Context);
   const classes = useStyles();
   return (
     <Grid item xs={12}>
       {estimatedDeparture * 1000 > Date.now() && (
         <Chip
-          variant="outlined"
-          color="secondary"
+          variant="default"
+          color="primary"
           label="pending departure"
           className={classes.chip}
         />
       )}
 
-    {estimatedDeparture * 1000 < Date.now() && estimatedArrival * 1000 > Date.now() && (
-        <Chip
-          variant="outlined"
-          color="secondary"
-          label="ongoing"
-          className={classes.chip}
-        />
-      )}
-
+      {estimatedDeparture * 1000 < Date.now() &&
+        estimatedArrival * 1000 > Date.now() && (
+          <Chip
+            variant="default"
+            color="primary"
+            label="ongoing"
+            className={classes.chip}
+          />
+        )}
 
       {estimatedArrival * 1000 < Date.now() && (
         <Chip
-          variant="outlined"
-          color="secondary"
+          variant="default"
+          color="primary"
           label="pending settlement"
           className={classes.chip}
         />
@@ -56,8 +56,8 @@ const FlightStatus = ({
 
       {settled && isLate && (
         <Chip
-          variant="outlined"
-          color="secondary"
+          variant="default"
+          color="primary"
           label="pending claim"
           className={classes.chip}
         />
@@ -66,24 +66,29 @@ const FlightStatus = ({
       {oracleActivatedIndex && (
         <>
           <Chip
-            variant="outlined"
-            color="secondary"
+            variant="default"
+            color="primary"
             label={"selected oracle index " + oracleActivatedIndex}
             className={classes.chip}
           />
-          <Chip
-            variant="outlined"
-            color="secondary"
-            label={"accepted answer consensus ratio : 5"}
-            className={classes.chip}
-          />
+          {daoIndicators && (
+            <Chip
+              variant="default"
+              color="primary"
+              label={
+                "accepted answer consensus ratio : " +
+                daoIndicators.acceptedAnswerTreshold
+              }
+              className={classes.chip}
+            />
+          )}
         </>
       )}
 
       {appContract && insuredValue && (
         <Chip
-          variant="outlined"
-          color="secondary"
+          variant="default"
+          color="primary"
           label={
             "current insured value : " +
             appContract?.utils.fromWei(insuredValue, "ether") +
@@ -97,8 +102,8 @@ const FlightStatus = ({
         !oracleRequestIsPresent &&
         estimatedArrival * 1000 < Date.now() && (
           <Chip
-            variant="outlined"
-            color="secondary"
+            variant="default"
+            color="primary"
             label="pending settlement request"
             className={classes.chip}
           />

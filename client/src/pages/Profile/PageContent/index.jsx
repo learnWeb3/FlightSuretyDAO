@@ -110,12 +110,12 @@ const PageContent = ({ state, setState }) => {
   return state.status === "loaded" ? (
     <>
       <Container className={classes.container}>
-        <Typography variant="h4" component="h1" gutterBottom>
+        <Typography variant="h5" component="h1" gutterBottom>
           My Activity
         </Typography>
       </Container>
       <Container className={classes.container}>
-        <Typography variant="h5" component="h2">
+        <Typography variant="h6" component="h1">
           Transaction history
         </Typography>
 
@@ -143,7 +143,7 @@ const PageContent = ({ state, setState }) => {
         )}
       </Container>
       <Container className={classes.container}>
-        <Typography variant="h5" component="h2">
+        <Typography variant="h6" component="h1">
           My insurances contract
         </Typography>
 

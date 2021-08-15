@@ -43,7 +43,7 @@ const fetchProfits = async (appContract, insuranceProvider) => {
         )
       : 0;
   });
-
+  
   const myCumulatedInsuranceValue = await getPastEvents(
     appContract,
     "NewInsurance",

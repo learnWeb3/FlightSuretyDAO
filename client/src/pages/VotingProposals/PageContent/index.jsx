@@ -158,7 +158,7 @@ const PageContent = ({ state, setState }) => {
     <Container>
       <Grid container spacing={4}>
         <Grid item xs={12} lg={6}>
-          <Typography variant="h4" component="h2" className={classes.header}>
+          <Typography variant="h5" component="h1" className={classes.header}>
             Settings amendment proposals
           </Typography>
         </Grid>
@@ -168,7 +168,7 @@ const PageContent = ({ state, setState }) => {
               id="membershipFeeAmendmentProposal"
               variant="contained"
               color="primary"
-              size="large"
+              size="medium"
               onClick={handleClick}
               fullWidth
             >
@@ -183,7 +183,7 @@ const PageContent = ({ state, setState }) => {
               id="insuranceCoverageRatioAmendmentProposal"
               variant="contained"
               color="primary"
-              size="large"
+              size="medium"
               onClick={handleClick}
               fullWidth
             >
@@ -228,7 +228,7 @@ const PageContent = ({ state, setState }) => {
       )}
     </Container>
   ) : state.status === "error" ? (
-    <ErrorPage code={state.code} height="100%"  message={state.message}/>
+    <ErrorPage code={state.code} height="100%" message={state.message} />
   ) : (
     state.status === "loading" && <LoadingAnimation />
   );

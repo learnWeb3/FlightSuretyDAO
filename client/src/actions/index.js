@@ -283,19 +283,18 @@ const fetchInsuranceProvidersProfits = async (
   );
   if (insuranceProvidersAddresses.length > 0) {
     return await Promise.all(
-      insuranceProvidersAddresses.map(
-        async (insuranceProviderAddress) =>
-          await fetchProfits(appContract, insuranceProviderAddress).then(
-            ({ totalCummulatedProfits, myCumulatedProfits }) => ({
-              id: insuranceProviderAddress,
-              label:
-                insuranceProviderAddress.slice(0, 3) +
-                "..." +
-                insuranceProviderAddress.slice(-3, -1),
-              value: parseInt(myCumulatedProfits),
-            })
-          )
-      )
+      insuranceProvidersAddresses.map(async (insuranceProviderAddress) => {
+        const { totalCumulatedProfits, myCumulatedProfits } =
+          await fetchProfits(appContract, insuranceProviderAddress);
+        return {
+          id: insuranceProviderAddress,
+          label:
+            insuranceProviderAddress.slice(0, 3) +
+            "..." +
+            insuranceProviderAddress.slice(-3, -1),
+          value: parseInt(totalCumulatedProfits),
+        };
+      })
     );
   } else {
     return [];
@@ -390,21 +389,22 @@ const fetchFundsIndicators = async (
 const fetchDAOIndicators = async (
   tokenContract,
   appContract,
-  currentAddress
+  oracleContract,
+  selectedAddress
 ) => {
   // token related metrics
   const tokenSupply = await tokenContract.methods
     .totalSupply()
-    .call({ from: currentAddress });
+    .call({ from: selectedAddress });
   const daysBeforeTokenRedeem = 365;
   // settings metrics
   const currentMembershipFee = await appContract.methods
     .currentMembershipFee()
-    .call({ from: currentAddress })
+    .call({ from: selectedAddress })
     .then((fee) => appContract.utils.fromWei(fee, "ether"));
   const currentInsuranceCoverageRatio = await appContract.methods
     .currentInsuranceCoverageRatio()
-    .call({ from: currentAddress })
+    .call({ from: selectedAddress })
     .then((ratio) => ratio / 100);
   // roles metrics
   const oracleRegisteredProvidersCount = await fetchRegisteredOracleProviders(
@@ -428,12 +428,30 @@ const fetchDAOIndicators = async (
   } = await fetchSettingsAmendmentProposal(
     appContract,
     tokenContract,
-    currentAddress
+    selectedAddress
   );
   const feeSettingsAmendmentProposalCount =
     membershipFeeAmendmentProposals.length;
   const coverageSettingsAmendmentProposalCount =
     insuranceCoverageAmendmentProposals.length;
+
+  // current constant values
+  // miniumum block number token holding to participate
+  const tokenHoldingMinimumBlock = await appContract.methods
+    .TOKEN_HOLDER_MINIMUM_BLOCK_REQUIREMENT()
+    .call({ from: selectedAddress });
+  // proposal validity block duration
+  const proposalValidityDuration = await appContract.methods
+    .PROPOSAL_VALID_BLOCK_NUMBER()
+    .call({ from: selectedAddress });
+  // accepted answer consensus ratio
+  const acceptedAnswerTreshold = await oracleContract.methods
+    .ACCEPTED_ANSWER_TRESHOLD()
+    .call({ from: selectedAddress });
+  // authorized flight delay
+  const authorizedFlightDelay = await oracleContract.methods
+    .AUTHORIZED_FLIGHT_DELAY()
+    .call({ from: selectedAddress });
   return {
     tokenSupply,
     daysBeforeTokenRedeem,
@@ -445,6 +463,10 @@ const fetchDAOIndicators = async (
     insuranceActivatedProvidersCount,
     feeSettingsAmendmentProposalCount,
     coverageSettingsAmendmentProposalCount,
+    tokenHoldingMinimumBlock,
+    proposalValidityDuration,
+    acceptedAnswerTreshold,
+    authorizedFlightDelay,
   };
 };
 
@@ -485,7 +507,7 @@ const fetchUserTransactions = async (
           .getPastEvents(eventName, {
             fromBlock: 0,
             filter: {
-              [appContractMappingEventNameToIndexedKey[eventName]]:
+              [oracleContractMappingEventNameToIndexedKey[eventName]]:
                 selectedAddress,
             },
           })
@@ -652,26 +674,26 @@ const fetchFlightSettlementRequests = async (oracleContract, flightID) => {
 
 const registerInsuranceProvider = async (
   appContract,
-  currentAddress,
+  selectedAddress,
   value,
   gas = 500000
 ) => {
   return await appContract.methods
     .registerInsuranceProvider()
-    .send({ from: currentAddress, value, gas });
+    .send({ from: selectedAddress, value, gas });
 };
 
 // oracle providers
 
 const registerOracleProvider = async (
   appContract,
-  currentAddress,
+  selectedAddress,
   value,
   gas = 500000
 ) => {
   return await appContract.methods
     .registerOracleProvider()
-    .send({ from: currentAddress, value, gas });
+    .send({ from: selectedAddress, value, gas });
 };
 
 /* votes providers */
@@ -680,26 +702,26 @@ const registerOracleProvider = async (
 
 const voteInsuranceProviderMembership = async (
   appContract,
-  currentAddress,
+  selectedAddress,
   votee,
-  gas = 200000
+  gas = 500000
 ) => {
   return await appContract.methods
     .voteInsuranceProviderMembership(votee)
-    .send({ from: currentAddress, gas });
+    .send({ from: selectedAddress, gas });
 };
 
 // oracle providers
 
 const voteOracleProviderMembership = async (
   appContract,
-  currentAddress,
+  selectedAddress,
   votee,
-  gas = 150000
+  gas = 500000
 ) => {
   return await appContract.methods
     .voteOracleProviderMembership(votee)
-    .send({ from: currentAddress, gas });
+    .send({ from: selectedAddress, gas });
 };
 
 const respondToRequest = async (
@@ -718,86 +740,86 @@ const respondToRequest = async (
 
 const registerFlight = async (
   appContract,
-  currentAddress,
+  selectedAddress,
   { flightRef, estimatedDeparture, estimatedArrival, rate },
   gas = 500000
 ) => {
   return await appContract.methods
     .registerFlight(flightRef, estimatedDeparture, estimatedArrival, rate)
-    .send({ from: currentAddress, gas });
+    .send({ from: selectedAddress, gas });
 };
 
 /* insurances management */
 
 const registerInsurance = async (
   appContract,
-  currentAddress,
+  selectedAddress,
   flightID,
   value,
   gas = 500000
 ) => {
   return await appContract.methods
     .registerInsurance(flightID)
-    .send({ from: currentAddress, value, gas });
+    .send({ from: selectedAddress, value, gas });
 };
 
 const claimInsurance = async (
   appContract,
-  currentAddress,
+  selectedAddress,
   flightID,
   gas = 500000
 ) => {
   return await appContract.methods
     .claimInsurance(flightID)
-    .send({ from: currentAddress, gas });
+    .send({ from: selectedAddress, gas });
 };
 
 /* Settings amendment proposals*/
 
 const registerMembershipFeeAmendmentProposal = async (
   appContract,
-  currentAddress,
+  selectedAddress,
   proposedValue,
   gas = 150000
 ) => {
   return await appContract.methods
     .registerMembershipFeeAmendmentProposal(proposedValue)
-    .send({ from: currentAddress, gas });
+    .send({ from: selectedAddress, gas });
 };
 
 const voteMembershipFeeAmendmentProposal = async (
   appContract,
-  currentAddress,
+  selectedAddress,
   proposalID,
   gas = 150000
 ) => {
   return await appContract.methods
     .voteMembershipFeeAmendmentProposal(proposalID)
-    .send({ from: currentAddress, gas });
+    .send({ from: selectedAddress, gas });
 };
 
 // insurance coverage amendment proposal
 
 const registerInsuranceCoverageAmendmentProposal = async (
   appContract,
-  currentAddress,
+  selectedAddress,
   proposedValue,
   gas = 150000
 ) => {
   return await appContract.methods
     .registerInsuranceCoverageAmendmentProposal(proposedValue)
-    .send({ from: currentAddress, gas });
+    .send({ from: selectedAddress, gas });
 };
 
 const voteInsuranceCoverageAmendmentProposal = async (
   appContract,
-  currentAddress,
+  selectedAddress,
   proposalID,
   gas = 150000
 ) => {
   return await appContract.methods
     .voteInsuranceCoverageAmendmentProposal(proposalID)
-    .send({ from: currentAddress, gas });
+    .send({ from: selectedAddress, gas });
 };
 
 export {

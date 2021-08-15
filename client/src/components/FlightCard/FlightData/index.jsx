@@ -58,7 +58,7 @@ const FlightData = ({
     isLate,
   },
 }) => {
-  const { oracleIndexes, setSelectedFlight, setSelectedInsurance, setModal } =
+  const { oracleIndexes, setSelectedFlight, setSelectedInsurance, setModal, userTx } =
     useContext(Context);
   const matches = useMediaQuery("(max-width:600px)");
   const classes = useStyles();
@@ -176,7 +176,7 @@ const FlightData = ({
                 id={"subscribeInsurance" + cardID}
                 variant="outlinedPrimary"
                 color="secondary"
-                size="large"
+                variant="contained"
                 fullWidth={matches}
                 onClick={handleClick}
               >
@@ -184,12 +184,13 @@ const FlightData = ({
               </Button>
             )}
 
+
           {!btnClaimInsuranceDisabled && settled && (
             <Button
               id={"claimInsurance" + cardID}
               variant="outlinedPrimary"
               color="secondary"
-              size="large"
+              variant="contained"
               fullWidth={matches}
               onClick={handleClick}
             >
@@ -205,7 +206,7 @@ const FlightData = ({
                 id={"requestFlightSettlement" + cardID}
                 variant="outlinedPrimary"
                 color="secondary"
-                size="large"
+                variant="contained"
                 fullWidth={matches}
                 onClick={handleClick}
               >

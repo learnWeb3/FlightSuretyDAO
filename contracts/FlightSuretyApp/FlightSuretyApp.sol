@@ -100,8 +100,10 @@ contract FlightSuretyApp is Ownable {
         address contractAddress
     );
 
-    uint256 constant public TOKEN_HOLDER_MINIMUM_BLOCK_REQUIREMENT = 390000;
-    uint256 constant public PROPOSAL_VALID_BLOCK_NUMBER = 180000;
+    // 1 month delay = 180000 blocks 2 times more blocks than a proposal is valid is 1/2 ratio limits users to double votes a proposal
+    // test values have been set can't just wait a month lol
+    uint256 public constant TOKEN_HOLDER_MINIMUM_BLOCK_REQUIREMENT = 2;
+    uint256 public constant PROPOSAL_VALID_BLOCK_NUMBER = 1000;
 
     IFlightSuretyData flightSuretyData;
     IInsuranceCoverageAmendmentProposal insuranceCoverageAmendmentProposal;
@@ -353,6 +355,8 @@ contract FlightSuretyApp is Ownable {
         insuranceProviderRole.addInsuranceProvider(msg.sender);
         // make the contract owner an activated insurance provider
         insuranceProviderRole.activateInsuranceProvider(msg.sender);
+        emit RegisteredInsuranceProvider(msg.sender);
+        emit ActivatedInsuranceProvider(msg.sender);
     }
 
     /* external contracts calls management */
@@ -889,16 +893,22 @@ contract FlightSuretyApp is Ownable {
         }
     }
 
-     // fetch the oracle provider indexes
-    function getOracleIndexes() external view onlyActivatedOracleProvider(msg.sender)
+    // fetch the oracle provider indexes
+    function getOracleIndexes()
+        external
+        view
+        onlyActivatedOracleProvider(msg.sender)
         returns (
             uint256 index1,
             uint256 index2,
             uint256 index3
-        ){
-            (index1, index2, index3) = oracleProviderRole.getOracleIndexes(msg.sender);
-            return (index1, index2, index3);
-        }
+        )
+    {
+        (index1, index2, index3) = oracleProviderRole.getOracleIndexes(
+            msg.sender
+        );
+        return (index1, index2, index3);
+    }
 
     function _incrementTotalInsuredValue(uint256 _addedValue) internal {
         uint256 currentTotalInsuredValue = flightSuretyData
