@@ -31,6 +31,8 @@ const PageContent = ({ state, setState }) => {
   const {
     // contract
     oracleContract,
+    // current address
+    selectedAddress,
     // data
     registration,
     flights,
@@ -82,7 +84,9 @@ const PageContent = ({ state, setState }) => {
                   ).then((responses) =>
                     responses.sort((a, b) => a.blockNumber - b.blockNumber)
                   );
-                const settlementConsensusTreshold = 5;
+                const settlementConsensusTreshold = await oracleContract.methods
+                  .ACCEPTED_ANSWER_TRESHOLD()
+                  .call({ from: selectedAddress });
                 const settlementResponseCount = settlementResponses.length;
                 return {
                   ...flight,

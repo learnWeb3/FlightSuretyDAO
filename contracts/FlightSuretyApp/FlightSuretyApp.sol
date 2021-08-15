@@ -100,8 +100,8 @@ contract FlightSuretyApp is Ownable {
         address contractAddress
     );
 
-    uint256 constant TOKEN_HOLDER_MINIMUM_BLOCK_REQUIREMENT = 390000;
-    uint256 constant PROPOSAL_VALID_BLOCK_NUMBER = 180000;
+    uint256 constant public TOKEN_HOLDER_MINIMUM_BLOCK_REQUIREMENT = 390000;
+    uint256 constant public PROPOSAL_VALID_BLOCK_NUMBER = 180000;
 
     IFlightSuretyData flightSuretyData;
     IInsuranceCoverageAmendmentProposal insuranceCoverageAmendmentProposal;

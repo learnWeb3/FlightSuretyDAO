@@ -16,9 +16,9 @@ contract FlightSuretyOracle is Ownable, Random {
         uint256 responseCount;
     }
     // consensus is reached after x similar answers
-    uint256 constant ACCEPTED_ANSWER_TRESHOLD = 5;
+    uint256 constant public ACCEPTED_ANSWER_TRESHOLD = 5;
     // one hour flight delay
-    uint256 constant AUTHORIZED_FLIGHT_DELAY = 3600;
+    uint256 constant public AUTHORIZED_FLIGHT_DELAY = 3600;
     uint256 currentRequestID;
     mapping(uint256 => Request) requests;
     mapping(uint256 => mapping(uint256 => uint256)) responses;

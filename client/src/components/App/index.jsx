@@ -155,6 +155,7 @@ const App = ({ state, setState }) => {
         isActivatedOracleProvider,
         isTokenHolder,
         isOwner,
+        isTokenHolderOldEnough,
       } = await checkRegistration(appContract, tokenContract, selectedAddress);
       const _oracleIndexes = isActivatedOracleProvider
         ? await fetchOracleIndexes(appContract, selectedAddress)
@@ -190,6 +191,7 @@ const App = ({ state, setState }) => {
         isActivatedOracleProvider,
         isTokenHolder,
         isOwner,
+        isTokenHolderOldEnough,
       });
       setOracleIndexes(_oracleIndexes);
       setSettingsAmendmentProposal(_settingsAmendmentProposal);

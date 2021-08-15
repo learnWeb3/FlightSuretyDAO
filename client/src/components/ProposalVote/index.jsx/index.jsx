@@ -16,9 +16,7 @@ import {
 import MuiAlert from "@material-ui/lab/Alert";
 import {
   voteInsuranceCoverageAmendmentProposal,
-  voteInsuranceProviderMembership,
   voteMembershipFeeAmendmentProposal,
-  voteOracleProviderMembership,
 } from "../../../actions";
 
 const useStyles = makeStyles(() => ({
@@ -59,6 +57,8 @@ const ProposalVote = ({ type, proposalID, proposedValue }) => {
     appContract,
     // current address
     selectedAddress,
+    // registration
+    registration,
     // data
     userTx,
     // modal
@@ -156,81 +156,92 @@ const ProposalVote = ({ type, proposalID, proposedValue }) => {
               </Grid>
             )}
 
-            <Grid item xs={12}>
-              <Typography
-                variant="h4"
-                component="h1"
-                className={classes.header}
-                gutterBottom
-              >
-                Vote
-                {type === "membershipFeeAmendmentProposal"
-                  ? " membership amendement proposal"
-                  : type === "insuranceCoverageRatioAmendmentProposal"
-                  ? " insurance coverage amendment proposal"
-                  : ""}
-              </Typography>
-            </Grid>
-
-            <Grid item xs={12}>
-              <TextField
-                className={classes.fullWidth}
-                required
-                id="voter"
-                label="Voter address"
-                value={selectedAddress}
-                disabled={true}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                className={classes.fullWidth}
-                required
-                id="proposedValue"
-                label="Proposed value"
-                value={proposedValue}
-                disabled={true}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                className={classes.fullWidth}
-                required
-                id="proposalID"
-                label="Proposal ID"
-                value={proposalID}
-                disabled={true}
-              />
-            </Grid>
-            {!isVoted && (
+            {registration?.isTokenHolderOldEnough ? (
               <>
                 <Grid item xs={12}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={isAgreed}
-                        onChange={() => setAggreed(!isAgreed)}
-                        name="terms-of-use"
-                        color="primary"
-                      />
-                    }
-                    label="I have read and agree to the terms of use"
-                  />
+                  <Typography
+                    variant="h4"
+                    component="h1"
+                    className={classes.header}
+                    gutterBottom
+                  >
+                    Vote
+                    {type === "membershipFeeAmendmentProposal"
+                      ? " membership amendement proposal"
+                      : type === "insuranceCoverageRatioAmendmentProposal"
+                      ? " insurance coverage amendment proposal"
+                      : ""}
+                  </Typography>
                 </Grid>
 
-                <Grid item xs={12} lg={6}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="large"
+                <Grid item xs={12}>
+                  <TextField
                     className={classes.fullWidth}
-                    disabled={isAgreed ? false : true}
-                    onClick={handleRegister}
-                  >
-                    VOTE
-                  </Button>
+                    required
+                    id="voter"
+                    label="Voter address"
+                    value={selectedAddress}
+                    disabled={true}
+                  />
                 </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    className={classes.fullWidth}
+                    required
+                    id="proposedValue"
+                    label="Proposed value"
+                    value={proposedValue}
+                    disabled={true}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    className={classes.fullWidth}
+                    required
+                    id="proposalID"
+                    label="Proposal ID"
+                    value={proposalID}
+                    disabled={true}
+                  />
+                </Grid>
+                {!isVoted && (
+                  <>
+                    <Grid item xs={12}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={isAgreed}
+                            onChange={() => setAggreed(!isAgreed)}
+                            name="terms-of-use"
+                            color="primary"
+                          />
+                        }
+                        label="I have read and agree to the terms of use"
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} lg={6}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        className={classes.fullWidth}
+                        disabled={isAgreed ? false : true}
+                        onClick={handleRegister}
+                      >
+                        VOTE
+                      </Button>
+                    </Grid>
+                  </>
+                )}
               </>
+            ) : (
+              <Grid item xs={12}>
+                <MuiAlert elevation={6} variant="filled" severity="info">
+                  Unfortunately you can not participate in community decisions
+                  yet, please check our documentation in order to find out why.
+                </MuiAlert>
+              </Grid>
             )}
 
             <Grid item xs={12} lg={6}>

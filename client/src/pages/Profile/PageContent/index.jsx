@@ -63,7 +63,7 @@ const PageContent = ({ state, setState }) => {
         status: "error",
         code: 403,
         message:
-          "You have to be registred or a token holder to access this ressource",
+          "You have to be a registred provider or a token holder to access this ressource",
       });
     }
   }, [userTx, userInsuranceContracts]);

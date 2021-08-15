@@ -13,6 +13,7 @@ import {
   TextField,
   useMediaQuery,
 } from "@material-ui/core";
+import MuiAlert from "@material-ui/lab/Alert";
 import {
   registerInsuranceCoverageAmendmentProposal,
   registerMembershipFeeAmendmentProposal,
@@ -56,6 +57,8 @@ const ProposalRegistration = ({ type }) => {
     appContract,
     // current address
     selectedAddress,
+    // registration
+    registration,
     // modal
     setModal,
     // alert
@@ -65,7 +68,7 @@ const ProposalRegistration = ({ type }) => {
     setRefreshCounter,
   } = useContext(Context);
   const matches = useMediaQuery("(max-width:600px)");
-const onlyLg = useMediaQuery("(min-width:1200px");
+  const onlyLg = useMediaQuery("(min-width:1200px");
   const classes = useStyles();
   const [isAgreed, setAggreed] = useState(false);
   const [proposedValue, setProposedValue] = useState(null);
@@ -151,50 +154,61 @@ const onlyLg = useMediaQuery("(min-width:1200px");
                 proposal
               </Typography>
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                error={errors}
-                onChange={handleChange}
-                className={classes.fullWidth}
-                required
-                id="proposedValue"
-                label="Proposed value"
-                helperText={
-                  type === "membershipFeeAmendmentProposal"
-                    ? "number value denominated in Eth required"
-                    : type === "insuranceCoverageRatioAmendmentProposal"
-                    ? "base 100 number value required"
-                    : ""
-                }
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={isAgreed}
-                    onChange={() => setAggreed(!isAgreed)}
-                    name="terms-of-use"
-                    color="primary"
+            {registration?.isTokenHolderOldEnough ? (
+              <>
+                <Grid item xs={12}>
+                  <TextField
+                    error={errors}
+                    onChange={handleChange}
+                    className={classes.fullWidth}
+                    required
+                    id="proposedValue"
+                    label="Proposed value"
+                    helperText={
+                      type === "membershipFeeAmendmentProposal"
+                        ? "number value denominated in Eth required"
+                        : type === "insuranceCoverageRatioAmendmentProposal"
+                        ? "base 100 number value required"
+                        : ""
+                    }
                   />
-                }
-                label="I have read and agree to the terms of use"
-              />
-            </Grid>
+                </Grid>
 
-            <Grid item xs={12} lg={6}>
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                className={classes.fullWidth}
-                disabled={isAgreed && proposedValue ? false : true}
-                onClick={handleRegister}
-              >
-                REGISTER
-              </Button>
-            </Grid>
+                <Grid item xs={12}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isAgreed}
+                        onChange={() => setAggreed(!isAgreed)}
+                        name="terms-of-use"
+                        color="primary"
+                      />
+                    }
+                    label="I have read and agree to the terms of use"
+                  />
+                </Grid>
+
+                <Grid item xs={12} lg={6}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    className={classes.fullWidth}
+                    disabled={isAgreed && proposedValue ? false : true}
+                    onClick={handleRegister}
+                  >
+                    REGISTER
+                  </Button>
+                </Grid>
+              </>
+            ) : (
+              <Grid item xs={12}>
+                <MuiAlert elevation={6} variant="filled" severity="info">
+                  Unfortunately you can not participate in community decisions
+                  yet, please check our documentation in order to find out why.
+                </MuiAlert>
+              </Grid>
+            )}
 
             <Grid item xs={12} lg={6}>
               <Button

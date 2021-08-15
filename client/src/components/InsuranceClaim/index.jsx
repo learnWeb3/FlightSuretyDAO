@@ -13,8 +13,7 @@ import {
 } from "@material-ui/core";
 import FlightCard from "../FlightCard/index";
 import Context from "../../context/index";
-import { claimInsurance, registerInsurance } from "../../actions";
-import { useComponentState } from "../../hooks";
+import { claimInsurance } from "../../actions";
 
 const useStyles = makeStyles(() => ({
   flex: {
@@ -65,7 +64,7 @@ const InsuranceClaim = () => {
     setAlert,
   } = useContext(Context);
   const matches = useMediaQuery("(max-width:600px)");
-const onlyLg = useMediaQuery("(min-width:1200px");
+  const onlyLg = useMediaQuery("(min-width:1200px");
   const classes = useStyles();
   const [isAgreed, setAggreed] = useState(false);
   const handleClaim = async () => {
@@ -73,7 +72,7 @@ const onlyLg = useMediaQuery("(min-width:1200px");
       await claimInsurance(
         appContract,
         selectedAddress,
-        selectedInsurance.flightID,
+        selectedInsurance.flightID
       );
       setModal({ displayed: false, content: null });
       setAlert({

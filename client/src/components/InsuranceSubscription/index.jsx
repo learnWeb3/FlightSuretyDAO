@@ -14,7 +14,6 @@ import {
 import FlightCard from "../FlightCard/index";
 import Context from "../../context/index";
 import { registerInsurance } from "../../actions";
-import { useComponentState } from "../../hooks";
 
 const useStyles = makeStyles(() => ({
   flex: {
@@ -65,7 +64,7 @@ const InsuranceSubscription = () => {
     setAlert,
   } = useContext(Context);
   const matches = useMediaQuery("(max-width:600px)");
-const onlyLg = useMediaQuery("(min-width:1200px");
+  const onlyLg = useMediaQuery("(min-width:1200px");
   const classes = useStyles();
   const [isAgreed, setAggreed] = useState(false);
   const handleSubscribe = async () => {
@@ -167,7 +166,8 @@ const onlyLg = useMediaQuery("(min-width:1200px");
                   className={classes.header}
                   gutterBottom
                 >
-                  Insurance amount : {appContract.utils.fromWei(selectedFlight.rate)} Eth
+                  Insurance amount :{" "}
+                  {appContract.utils.fromWei(selectedFlight.rate)} Eth
                 </Typography>
 
                 <FormControlLabel

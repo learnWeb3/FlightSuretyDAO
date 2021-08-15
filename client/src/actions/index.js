@@ -171,6 +171,16 @@ const checkRegistration = async (
   const tokenBalance = await tokenContract.methods
     .balanceOf(selectedAddress)
     .call({ from: selectedAddress });
+  const isTokenHolderOldEnough = await tokenContract.methods
+    .ownershipBlockNum(selectedAddress)
+    .call({ from: selectedAddress })
+    .then(async (blockNum) => {
+      const blockRequirement = await appContract.methods
+        .TOKEN_HOLDER_MINIMUM_BLOCK_REQUIREMENT()
+        .call({ from: selectedAddress });
+      const currentBlockNum = await tokenContract.eth.getBlockNumber();
+      return currentBlockNum - blockNum > blockRequirement;
+    });
   const isOwner = await appContract.methods
     .isOwner()
     .call({ from: selectedAddress });
@@ -197,6 +207,7 @@ const checkRegistration = async (
       : false,
     isTokenHolder: tokenBalance > 0,
     isOwner,
+    isTokenHolderOldEnough,
   };
 };
 
