@@ -95,9 +95,24 @@ contract OracleProviderRole is Ownable, CallerAuditable, Random {
     }
 
     // fetch the oracle provider indexes
-    function getOracleIndexes(address account)  external view onlyAuthorizedCaller returns (uint256 index1, uint256 index2, uint256 index3){
-       uint256[3] memory _oracleProviderIndexes = oracleProvidersIndexes[account];
-       return  (_oracleProviderIndexes[0],_oracleProviderIndexes[1], _oracleProviderIndexes[2]);
+    function getOracleIndexes(address account)
+        external
+        view
+        onlyAuthorizedCaller
+        returns (
+            uint256 index1,
+            uint256 index2,
+            uint256 index3
+        )
+    {
+        uint256[3] memory _oracleProviderIndexes = oracleProvidersIndexes[
+            account
+        ];
+        return (
+            _oracleProviderIndexes[0],
+            _oracleProviderIndexes[1],
+            _oracleProviderIndexes[2]
+        );
     }
 
     // get the current votes number for a given account

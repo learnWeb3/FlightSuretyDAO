@@ -66,6 +66,7 @@ const PageContent = ({ state, setState }) => {
               label="days before token redeem"
               value={fundsIndicators.daysBeforeTokenRedeem}
             />
+          
             <MultiIndicatorPanel
               label="registered flights"
               values={[
@@ -154,6 +155,22 @@ const PageContent = ({ state, setState }) => {
               label="insurance coverage ratio"
               value={daoIndicators.currentInsuranceCoverageRatio}
             />
+              <IndicatorPanel
+              label="Proposal validity duration (block number)"
+              value={daoIndicators.proposalValidityDuration}
+            />
+            <IndicatorPanel
+              label="Minimum same answers before flight data update"
+              value={daoIndicators.acceptedAnswerTreshold}
+            />
+            <IndicatorPanel
+              label="Minimum holding duration before vote (block number)"
+              value={daoIndicators.tokenHoldingMinimumBlock}
+            />
+            <IndicatorPanel
+              label="Authorized flight delay (seconds)"
+              value={daoIndicators.authorizedFlightDelay}
+            />
             <MultiIndicatorPanel
               label="oracle providers"
               values={[
@@ -200,7 +217,7 @@ const PageContent = ({ state, setState }) => {
       </Grid>
     </Container>
   ) : state.status === "error" ? (
-    <ErrorPage code={state.code} height="100%"  message={state.message}/>
+    <ErrorPage code={state.code} height="100%" message={state.message} />
   ) : state.status === "loading" ? (
     <LoadingAnimation />
   ) : (

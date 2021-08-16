@@ -177,7 +177,7 @@ const checkRegistration = async (
     .call({ from: selectedAddress })
     .then(async (blockNum) => {
       const blockRequirement = await appContract.methods
-        .TOKEN_HOLDER_MINIMUM_BLOCK_REQUIREMENT()
+        .tokenHolderMinBlockRequirement()
         .call({ from: selectedAddress });
       const currentBlockNum = await tokenContract.eth.getBlockNumber();
       return currentBlockNum - blockNum > blockRequirement;
@@ -439,19 +439,22 @@ const fetchDAOIndicators = async (
   // current constant values
   // miniumum block number token holding to participate
   const tokenHoldingMinimumBlock = await appContract.methods
-    .TOKEN_HOLDER_MINIMUM_BLOCK_REQUIREMENT()
+    .tokenHolderMinBlockRequirement()
     .call({ from: selectedAddress });
   // proposal validity block duration
   const proposalValidityDuration = await appContract.methods
-    .PROPOSAL_VALID_BLOCK_NUMBER()
+    .proposalValidBlockNum()
     .call({ from: selectedAddress });
   // accepted answer consensus ratio
   const acceptedAnswerTreshold = await oracleContract.methods
-    .ACCEPTED_ANSWER_TRESHOLD()
-    .call({ from: selectedAddress });
+    .getActivatedOracleProvidersCount()
+    .call({ from: selectedAddress })
+    .then((activatedOracleProviderCount) =>
+      Math.ceil(activatedOracleProviderCount / 2)
+    );
   // authorized flight delay
   const authorizedFlightDelay = await oracleContract.methods
-    .AUTHORIZED_FLIGHT_DELAY()
+    .authorizedFlightDelay()
     .call({ from: selectedAddress });
   return {
     tokenSupply,
@@ -620,7 +623,11 @@ const fetchUserInsurancesContracts = async (
           flightID,
           insuranceID
         );
-        const settled =claims.find((claim)=>claim.insuranceID === insuranceID) ? true : false
+        const settled = claims.find(
+          (claim) => claim.insuranceID === insuranceID
+        )
+          ? true
+          : false;
         const returnedFlight = flightData[0];
         return {
           ...returnedFlight,
@@ -672,6 +679,62 @@ const fetchFlightSettlementResponses = async (oracleContract, flightID) => {
 // fetch the current requests for a given flight ID
 const fetchFlightSettlementRequests = async (oracleContract, flightID) => {
   return await getPastEvents(oracleContract, "NewRequest", { flightID });
+};
+
+const GroupedFlightSettlementResponses = async (oracleContract, flightID) => {
+  const requests = await fetchFlightSettlementRequests(
+    oracleContract,
+    flightID
+  );
+  const responses = await fetchFlightSettlementResponses(
+    oracleContract,
+    flightID
+  );
+
+  return requests.map((request) => {
+    const uniqMappingDeparture = {};
+    const uniqMappingArrival = {};
+    responses.map((response) => {
+      if (
+        uniqMappingDeparture[response.flightID] &&
+        uniqMappingDeparture[flightID][response.realDeparture]
+      ) {
+        uniqMappingDeparture[response.flightID][response.realDeparture]++;
+      } else {
+        uniqMappingDeparture[response.flightID] = {
+          [response.realDeparture]: 1,
+        };
+      }
+      if (
+        uniqMappingArrival[response.flightID] &&
+        uniqMappingArrival[flightID][response.realArrival]
+      ) {
+        uniqMappingArrival[response.flightID][response.realArrival]++;
+      } else {
+        uniqMappingArrival[response.flightID] = { [response.realArrival]: 1 };
+      }
+    });
+
+    return {
+      requestID: request.requestID,
+      flightID: request.flightID,
+      flightRef: request.flightRef,
+      arrivalResponses: Object.keys(uniqMappingArrival).map((key) => {
+        const value = parseInt(Object.keys(uniqMappingArrival[key])[0]);
+        return {
+          value,
+          count: uniqMappingArrival[key][value],
+        };
+      }),
+      departureResponses: Object.keys(uniqMappingDeparture).map((key) => {
+        const value = parseInt(Object.keys(uniqMappingDeparture[key])[0]);
+        return {
+          value: value,
+          count: uniqMappingDeparture[key][value],
+        };
+      }),
+    };
+  });
 };
 
 /**======================================================================================================================================== */
@@ -854,6 +917,7 @@ export {
   fetchOracleIndexes,
   fetchFlightSettlementResponses,
   fetchFlightSettlementRequests,
+  GroupedFlightSettlementResponses,
   /** WRITE TO THE BLOCKCHAIN */
   // as any user
   registerInsuranceProvider,

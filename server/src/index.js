@@ -32,42 +32,54 @@ const getPastEvents = async (contract, event, filter = null) => {
 
 const initWeb3Contracts = async (MNEMONIC, PROVIDER_URL) => {
   // hdwalletprovider to access metamask wallet
-  //const httpProvider = new HDWalletProvider(MNEMONIC, PROVIDER_URL);
+  const httpProvider = new HDWalletProvider(MNEMONIC, PROVIDER_URL);
   // websocket provider
   const wSSProviderURL = PROVIDER_URL.replace("ws", "http");
   // web3 instantiation
   const web3WSS = new Web3(wSSProviderURL);
-  //const web3HTTP = new Web3(httpProvider);
+  const web3HTTP = new Web3(httpProvider);
   // fetch current network ID
   const networkID = await web3WSS.eth.net.getId();
+  // contracts addresses
   const appContractAddress =
     FlightSuretyAppInterface.networks[networkID].address;
+  const oracleContractAddress =
+    FlightSuretyOracleInterface.networks[networkID].address;
   // FlightSuretyApp contract instantiation
-  const appContract = web3Contract(
-    web3WSS,
+  const appContractWSS = web3Contract(
+    web3HTTP,
     appContractAddress,
     FlightSuretyAppInterface.abi
   );
-  const oracleContractAddress =
-    FlightSuretyOracleInterface.networks[networkID].address;
+  const appContractHTTP = web3Contract(
+    web3HTTP,
+    appContractAddress,
+    FlightSuretyAppInterface.abi
+  );
   // FlightSuretyOracle contract instantiation
-  const oracleContract = web3Contract(
+  const oracleContractWSS = web3Contract(
     web3WSS,
     oracleContractAddress,
     FlightSuretyOracleInterface.abi
   );
+  const oracleContractHTTP = web3Contract(
+    web3HTTP,
+    oracleContractAddress,
+    FlightSuretyOracleInterface.abi
+  );
   // user address
-  // const userAddress = httpProvider.addresses[0];
-  const userAddress = await web3WSS.eth
-    .getAccounts()
-    .then((account) => account[2]);
+  const userAddress = httpProvider.addresses[0];
   return {
     networkID,
     userAddress,
     appContractAddress,
     oracleContractAddress,
-    oracleContract,
-    appContract,
+    // WSS providers instantiated contracts to listen for contracts emitted events
+    oracleContractWSS,
+    appContractWSS,
+    // HTTP providers instantiated contracts to call contracts using mnemonic unlocked addresses
+    oracleContractHTTP,
+    appContractHTTP,
   };
 };
 
@@ -111,8 +123,12 @@ const initCronTasks = (MNEMONIC, PROVIDER_URL) => {
         userAddress,
         appContractAddress,
         oracleContractAddress,
-        oracleContract,
-        appContract,
+        // WSS providers
+        oracleContractWSS,
+        appContractWSS,
+        // HTTP providers
+        oracleContractHTTP,
+        appContractHTTP,
       } = await initWeb3Contracts(MNEMONIC, PROVIDER_URL);
       taskNumber += 1;
       console.log(
@@ -126,7 +142,8 @@ const initCronTasks = (MNEMONIC, PROVIDER_URL) => {
         `FlightSuretyOracle contract address: ${oracleContractAddress}`
       );
       // fetch the flights
-      const flights = await fetchFlights(appContract, oracleContract);
+      const flights = await fetchFlights(appContractWSS, oracleContractWSS);
+      const txs = [];
       //loop through it and create a request for data settlement
       await Promise.all(
         flights.map(
@@ -142,9 +159,10 @@ const initCronTasks = (MNEMONIC, PROVIDER_URL) => {
               !oracleRequestIsPresent &&
               insuredValue > 0
             ) {
-              const tx = await oracleContract.methods
+              const tx = await oracleContractHTTP.methods
                 .createRequest(flightID, flightRef)
                 .send({ from: userAddress, gas: 500000 });
+              txs.push(tx);
               console.log(
                 `New settlement request for flight ${flightID} successfully created on oracle contract`
               );
@@ -155,6 +173,9 @@ const initCronTasks = (MNEMONIC, PROVIDER_URL) => {
           }
         )
       );
+
+      !txs.length > 0 &&
+        console.log("task ended with no request creation ....");
     } catch (error) {
       console.log(error);
     }

@@ -23,6 +23,7 @@ const PageContent = ({ state, setState }) => {
     setModal,
     // data
     registration,
+    daoIndicators,
     fundsIndicators,
     insuranceProvidersProfits,
     insuranceProvidersFlights,
@@ -74,6 +75,7 @@ const PageContent = ({ state, setState }) => {
       {state.status === "loaded" ? (
         <Grid container spacing={4}>
           {fundsIndicators &&
+          daoIndicators &&
           insuranceProvidersProfits &&
           insuranceProvidersFlights ? (
             <>
@@ -85,6 +87,12 @@ const PageContent = ({ state, setState }) => {
                 label="days before token redeem"
                 value={fundsIndicators.daysBeforeTokenRedeem}
               />
+
+              <IndicatorPanel
+                label="Authorized flight delay (seconds)"
+                value={daoIndicators.authorizedFlightDelay}
+              />
+
               <MultiIndicatorPanel
                 label="registered flights"
                 values={[

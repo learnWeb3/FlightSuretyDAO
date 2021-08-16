@@ -27,7 +27,7 @@ import { useProvider } from "../../hooks";
 import FlightSuretyApp from "../../contracts/FlightSuretyApp.json";
 import FlightSuretyShares from "../../contracts/FlightSuretyShares.json";
 import FlightSuretyOracle from "../../contracts/FlightSuretyOracle.json";
-import { getPastEvents, web3Contract } from "../../web3";
+import { web3Contract } from "../../web3";
 import Profile from "../../pages/Profile/index";
 import MembershipApplication from "../../pages/MembershipApplication/index";
 import Registration from "../../pages/Registration/index";

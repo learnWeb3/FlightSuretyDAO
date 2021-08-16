@@ -49,6 +49,23 @@ const PageContent = ({ state, setState }) => {
               label="insurance coverage ratio"
               value={daoIndicators.currentInsuranceCoverageRatio}
             />
+               <IndicatorPanel
+              label="Proposal validity duration (block number)"
+              value={daoIndicators.proposalValidityDuration}
+            />
+            <IndicatorPanel
+              label="Minimum same answers before flight data update"
+              value={daoIndicators.acceptedAnswerTreshold}
+            />
+            <IndicatorPanel
+              label="Minimum holding duration before vote (block number)"
+              value={daoIndicators.tokenHoldingMinimumBlock}
+            />
+            <IndicatorPanel
+              label="Authorized flight delay (seconds)"
+              value={daoIndicators.authorizedFlightDelay}
+            />
+
             <MultiIndicatorPanel
               label="oracle providers"
               values={[

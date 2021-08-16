@@ -13,10 +13,14 @@ import {
 } from "@material-ui/core";
 import FlightCard from "../FlightCard/index";
 import Context from "../../context/index";
-import { respondToRequest } from "../../actions";
+import {
+  GroupedFlightSettlementResponses,
+  respondToRequest,
+} from "../../actions";
 import DateField from "../DateField/index";
 import LinearProgressWithLabel from "../LinearProgressWithLabel/index";
 import MuiAlert from "@material-ui/lab/Alert";
+import moment from "moment";
 
 const useStyles = makeStyles(() => ({
   flex: {
@@ -72,25 +76,40 @@ const SettleFlight = () => {
   const onlyLg = useMediaQuery("(min-width:1200px");
   const classes = useStyles();
   const [isAgreed, setAggreed] = useState(false);
-
   const [formData, setFormData] = useState({
     realArrival: Date.now(),
     realDeparture: Date.now(),
   });
+  const [flightSettlementResponses, setFlightSettlementResponses] =
+    useState(null);
 
   useEffect(() => {
-    if (selectedFlight) {
-      setFormData({
-        realArrival: parseInt(selectedFlight.estimatedArrival * 1000),
-        realDeparture: parseInt(selectedFlight.estimatedDeparture * 1000),
-        requestID: parseInt(
-          selectedFlight.settlementRequests[
-            selectedFlight.settlementRequests.length - 1
-          ].requestID
-        ),
-      });
+    if (selectedFlight && selectedFlight?.flightID && oracleContract) {
+      const loadData = async () => {
+        setFormData({
+          realArrival: parseInt(selectedFlight.estimatedArrival * 1000),
+          realDeparture: parseInt(selectedFlight.estimatedDeparture * 1000),
+          requestID: parseInt(
+            selectedFlight.settlementRequests[
+              selectedFlight.settlementRequests.length - 1
+            ].requestID
+          ),
+        });
+        const groupedFlightSettlementResponses =
+          await GroupedFlightSettlementResponses(
+            oracleContract,
+            parseInt(selectedFlight.flightID)
+          );
+        setFlightSettlementResponses(groupedFlightSettlementResponses);
+      };
+
+      loadData();
     }
   }, [userTx, selectedFlight]);
+
+  useEffect(() => {
+    flightSettlementResponses && console.log(flightSettlementResponses);
+  }, [flightSettlementResponses]);
 
   const [isVoted, setIsVoted] = useState(null);
 
@@ -180,6 +199,23 @@ const SettleFlight = () => {
                 : clsx(classes.overflow, classes.overflowHeightLg)
             }
           >
+            {selectedFlight?.settled &&
+              selectedFlight?.realArrival &&
+              selectedFlight?.realDeparture && (
+                <Grid item xs={12}>
+                  <MuiAlert elevation={6} variant="filled" severity="success">
+                    Flight has been settled with a departure on{" "}
+                    {moment(selectedFlight?.realDeparture * 1000)
+                      .format("MMMM Do YYYY hh:mm")
+                      .toString()}{" "}
+                    and an arrival on{" "}
+                    {moment(selectedFlight?.realArrival * 1000)
+                      .format("MMMM Do YYYY hh:mm")
+                      .toString()}
+                  </MuiAlert>
+                </Grid>
+              )}
+
             {isVoted && (
               <Grid item xs={12}>
                 <MuiAlert elevation={6} variant="filled" severity="info">
@@ -187,6 +223,7 @@ const SettleFlight = () => {
                 </MuiAlert>
               </Grid>
             )}
+
             <Grid item xs={12}>
               <Typography
                 variant="h4"
@@ -234,56 +271,127 @@ const SettleFlight = () => {
                 gutterBottom
                 color="textSecondary"
               >
-                Flight settlement consensus progress
+                Flight settlement responses and consensus progress
               </Typography>
               <Paper className={classes.insurance}>
-                <Grid item xs={12}>
-                  {daoIndicators && (
-                    <LinearProgressWithLabel
-                      value={Math.ceil(
-                        (selectedFlight?.settlementResponseCount * 100) /
-                          daoIndicators.acceptedAnswerTreshold
-                      )}
-                    />
+                <Typography
+                  variant="body1"
+                  component="p"
+                  className={classes.header}
+                  gutterBottom
+                  color="textSecondary"
+                >
+                  Departure
+                </Typography>
+                {flightSettlementResponses &&
+                  flightSettlementResponses[0]?.departureResponses?.map(
+                    (response) => (
+                      <>
+                        <Typography
+                          variant="body1"
+                          component="p"
+                          className={classes.header}
+                          gutterBottom
+                          color="textSecondary"
+                        >
+                          Proposed value :{" "}
+                          {moment(response.value * 1000)
+                            .format("MMMM Do YYYY hh:mm")
+                            .toString()}
+                        </Typography>
+
+                        <Grid item xs={12}>
+                          {daoIndicators && (
+                            <LinearProgressWithLabel
+                              value={Math.ceil(
+                                (response.count * 100) /
+                                  daoIndicators.acceptedAnswerTreshold
+                              )}
+                            />
+                          )}
+                        </Grid>
+                      </>
+                    )
                   )}
-                </Grid>
+              </Paper>
+
+              <Paper className={classes.insurance}>
+                <Typography
+                  variant="body1"
+                  component="p"
+                  className={classes.header}
+                  gutterBottom
+                  color="textSecondary"
+                >
+                  Arrivals
+                </Typography>
+                {flightSettlementResponses &&
+                  flightSettlementResponses[0]?.arrivalResponses?.map(
+                    (response) => (
+                      <>
+                        <Typography
+                          variant="body1"
+                          component="p"
+                          className={classes.header}
+                          gutterBottom
+                          color="textSecondary"
+                        >
+                          Proposed value :{" "}
+                          {moment((response.value + 60) * 1000)
+                            .format("MMMM Do YYYY hh:mm")
+                            .toString()}
+                        </Typography>
+                        <Grid item xs={12}>
+                          {daoIndicators && (
+                            <LinearProgressWithLabel
+                              value={Math.ceil(
+                                (response.count * 100) /
+                                  daoIndicators.acceptedAnswerTreshold
+                              )}
+                            />
+                          )}
+                        </Grid>
+                      </>
+                    )
+                  )}
               </Paper>
             </Grid>
+            {!isVoted && selectedFlight?.settled && (
+              <Grid item xs={12}>
+                <Typography
+                  variant="h5"
+                  component="h2"
+                  className={classes.header}
+                  gutterBottom
+                  color="textSecondary"
+                >
+                  Flight settlement informations
+                </Typography>
 
-            <Grid item xs={12}>
-              <Typography
-                variant="h5"
-                component="h2"
-                className={classes.header}
-                gutterBottom
-                color="textSecondary"
-              >
-                Flight settlement informations
-              </Typography>
-              <Paper className={classes.insurance}>
-                <Grid item xs={12}>
-                  <DateField
-                    error={errors.realDeparture}
-                    label={"Departure date"}
-                    id={"departure-date"}
-                    selectedDate={formData.realDeparture}
-                    handleChange={handleDepartureDateChange}
-                    required={true}
-                    minDate={formData.realDeparture}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <DateField
-                    label={"Arrival date"}
-                    id={"arrival-date"}
-                    selectedDate={formData.realArrival}
-                    handleChange={handleArrivalDateChange}
-                    required={true}
-                    error={errors.realArrival}
-                    minDate={formData.realArrival}
-                  />
-                </Grid>
-                {!isVoted && (
+                <Paper className={classes.insurance}>
+                  <Grid item xs={12}>
+                    <DateField
+                      error={errors.realDeparture}
+                      label={"Departure date"}
+                      id={"departure-date"}
+                      selectedDate={formData.realDeparture}
+                      handleChange={handleDepartureDateChange}
+                      required={true}
+                      minDate={formData.realDeparture}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <DateField
+                      label={"Arrival date"}
+                      id={"arrival-date"}
+                      selectedDate={formData.realArrival}
+                      handleChange={handleArrivalDateChange}
+                      required={true}
+                      error={errors.realArrival}
+                      minDate={formData.realArrival}
+                    />
+                  </Grid>
+
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -295,10 +403,10 @@ const SettleFlight = () => {
                     }
                     label="I have read and agree to the terms of use"
                   />
-                )}
-              </Paper>
-            </Grid>
-            {!isVoted && (
+                </Paper>
+              </Grid>
+            )}
+            {!isVoted && !selectedFlight?.settled && (
               <Grid item xs={12} lg={6}>
                 <Button
                   variant="contained"

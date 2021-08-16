@@ -86,7 +86,7 @@ const PageContent = ({ state, setState }) => {
                     responses.sort((a, b) => a.blockNumber - b.blockNumber)
                   );
                 const settlementConsensusTreshold = await oracleContract.methods
-                  .ACCEPTED_ANSWER_TRESHOLD()
+                  .getActivatedOracleProvidersCount()
                   .call({ from: selectedAddress });
                 const settlementResponseCount = settlementResponses.length;
                 return {
@@ -178,6 +178,9 @@ const PageContent = ({ state, setState }) => {
                       settlementResponseCount,
                       settlementConsensusTreshold,
                       settlementRequests,
+                      realArrival,
+                      realDeparture,
+                      settled
                     },
                     index
                   ) => (
@@ -190,6 +193,9 @@ const PageContent = ({ state, setState }) => {
                       estimatedArrival={estimatedArrival}
                       insuranceProvider={insuranceProvider}
                       rate={rate}
+                      realArrival={realArrival}
+                      realDeparture={realDeparture}
+                      settled={realArrival > 0 && realDeparture > 0}
                       btnSubscribeInsuranceDisabled={true}
                       btnCreateRequestDisabled={false}
                       oracleRequestIsPresent={oracleRequestIsPresent}

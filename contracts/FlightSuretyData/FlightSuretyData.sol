@@ -14,7 +14,7 @@ contract FlightSuretyData is Ownable, CallerAuditable, FlightSuretyDataBase {
         _;
     }
 
-    // constructor setting owner and initial authorized caller address aka appAddress
+    // constructor setting owner and initial authorized caller address aka appAddress and oracle contract address
     constructor(address _appContractAddress, address _oracleContractAddress)
         Ownable()
     {

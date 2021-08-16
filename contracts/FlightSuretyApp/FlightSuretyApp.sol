@@ -100,10 +100,10 @@ contract FlightSuretyApp is Ownable {
         address contractAddress
     );
 
-    // 1 month delay = 180000 blocks 2 times more blocks than a proposal is valid is 1/2 ratio limits users to double votes a proposal
-    // test values have been set can't just wait a month lol
-    uint256 public constant TOKEN_HOLDER_MINIMUM_BLOCK_REQUIREMENT = 2;
-    uint256 public constant PROPOSAL_VALID_BLOCK_NUMBER = 1000;
+    // public contract settings to set constraint to user vote in general
+    uint256 public tokenHolderMinBlockRequirement;
+    // public contract setting to set constraint on user proposal vote
+    uint256 public proposalValidBlockNum;
 
     IFlightSuretyData flightSuretyData;
     IInsuranceCoverageAmendmentProposal insuranceCoverageAmendmentProposal;
@@ -142,12 +142,11 @@ contract FlightSuretyApp is Ownable {
     }
 
     modifier requireProposalIsActive(uint256 proposalID) {
+        uint256 elapsedBlock = block.number.sub(
+            membershipFeeAmendmentProposal.getProposalCreatedAt(proposalID)
+        );
         require(
-            block.number -
-                membershipFeeAmendmentProposal.getProposalCreatedAt(
-                    proposalID
-                ) <=
-                PROPOSAL_VALID_BLOCK_NUMBER,
+            elapsedBlock <= proposalValidBlockNum,
             "voting proposal has expired"
         );
         _;
@@ -175,7 +174,7 @@ contract FlightSuretyApp is Ownable {
     modifier requireMessageValueGreatherOrEqualToFlightRate(uint256 _flightID) {
         (, , , , , , , , uint256 rate) = flightSuretyData.getFlight(_flightID);
         require(msg.value >= rate, "sent value does not match flight rate");
-        uint256 amountDue = rate - msg.value;
+        uint256 amountDue = rate.sub(msg.value);
         _;
         payable(msg.sender).transfer(amountDue);
     }
@@ -209,8 +208,11 @@ contract FlightSuretyApp is Ownable {
     }
 
     modifier requireTotalInsuredValueCoverage(uint256 newInsuranceValue) {
+        uint256 newTotalInsuredValue = flightSuretyData
+            .getTotalInsuredValue()
+            .add(newInsuranceValue);
         uint256 totalFundsWithCoverage = _calculateInsuredValueBenefits(
-            flightSuretyData.getTotalInsuredValue().add(newInsuranceValue)
+            newTotalInsuredValue
         );
         require(
             totalFundsWithCoverage <= address(this).balance,
@@ -230,9 +232,9 @@ contract FlightSuretyApp is Ownable {
         );
 
         if (msg.value > _currentMembershipFee) {
-            payable(address(this)).transfer(
-                msg.value.sub(_currentMembershipFee)
-            );
+            uint256 _amountDue = msg.value.sub(_currentMembershipFee);
+            (bool success, ) = payable(msg.sender).call{value: _amountDue}("");
+            require(success, "transfer failed");
         }
         _;
     }
@@ -257,9 +259,11 @@ contract FlightSuretyApp is Ownable {
     }
 
     modifier requireTokenHolderIsOldEnough(address _caller) {
+        uint256 blockElapsed = block.number.sub(
+            flightSuretyShares.ownershipBlockNum(_caller)
+        );
         require(
-            block.number - flightSuretyShares.ownershipBlockNum(_caller) >=
-                TOKEN_HOLDER_MINIMUM_BLOCK_REQUIREMENT,
+            blockElapsed >= tokenHolderMinBlockRequirement,
             "caller must be an old token holder"
         );
         _;
@@ -329,7 +333,15 @@ contract FlightSuretyApp is Ownable {
         _;
     }
 
-    constructor() Ownable() {}
+    constructor(
+        uint256 _tokenHolderMinBlockRequirement,
+        uint256 _proposalValidBlockNum
+    ) Ownable() {
+        // public contract settings to set constraint to user vote in general
+        tokenHolderMinBlockRequirement = _tokenHolderMinBlockRequirement;
+        // public contract setting to set constraint on user proposal vote
+        proposalValidBlockNum = _proposalValidBlockNum;
+    }
 
     // initialize external contracts addresses
     function initialize(

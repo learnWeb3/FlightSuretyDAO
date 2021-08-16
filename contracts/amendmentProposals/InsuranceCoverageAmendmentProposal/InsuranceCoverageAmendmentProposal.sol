@@ -20,10 +20,10 @@ contract InsuranceCoverageAmendmentProposal is
         _;
     }
 
-    // constructor setting owner and initial authorized caller address aka appAddress
-    constructor(address _appContractAddress) Ownable() {
+    // constructor setting owner and initial authorized caller address aka appAddress and current insurance coverage ratio
+    constructor(address _appContractAddress, uint256 _currentInsuranceCoverage) Ownable() {
         authorizedCallers[_appContractAddress] = true;
-        currentInsuranceCoverage = 150;
+        currentInsuranceCoverage = _currentInsuranceCoverage;
     }
 
     /** caller authorization */

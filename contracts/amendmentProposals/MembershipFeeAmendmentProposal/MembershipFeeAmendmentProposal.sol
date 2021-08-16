@@ -20,10 +20,12 @@ contract MembershipFeeAmendmentProposal is
         _;
     }
 
-    // constructor setting owner and initial authorized caller address aka appAddress
-    constructor(address _appContractAddress) Ownable() {
+    // constructor setting owner and initial authorized caller address aka appAddress and current membership fee
+    constructor(address _appContractAddress, uint256 _currentMembershipfee)
+        Ownable()
+    {
         authorizedCallers[_appContractAddress] = true;
-        currentMembershipfee = 10 ether;
+        currentMembershipfee = _currentMembershipfee;
     }
 
     /** caller authorization */

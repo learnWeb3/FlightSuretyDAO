@@ -15,10 +15,9 @@ contract FlightSuretyOracle is Ownable, Random {
         uint256 activatedIndex;
         uint256 responseCount;
     }
-    // consensus is reached after x similar answers
-    uint256 public constant ACCEPTED_ANSWER_TRESHOLD = 2;
+
     // one hour flight delay = 3600 block
-    uint64 public constant AUTHORIZED_FLIGHT_DELAY = 3600;
+    uint64 public authorizedFlightDelay;
     uint256 currentRequestID;
     mapping(uint256 => Request) requests;
     mapping(uint256 => mapping(uint64 => uint256)) responses;
@@ -108,8 +107,10 @@ contract FlightSuretyOracle is Ownable, Random {
         _;
     }
 
-    // constructor setting owner and initial authorized caller address aka appAddress
-    constructor() Ownable() {}
+    // constructor setting authorized flight delay
+    constructor(uint64 _authorizedFlightDelay) Ownable() {
+        authorizedFlightDelay = _authorizedFlightDelay;
+    }
 
     // initialize external contracts addresses
     function initialize(address _flightSuretyData, address _oracleProviderRole)
@@ -128,7 +129,7 @@ contract FlightSuretyOracle is Ownable, Random {
         requireFlightExists(_flightID)
     {
         uint256 _randomIndex = _rand(5);
-        currentRequestID++;
+        currentRequestID = currentRequestID.add(1);
         requests[currentRequestID] = Request({
             flightID: _flightID,
             flightRef: _flightRef,
@@ -207,9 +208,9 @@ contract FlightSuretyOracle is Ownable, Random {
         // check if consensus treshold on the accepted answer (the most present data) is reached
         if (
             responses[_requestID][acceptedAnswer[_requestID][0]] >=
-            ACCEPTED_ANSWER_TRESHOLD &&
+            this.getActivatedOracleProvidersCount().div(2) &&
             responses[_requestID][acceptedAnswer[_requestID][1]] >=
-            ACCEPTED_ANSWER_TRESHOLD
+            this.getActivatedOracleProvidersCount().div(2)
         ) {
             // get flight
             (
@@ -246,7 +247,10 @@ contract FlightSuretyOracle is Ownable, Random {
             );
             emit UpdatedFlight(flightID, _realDeparture, _realArrival, _isLate);
         } else {
-            if (requests[_requestID].responseCount > ACCEPTED_ANSWER_TRESHOLD) {
+            if (
+                requests[_requestID].responseCount >
+                this.getActivatedOracleProvidersCount().div(2)
+            ) {
                 uint256 _flightID = requests[_requestID].flightID;
                 emit FailedRequest(_requestID, _flightID);
             }
@@ -261,15 +265,24 @@ contract FlightSuretyOracle is Ownable, Random {
     }
 
     // check if a flight is late
-    function checkFlightIsLate(
-        uint64 _estimatedArrival,
-        uint64 _realArrival
-    ) internal pure returns (bool isLate) {
-        if (_realArrival > _estimatedArrival + AUTHORIZED_FLIGHT_DELAY) {
+    function checkFlightIsLate(uint64 _estimatedArrival, uint64 _realArrival)
+        internal
+        view
+        returns (bool isLate)
+    {
+        if (_realArrival > _estimatedArrival + authorizedFlightDelay) {
             return true;
         } else {
             return false;
         }
+    }
+
+    function getActivatedOracleProvidersCount()
+        external
+        view
+        returns (uint256 count)
+    {
+        return oracleProviderRole.getActivatedOracleProvidersCount();
     }
 
     // update flight data
@@ -279,10 +292,7 @@ contract FlightSuretyOracle is Ownable, Random {
         uint64 _realDeparture,
         uint64 _realArrival
     ) internal returns (bool _isLate) {
-        _isLate = checkFlightIsLate(
-            _estimatedArrival,
-            _realArrival
-        );
+        _isLate = checkFlightIsLate(_estimatedArrival, _realArrival);
         uint256 _flightID = requests[_requestID].flightID;
         flightSuretyData.updateFlight(
             _flightID,

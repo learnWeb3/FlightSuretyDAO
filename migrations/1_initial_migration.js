@@ -46,12 +46,15 @@ const MembershipFeeAmendmentProposal = artifacts.require(
 module.exports = async function (deployer, network, accounts) {
   const owner = accounts[0];
 
-  // 1- deploy FlightSuretyApp
-  await deployer.deploy(FlightSuretyApp, { from: owner });
+  // 1- deploy FlightSuretyApp setting contract vote settings :
+  // - uint256 _tokenHolderMinBlockRequirement
+  // - uint256 _proposalValidBlockNum
+  await deployer.deploy(FlightSuretyApp, 2, 1000, { from: owner });
   const flightSuretyApp = await FlightSuretyApp.deployed();
 
-  //2- deploy FlightSuretyOracle
-  await deployer.deploy(FlightSuretyOracle, { from: owner });
+  //2- deploy FlightSuretyOracle setting authorized flight delay :
+  // - uint64 _authorizedFlightDelay
+  await deployer.deploy(FlightSuretyOracle, 3600, { from: owner });
   const flightSuretyOracle = await FlightSuretyOracle.deployed();
 
   //3- deploy FlightSuretyData authorizing callers :
@@ -90,21 +93,25 @@ module.exports = async function (deployer, network, accounts) {
   });
   const flightSuretyShares = await FlightSuretyShares.deployed();
 
-  //7- deploy InsuranceCoverageAmendmentProposal authroizing caller :
+  //7- deploy InsuranceCoverageAmendmentProposal authroizing caller and setting current insurance coverage ratio to 150 aka 1.5x :
   //  - address _appContractAddress
+  // - uint256  _currentInsuranceCoverage
   await deployer.deploy(
     InsuranceCoverageAmendmentProposal,
     flightSuretyApp.address,
+    150,
     { from: owner }
   );
   const insuranceCoverageAmendmentProposal =
     await InsuranceCoverageAmendmentProposal.deployed();
 
-  //8- deploy MembershipFeeAmendmentProposal authorizing caller :
+  //8- deploy MembershipFeeAmendmentProposal authorizing caller and setting current membership fee to 10 ether:
   //  - address _appContractAddress
+  //  - uint256 _currentMembershipfee
   await deployer.deploy(
     MembershipFeeAmendmentProposal,
     flightSuretyApp.address,
+    web3.utils.toWei("10", "ether"),
     { from: owner }
   );
   const membershipFeeAmendmentProposal =
@@ -152,8 +159,6 @@ module.exports = async function (deployer, network, accounts) {
     "========================================================================================="
   );
 
-
-
   // copying contract abi to client directory
 
   const deployedContractNames = [
@@ -171,5 +176,4 @@ module.exports = async function (deployer, network, accounts) {
       data
     );
   });
-
 };

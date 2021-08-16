@@ -11,6 +11,11 @@ const SeedContract = async () => {
   const oracleContractAddress =
     FlightSuretyOracleInterface.networks[networkID].address;
 
+  console.log(`current network id: ${networkID}`);
+  console.log(`local accounts fetched with success !`);
+  console.log(`FlightSuretyApp contract Address: ${appContractAddress}`);
+  console.log(`FlightSuretyOracle contract address: ${oracleContractAddress}`);
+
   const appContract = await web3Contract(
     web3,
     appContractAddress,
@@ -24,17 +29,21 @@ const SeedContract = async () => {
     gas: 500000,
   });
 
-  // register orcle providers
+  console.log(`Insurance provider registered : ${accounts[1]}`);
+
+  // register oracle providers (all accounts)
   await Promise.all(
-    accounts.splice(2, accounts.length - 1).map(
-      async (account) =>
-        await appContract.methods.registerOracleProvider().send({
-          from: account,
-          value: web3.utils.toWei("10", "ether"),
-          gas: 500000,
-        })
-    )
+    accounts.map(async (account) => {
+      await appContract.methods.registerOracleProvider().send({
+        from: account,
+        value: web3.utils.toWei("10", "ether"),
+        gas: 500000,
+      });
+      console.log(`Oracle provider registered : ${account}`);
+    })
   );
+
+  process.exit();
 };
 
 SeedContract();
