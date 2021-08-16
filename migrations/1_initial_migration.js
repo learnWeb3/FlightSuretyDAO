@@ -1,4 +1,3 @@
-const fs = require("fs");
 const FlightSuretyApp = artifacts.require("FlightSuretyApp");
 const FlightSuretyOracle = artifacts.require("FlightSuretyOracle");
 const FlightSuretyData = artifacts.require("FlightSuretyData");
@@ -16,7 +15,10 @@ const MembershipFeeAmendmentProposal = artifacts.require(
   contracts deployement workflow :
 
       1- deploy FlightSuretyApp
+        - uint256 _tokenHolderMinBlockRequirement
+        - uint256 _proposalValidBlockNum
       2- deploy FlightSuretyOracle
+        - uint64 _authorizedFlightDelay
       3- deploy FlightSuretyData authorizing callers : 
         - address _appContractAddress 
         - address _oracleContractAddress
@@ -29,8 +31,10 @@ const MembershipFeeAmendmentProposal = artifacts.require(
         - address _appContractAddress
       7- deploy InsuranceCoverageAmendmentProposal authroizing caller : 
         - address _appContractAddress
+        - uint256  _currentInsuranceCoverage
       8- deploy MembershipFeeAmendmentProposal authorizing caller :
         - address _appContractAddress
+        - uint256 _currentMembershipfee
       7- initialize FlightSuretyApp referencing external contracts addresses : 
         - address _flightSuretyData
         - address _insuranceCoverageAmendmentProposal
@@ -95,7 +99,7 @@ module.exports = async function (deployer, network, accounts) {
 
   //7- deploy InsuranceCoverageAmendmentProposal authroizing caller and setting current insurance coverage ratio to 150 aka 1.5x :
   //  - address _appContractAddress
-  // - uint256  _currentInsuranceCoverage
+  //  - uint256  _currentInsuranceCoverage
   await deployer.deploy(
     InsuranceCoverageAmendmentProposal,
     flightSuretyApp.address,
@@ -158,22 +162,4 @@ module.exports = async function (deployer, network, accounts) {
   console.log(
     "========================================================================================="
   );
-
-  // copying contract abi to client directory
-
-  const deployedContractNames = [
-    "FlightSuretyApp",
-    "FlightSuretyOracle",
-    "FlightSuretyShares",
-  ];
-
-  deployedContractNames.map((filename) => {
-    const data = fs.readFileSync(
-      process.cwd() + "/build/contracts/" + filename + ".json"
-    );
-    fs.writeFileSync(
-      process.cwd() + "/client/src/contracts/" + filename + ".json",
-      data
-    );
-  });
 };
