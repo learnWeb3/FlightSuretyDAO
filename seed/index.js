@@ -22,15 +22,6 @@ const SeedContract = async () => {
     FlightSuretyAppInterface.abi
   );
 
-  // register insurance provider
-  await appContract.methods.registerInsuranceProvider().send({
-    from: accounts[1],
-    value: web3.utils.toWei("10", "ether"),
-    gas: 500000,
-  });
-
-  console.log(`Insurance provider registered : ${accounts[1]}`);
-
   // register oracle providers (all accounts)
   await Promise.all(
     accounts.map(async (account) => {

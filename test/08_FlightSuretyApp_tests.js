@@ -398,8 +398,8 @@ contract(FlightSuretyApp, async (accounts) => {
         registeredInsuranceProviderTwo,
       ].map(
         async (user) =>
-          await contract.registerInsuranceProvider({
-            from: user,
+          await contract.registerInsuranceProvider(user, {
+            from: owner,
             value: web3.utils.toWei("10"),
           })
       )
@@ -438,10 +438,49 @@ contract(FlightSuretyApp, async (accounts) => {
     assert.equal(eventLogsActivatedUserFive.length, 0);
   });
 
+  it("should fail to register an insurance provider calling contract with any other account than a registered inusrance provider", async () => {
+    const contract = await FlightSuretyApp.deployed();
+    try {
+      await contract.registerInsuranceProvider(registeredInsuranceProviderOne, {
+        from: registeredInsuranceProviderOne,
+        value: web3.utils.toWei("1"),
+      });
+    } catch (error) {
+      assert.equal(error.reason, "caller must be activated insurance provider");
+    }
+
+    try {
+      await contract.registerInsuranceProvider(registeredOracleProviderOne, {
+        from: registeredOracleProviderOne,
+        value: web3.utils.toWei("1"),
+      });
+    } catch (error) {
+      assert.equal(error.reason, "caller must be activated insurance provider");
+    }
+
+    try {
+      await contract.registerInsuranceProvider(activatedInsuranceProviderOne, {
+        from: registeredInsuranceProviderTwo,
+        value: web3.utils.toWei("1"),
+      });
+    } catch (error) {
+      assert.equal(error.reason, "caller must be activated insurance provider");
+    }
+
+    try {
+      await contract.registerInsuranceProvider(unauthorizedCaller, {
+        from: unauthorizedCaller,
+        value: web3.utils.toWei("1"),
+      });
+    } catch (error) {
+      assert.equal(error.reason, "caller must be activated insurance provider");
+    }
+  });
+
   it("should fail to register an insurance provider providing the incorrect fee", async () => {
     const contract = await FlightSuretyApp.deployed();
     try {
-      await contract.registerInsuranceProvider({
+      await contract.registerInsuranceProvider(authorizedCaller,{
         from: activatedInsuranceProviderOne,
         value: web3.utils.toWei("1"),
       });

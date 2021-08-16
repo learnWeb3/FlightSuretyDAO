@@ -2,12 +2,13 @@
 pragma solidity ^0.8.00;
 
 import "../Ownable/Ownable.sol";
+import "../Pausable/Pausable.sol";
 import "../Random/Random.sol";
 import "./interfaces/IOracleProviderRoleOracle.sol";
 import "./interfaces/IFlightSuretyDataOracle.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract FlightSuretyOracle is Ownable, Random {
+contract FlightSuretyOracle is Ownable, Pausable, Random {
     using SafeMath for uint256;
     struct Request {
         uint256 flightID;
@@ -108,7 +109,7 @@ contract FlightSuretyOracle is Ownable, Random {
     }
 
     // constructor setting authorized flight delay
-    constructor(uint64 _authorizedFlightDelay) Ownable() {
+    constructor(uint64 _authorizedFlightDelay) Ownable() Pausable() {
         authorizedFlightDelay = _authorizedFlightDelay;
     }
 
@@ -122,9 +123,16 @@ contract FlightSuretyOracle is Ownable, Random {
         oracleProviderRole = IOracleProviderRoleOracle(_oracleProviderRole);
     }
 
+    /* operationnal status */
+
+    function setOperationnal(bool _operationnal) external onlyOwner {
+        _setOperationnal(_operationnal);
+    }
+
     // create a request for a targeted oracle provider subset
     function createRequest(uint256 _flightID, string calldata _flightRef)
         external
+        onlyOperational
         onlyActivatedOracleProvider(msg.sender)
         requireFlightExists(_flightID)
     {
@@ -146,6 +154,7 @@ contract FlightSuretyOracle is Ownable, Random {
         uint64 _realArrival
     )
         external
+        onlyOperational
         onlyActivatedOracleProvider(msg.sender)
         requireFlightExists(requests[_requestID].flightID)
         requireOracleProviderHasNotAnsweredRequest(_requestID, msg.sender)

@@ -9,9 +9,10 @@ import "./interfaces/IOracleProviderRole.sol";
 import "./interfaces/IFlightSuretyOracle.sol";
 import "./interfaces/IFlightSuretyShares.sol";
 import "../Ownable/Ownable.sol";
+import "../Pausable/Pausable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract FlightSuretyApp is Ownable {
+contract FlightSuretyApp is Ownable, Pausable {
     using SafeMath for uint256;
     // insurance providers related events
     event RegisteredInsuranceProvider(address indexed insuranceProvider);
@@ -336,7 +337,7 @@ contract FlightSuretyApp is Ownable {
     constructor(
         uint256 _tokenHolderMinBlockRequirement,
         uint256 _proposalValidBlockNum
-    ) Ownable() {
+    ) Ownable() Pausable() {
         // public contract settings to set constraint to user vote in general
         tokenHolderMinBlockRequirement = _tokenHolderMinBlockRequirement;
         // public contract setting to set constraint on user proposal vote
@@ -369,6 +370,12 @@ contract FlightSuretyApp is Ownable {
         insuranceProviderRole.activateInsuranceProvider(msg.sender);
         emit RegisteredInsuranceProvider(msg.sender);
         emit ActivatedInsuranceProvider(msg.sender);
+    }
+
+    /* operationnal status */
+
+    function setOperationnal(bool _operationnal) external onlyOwner {
+        _setOperationnal(_operationnal);
     }
 
     /* external contracts calls management */
@@ -507,28 +514,39 @@ contract FlightSuretyApp is Ownable {
 
     // insurance providers
 
-    function registerInsuranceProvider() external payable requireMembershipFee {
-        insuranceProviderRole.addInsuranceProvider(msg.sender);
+    function registerInsuranceProvider(address account)
+        external
+        payable
+        onlyOperational
+        onlyActivatedInsuranceProvider(msg.sender)
+        requireMembershipFee
+    {
+        insuranceProviderRole.addInsuranceProvider(account);
         uint256 registeredInsuranceProviderCount = insuranceProviderRole
             .getRegisteredInsuranceProvidersCount();
-        if (registeredInsuranceProviderCount <= 4) {
-            insuranceProviderRole.activateInsuranceProvider(msg.sender);
+        if (registeredInsuranceProviderCount < 5) {
+            insuranceProviderRole.activateInsuranceProvider(account);
             uint256 sharesToMint = _calculateSharesToMint();
-            flightSuretyShares.mint(msg.sender, sharesToMint);
-            emit RegisteredInsuranceProvider(msg.sender);
-            emit ActivatedInsuranceProvider(msg.sender);
+            flightSuretyShares.mint(account, sharesToMint);
+            emit RegisteredInsuranceProvider(account);
+            emit ActivatedInsuranceProvider(account);
         } else {
-            emit RegisteredInsuranceProvider(msg.sender);
+            emit RegisteredInsuranceProvider(account);
         }
     }
 
     // oracle providers
 
-    function registerOracleProvider() external payable requireMembershipFee {
+    function registerOracleProvider()
+        external
+        payable
+        onlyOperational
+        requireMembershipFee
+    {
         oracleProviderRole.addOracleProvider(msg.sender);
         uint256 registeredOracleProviderCount = oracleProviderRole
             .getRegisteredOracleProvidersCount();
-        if (registeredOracleProviderCount <= 4) {
+        if (registeredOracleProviderCount < 5) {
             oracleProviderRole.activateOracleProvider(msg.sender);
             uint256 sharesToMint = _calculateSharesToMint();
             flightSuretyShares.mint(msg.sender, sharesToMint);
@@ -545,6 +563,7 @@ contract FlightSuretyApp is Ownable {
 
     function voteInsuranceProviderMembership(address _account)
         external
+        onlyOperational
         onlyTokenHolder(msg.sender)
         requireTokenHolderIsOldEnough(msg.sender)
         requireTokenHolderHasNotVotedInsuranceProviderMembership(
@@ -578,6 +597,7 @@ contract FlightSuretyApp is Ownable {
 
     function voteOracleProviderMembership(address _account)
         external
+        onlyOperational
         onlyTokenHolder(msg.sender)
         requireTokenHolderIsOldEnough(msg.sender)
         requireTokenHolderHasNotVotedOracleProviderMembership(
@@ -616,6 +636,7 @@ contract FlightSuretyApp is Ownable {
         uint256 _rate
     )
         external
+        onlyOperational
         onlyActivatedInsuranceProvider(msg.sender)
         requireValidFlight(_estimatedDeparture, _estimatedArrival, _rate)
     {
@@ -706,6 +727,7 @@ contract FlightSuretyApp is Ownable {
     function registerInsurance(uint256 _flightID)
         external
         payable
+        onlyOperational
         requireFutureFlight(_flightID)
         requireMessageValueGreatherOrEqualToFlightRate(_flightID)
         requireTotalInsuredValueCoverage(msg.value)
@@ -739,6 +761,7 @@ contract FlightSuretyApp is Ownable {
     function claimInsurance(uint256 _insuranceID)
         external
         payable
+        onlyOperational
         requireFlightIsLate(_insuranceID)
         onlyInsuranceOwner(_insuranceID)
         onlyInsuranceIsNotClaimed(_insuranceID)
@@ -784,6 +807,7 @@ contract FlightSuretyApp is Ownable {
 
     function registerMembershipFeeAmendmentProposal(uint256 _proposedValue)
         external
+        onlyOperational
         onlyTokenHolder(msg.sender)
     {
         membershipFeeAmendmentProposal.registerMembershipFeeAmendmentProposal(
@@ -803,6 +827,7 @@ contract FlightSuretyApp is Ownable {
 
     function voteMembershipFeeAmendmentProposal(uint256 _proposalID)
         external
+        onlyOperational
         onlyTokenHolder(msg.sender)
         requireTokenHolderIsOldEnough(msg.sender)
         requireTokenHolderHasNotVotedMembershipFeeAmendmentProposal(
@@ -842,6 +867,7 @@ contract FlightSuretyApp is Ownable {
 
     function registerInsuranceCoverageAmendmentProposal(uint256 _proposedValue)
         external
+        onlyOperational
         onlyTokenHolder(msg.sender)
     {
         insuranceCoverageAmendmentProposal
@@ -862,6 +888,7 @@ contract FlightSuretyApp is Ownable {
 
     function voteInsuranceCoverageAmendmentProposal(uint256 _proposalID)
         external
+        onlyOperational
         onlyTokenHolder(msg.sender)
         requireTokenHolderIsOldEnough(msg.sender)
         requireTokenHolderHasNotVotedInsuranceCoverageAmendmentProposal(
