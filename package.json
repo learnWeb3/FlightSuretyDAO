@@ -19,7 +19,10 @@
   "scripts": {
     "migrate-dev": "truffle compile && truffle networks --clean && truffle migrate --reset && node ./config/index.js",
     "migrate": "truffle compile && truffle networks --clean && truffle migrate --network=rinkeby --reset && node ./config/index.js",
-    "test": "truffle test"
+    "test": "truffle test",
+    "server-dev": "cd ./server && npm run dev",
+    "server": "cd ./server && npm run start",
+    "app": "cd ./client && npm run start"
   },
   "author": "",
   "license": "ISC"
