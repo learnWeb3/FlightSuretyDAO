@@ -139,19 +139,13 @@ const FlightData = ({
 
   return (
     <Grid item xs={12}>
-      <Grid container>
-        <Grid item xs={12} lg={8} className={classes.flightInfo}>
+      <Grid container spacing={4}>
+        <Grid item xs={12} lg={6} className={classes.flightInfo}>
           {formattedEstimatedDeparture && formattedEstimatedArrival && (
             <>
               <TypoIcon
                 text={formattedEstimatedDepartureDate}
                 icon={CalendarTodayRoundedIcon}
-              />
-              <TypoIcon
-                text={
-                  formattedEstimatedDeparture + "-" + formattedEstimatedArrival
-                }
-                icon={ScheduleRoundedIcon}
               />
 
               {flightRef && (
@@ -171,22 +165,28 @@ const FlightData = ({
           )}
         </Grid>
 
-        <Grid item xs={12} lg={4} className={classes.flightInfo}>
-          <Typography variant="body2" color="textSecondary" gutterBottom>
+        <Grid item xs={12} lg={6} className={classes.flightInfo}>
+          <TypoIcon
+            text={formattedEstimatedDeparture + "-" + formattedEstimatedArrival}
+            icon={ScheduleRoundedIcon}
+          />
+          <Typography variant="body2" gutterBottom>
             Flight duration : ≈ {formattedFlightDuration} hours
           </Typography>
           {rate && (
-            <Typography variant="body2" color="textSecondary" gutterBottom>
+            <Typography variant="body2" gutterBottom>
               Flight rate : {ethRate} Eth
             </Typography>
           )}
+        </Grid>
+
+        <Grid item xs={12} lg={6}>
           {!btnSubscribeInsuranceDisabled &&
             estimatedDeparture * 1000 > Date.now() && (
               <Button
                 id={"subscribeInsurance" + cardID}
-                variant="outlinedPrimary"
-                color="secondary"
-                variant="contained"
+                color="primary"
+                variant="text"
                 fullWidth={matches}
                 onClick={handleClick}
               >
@@ -197,9 +197,8 @@ const FlightData = ({
           {!btnClaimInsuranceDisabled && !settled && isLate && (
             <Button
               id={"claimInsurance" + cardID}
-              variant="outlinedPrimary"
-              color="secondary"
-              variant="contained"
+              color="primary"
+              variant="text"
               fullWidth={matches}
               onClick={handleClick}
             >
@@ -213,9 +212,8 @@ const FlightData = ({
             Object.values(oracleIndexes).includes(oracleActivatedIndex) && (
               <Button
                 id={"requestFlightSettlement" + cardID}
-                variant="outlinedPrimary"
-                color="secondary"
-                variant="contained"
+                color="primary"
+                variant="text"
                 fullWidth={matches}
                 onClick={handleClick}
               >

@@ -66,7 +66,7 @@ const PageContent = ({ state, setState }) => {
               label="days before token redeem"
               value={fundsIndicators.daysBeforeTokenRedeem}
             />
-          
+
             <MultiIndicatorPanel
               label="registered flights"
               values={[
@@ -110,11 +110,16 @@ const PageContent = ({ state, setState }) => {
               label="payout ratio"
               values={[
                 {
-                  value: fundsIndicators.totalInsuranceDefaultRate,
+                  value:
+                    Math.round(
+                      fundsIndicators.totalInsuranceDefaultRate * 100
+                    ) / 100,
                   label: "total",
                 },
                 {
-                  value: fundsIndicators.myInsuranceDefaultRate,
+                  value:
+                    Math.round(fundsIndicators.myInsuranceDefaultRate * 100) /
+                    100,
                   label: "me",
                 },
               ]}
@@ -155,7 +160,7 @@ const PageContent = ({ state, setState }) => {
               label="insurance coverage ratio"
               value={daoIndicators.currentInsuranceCoverageRatio}
             />
-              <IndicatorPanel
+            <IndicatorPanel
               label="Proposal validity duration (block number)"
               value={daoIndicators.proposalValidityDuration}
             />

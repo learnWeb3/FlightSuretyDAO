@@ -136,11 +136,11 @@ const PageContent = ({ state, setState }) => {
                 label="payout ratio"
                 values={[
                   {
-                    value: fundsIndicators.totalInsuranceDefaultRate,
+                    value: Math.round(fundsIndicators.totalInsuranceDefaultRate *100) / 100,
                     label: "total",
                   },
                   {
-                    value: fundsIndicators.myInsuranceDefaultRate,
+                    value: Math.round(fundsIndicators.myInsuranceDefaultRate*100) / 100,
                     label: "me",
                   },
                 ]}
