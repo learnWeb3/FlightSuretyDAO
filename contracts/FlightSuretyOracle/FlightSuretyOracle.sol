@@ -307,12 +307,14 @@ contract FlightSuretyOracle is Ownable, Random {
     function _updateTotalInsuredValue(bool _isLate, uint256 _flightInsuredValue)
         internal
     {
-        if (!_isLate) {
+        if (!_isLate && _flightInsuredValue > 0) {
             uint256 totalInsuredValue = flightSuretyData.getTotalInsuredValue();
-            uint256 newTotalInsuredValue = totalInsuredValue.sub(
-                _flightInsuredValue
-            );
-            flightSuretyData.setTotalInsuredValue(newTotalInsuredValue);
+            if (totalInsuredValue > 0) {
+                uint256 newTotalInsuredValue = totalInsuredValue.sub(
+                    _flightInsuredValue
+                );
+                flightSuretyData.setTotalInsuredValue(newTotalInsuredValue);
+            }
         }
     }
 }

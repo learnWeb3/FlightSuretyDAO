@@ -64887,12 +64887,12 @@
         }
       },
       "links": {},
-      "address": "0xb3e70c442151A8123F1F5546c27F78fa339B0c01",
-      "transactionHash": "0x0dcb569b0ffdd14170e60700c0d493ffc1cf9860ab5039ed9075b7dcd9eb522c"
+      "address": "0x2Bb55208E3bE44C5aFFB630f9c5b41FC3545fB91",
+      "transactionHash": "0xc53b2ffb09cede1ea9ad2cf6d965a2a951663d685c60d8915961d9d94b9e1ab4"
     }
   },
   "schemaVersion": "3.4.2",
-  "updatedAt": "2021-08-16T07:14:01.852Z",
+  "updatedAt": "2021-08-16T07:14:14.437Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

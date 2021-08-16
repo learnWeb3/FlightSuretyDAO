@@ -82,7 +82,9 @@ contract(FlightSuretyApp, async (accounts) => {
   it("As a contract owner it initialize external contracts addresses", async () => {
     const contract = await FlightSuretyApp.deployed();
     // oracle
-    let flightSuretyOracle = await FlightSuretyOracle.new({ from: owner });
+    let flightSuretyOracle = await FlightSuretyOracle.new(3600, {
+      from: owner,
+    });
     // roles
     let oracleProviderRole = await OracleProviderRole.new(
       contract.address,
@@ -105,13 +107,17 @@ contract(FlightSuretyApp, async (accounts) => {
     });
     // settings amendment proposal
     let insuranceCoverageAmendmentProposal =
-      await InsuranceCoverageAmendmentProposal.new(contract.address, {
+      await InsuranceCoverageAmendmentProposal.new(contract.address, 150, {
         from: owner,
       });
     let membershipFeeAmendmentProposal =
-      await MembershipFeeAmendmentProposal.new(contract.address, {
-        from: owner,
-      });
+      await MembershipFeeAmendmentProposal.new(
+        contract.address,
+        web3.utils.toWei("10", "ether"),
+        {
+          from: owner,
+        }
+      );
     // storing addresses of external deployed contract
     oracleProviderRoleAddress = oracleProviderRole.address;
     flightSuretyDataAddress = flightSuretyData.address;

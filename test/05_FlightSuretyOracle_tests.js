@@ -5,6 +5,7 @@ const FlightSuretyData = artifacts.require("FlightSuretyData");
 const OracleProviderRole = artifacts.require("OracleProviderRole");
 const InsuranceProviderRole = artifacts.require("InsuranceProviderRole");
 const FlightSuretyApp = artifacts.require("FlightSuretyApp");
+const FlightSuretyShares = artifacts.require("FlightSuretyShares");
 
 contract(FlightSuretyOracle, async (accounts) => {
   // accounts and contracts variables
@@ -18,6 +19,8 @@ contract(FlightSuretyOracle, async (accounts) => {
   let flightSuretyDataAddress;
   let oracleProviderRoleAddress;
   let insuranceProviderRoleAddress;
+  let flightSuretySharesAddress;
+  let persistentUserIndexes;
 
   // flights mock data
   const flightID = 1;
@@ -33,7 +36,7 @@ contract(FlightSuretyOracle, async (accounts) => {
   it("As a contract owner it initialize external contracts addresses", async () => {
     const contract = await FlightSuretyOracle.deployed();
     // deploying linked contract
-    let flightSuretyApp = await FlightSuretyApp.new({ from: owner });
+    let flightSuretyApp = await FlightSuretyApp.new(2, 1000, { from: owner });
     let oracleProviderRole = await OracleProviderRole.new(
       flightSuretyApp.address,
       contract.address,
@@ -48,15 +51,23 @@ contract(FlightSuretyOracle, async (accounts) => {
       flightSuretyApp.address,
       { from: owner }
     );
+    let flightSuretyShares = await FlightSuretyShares.new(
+      flightSuretyApp.address,
+      { from: owner }
+    );
     // storing addresses of deployed contract
     flightSuretyAppAddress = flightSuretyApp.address;
     oracleProviderRoleAddress = oracleProviderRole.address;
     flightSuretyDataAddress = flightSuretyData.address;
     insuranceProviderRoleAddress = insuranceProviderRole.address;
+    flightSuretySharesAddress = flightSuretyShares.address;
     // authorizing dummy caller in OracleProviderRole, FlightSuretyData and InsuranceProviderRol in order to create roles, flights and insurances
     await oracleProviderRole.authorizeCaller(authorizedCaller, { from: owner });
     await flightSuretyData.authorizeCaller(authorizedCaller, { from: owner });
     await insuranceProviderRole.authorizeCaller(authorizedCaller, {
+      from: owner,
+    });
+    await flightSuretyShares.authorizeCaller(authorizedCaller, {
       from: owner,
     });
     // referencing external contract address in flightsuretyOracle
@@ -92,6 +103,9 @@ contract(FlightSuretyOracle, async (accounts) => {
     let insuranceProviderRole = await InsuranceProviderRole.at(
       insuranceProviderRoleAddress
     );
+    let flightSuretyShares = await FlightSuretyShares.at(
+      flightSuretySharesAddress
+    );
     // add and activate an oracle provider in order to process requests and responses
     await oracleProviderRoleContract.addOracleProvider(persistentUser, {
       from: authorizedCaller,
@@ -104,6 +118,15 @@ contract(FlightSuretyOracle, async (accounts) => {
       from: authorizedCaller,
     });
     await insuranceProviderRole.activateInsuranceProvider(persistentUser, {
+      from: authorizedCaller,
+    });
+    // fetch persistentUser indexes
+    persistentUserIndexes = oracleProviderRoleContract
+      .getOracleProviderIndexes(persistentUser, { from: authorizedCaller })
+      .then((index) => parseInt(index));
+
+    // distribute token to activated accouts (similar behaviour as the register method of app contract)
+    await flightSuretyShares.mint(persistentUser, 1, {
       from: authorizedCaller,
     });
     // register a flights
@@ -119,8 +142,15 @@ contract(FlightSuretyOracle, async (accounts) => {
     await flightSuretyData.insure(userTwo, flightID, rate, {
       from: authorizedCaller,
     });
-    // finally create a request using activated oracle provider role
+    // finally create a request using activated oracle provider role (pseudo random oracle selected index so creating multiple requests)
     await contract.createRequest(flightID, flightRef, { from: persistentUser });
+    await contract.createRequest(flightID, flightRef, { from: persistentUser });
+    await contract.createRequest(flightID, flightRef, { from: persistentUser });
+    await contract.createRequest(flightID, flightRef, { from: persistentUser });
+    const eventLog = await contract.getPastEvents("NewRequest", {
+      fromBlock: 0,
+    });
+    assert.equal(eventLog.length, 4);
   });
 
   it("As any other account it should fail to create a request for a targeted oracle provider subset", async () => {
@@ -133,27 +163,37 @@ contract(FlightSuretyOracle, async (accounts) => {
 
   it("As an activated oracle provider it should update responses to a request and validate the accepted outcome according to multiparty consensus rules", async () => {
     const contract = await FlightSuretyOracle.deployed();
-    await contract.respondToRequest(
-      persistentUser,
-      1,
-      realDeparture,
-      realArrival,
-      0,
-      { from: persistentUser }
+    const eventLogNewRequest = await contract.getPastEvents("NewRequest", {
+      fromBlock: 0,
+    });
+    await Promise.all(
+      eventLogNewRequest.map(async (event) => {
+        try {
+          await contract.respondToRequest(
+            parseInt(event.returnValues.requestID),
+            realDeparture,
+            realArrival,
+            { from: persistentUser }
+          );
+        } catch (error) {
+          console.log(error);
+        }
+      })
     );
+    const eventLogNewResponse = await contract.getPastEvents("NewResponse", {
+      fromBlock: 0,
+    });
+
+    assert.equal(eventLogNewResponse.length > 0, true);
   });
 
   it("As any other account it should fail to update responses to a request and validate the accepted outcome according to multiparty consensus rules", async () => {
     const contract = await FlightSuretyOracle.deployed();
     try {
-      await contract.respondToRequest(
-        persistentUser,
-        1,
-        realDeparture,
-        realArrival,
-        isLate,
-        { from: userTwo }
-      );
+      await contract.respondToRequest(1, realDeparture, realArrival, {
+        from: userTwo,
+        gas: 500000,
+      });
       assert.fail();
     } catch (error) {}
   });
