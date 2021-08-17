@@ -187,22 +187,22 @@ const checkRegistration = async (
     .call({ from: selectedAddress });
   return {
     isRegisteredInsuranceProvider: registeredInsuranceProviders.find(
-      (provider) => provider.insuranceProvider === selectedAddress
+      (provider) => provider.insuranceProvider.toLowerCase() === selectedAddress.toLowerCase()
     )
       ? true
       : false,
     isRegisteredOracleProvider: registeredOracleProviders.find(
-      (provider) => provider.oracleProvider === selectedAddress
+      (provider) => provider.oracleProvider.toLowerCase() === selectedAddress.toLowerCase()
     )
       ? true
       : false,
     isActivatedInsuranceProvider: activatedInsuranceProviders.find(
-      (provider) => provider.insuranceProvider === selectedAddress
+      (provider) => provider.insuranceProvider.toLowerCase() === selectedAddress.toLowerCase()
     )
       ? true
       : false,
     isActivatedOracleProvider: activatedOracleProviders.find(
-      (provider) => provider.oracleProvider === selectedAddress
+      (provider) => provider.oracleProvider.toLowerCase() === selectedAddress.toLowerCase()
     )
       ? true
       : false,
@@ -747,12 +747,23 @@ const GroupedFlightSettlementResponses = async (oracleContract, flightID) => {
 
 const registerInsuranceProvider = async (
   appContract,
+  insuranceProviderAddress,
+  selectedAddress,
+  gas = 500000
+) => {
+  return await appContract.methods
+    .registerInsuranceProvider(insuranceProviderAddress)
+    .send({ from: selectedAddress, gas });
+};
+
+const fundInsuranceProvider = async (
+  appContract,
   selectedAddress,
   value,
   gas = 500000
 ) => {
   return await appContract.methods
-    .registerInsuranceProvider()
+    .fundInsuranceProvider()
     .send({ from: selectedAddress, value, gas });
 };
 
@@ -921,6 +932,7 @@ export {
   /** WRITE TO THE BLOCKCHAIN */
   // as any user
   registerInsuranceProvider,
+  fundInsuranceProvider,
   registerOracleProvider,
   registerInsurance,
   claimInsurance,

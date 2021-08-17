@@ -142,9 +142,34 @@ contract FlightSuretyApp is Ownable, Pausable {
         _;
     }
 
-    modifier requireProposalIsActive(uint256 proposalID) {
+    modifier requireMembershipFeeProposalIsActive(uint256 proposalID) {
         uint256 elapsedBlock = block.number.sub(
             membershipFeeAmendmentProposal.getProposalCreatedAt(proposalID)
+        );
+        require(
+            elapsedBlock <= proposalValidBlockNum,
+            "voting proposal has expired"
+        );
+        _;
+    }
+
+    modifier requireMembershipFeeHasNotBeenSet(uint256 proposalID) {
+        bool check = membershipFeeAmendmentProposal
+            .isMembershipFeeAmendmentProposalSet(proposalID);
+        require(!check, "proposal already set");
+        _;
+    }
+
+    modifier requireInsuranceCoverageProposalHasNotBeenSet(uint256 proposalID) {
+        bool check = insuranceCoverageAmendmentProposal
+            .isInsuranceCoverageAmendmentProposalSet(proposalID);
+        require(!check, "proposal already set");
+        _;
+    }
+
+    modifier requireInsuranceCoverageProposalIsActive(uint256 proposalID) {
+        uint256 elapsedBlock = block.number.sub(
+            insuranceCoverageAmendmentProposal.getProposalCreatedAt(proposalID)
         );
         require(
             elapsedBlock <= proposalValidBlockNum,
@@ -197,7 +222,7 @@ contract FlightSuretyApp is Ownable, Pausable {
         _;
     }
 
-    modifier onlyInsuranceIsNotClaimed(uint256 _insuranceID) {
+    modifier requireInsuranceIsNotClaimed(uint256 _insuranceID) {
         (, , , bool claimed) = flightSuretyData.getInsurance(_insuranceID);
         require(!claimed, "insurance must not have been claimed");
         _;
@@ -252,10 +277,8 @@ contract FlightSuretyApp is Ownable, Pausable {
     }
 
     modifier onlyTokenHolder(address _caller) {
-        require(
-            flightSuretyShares.balanceOf(_caller) > 0,
-            "caller must be token holder"
-        );
+        uint256 callerBalance = flightSuretyShares.balanceOf(_caller);
+        require(callerBalance > 0, "caller must be token holder");
         _;
     }
 
@@ -288,6 +311,14 @@ contract FlightSuretyApp is Ownable, Pausable {
         _;
     }
 
+    modifier requireUnactivatedInsuranceProvider(address _caller) {
+        require(
+            !insuranceProviderRole.isActivatedInsuranceProvider(_caller),
+            "insurance provider is already activated"
+        );
+        _;
+    }
+
     modifier requireTokenHolderHasNotVotedInsuranceProviderMembership(
         address _caller,
         address _account
@@ -316,6 +347,14 @@ contract FlightSuretyApp is Ownable, Pausable {
         require(
             oracleProviderRole.isActivatedOracleProvider(_caller),
             "caller is not activated oracle provider"
+        );
+        _;
+    }
+
+    modifier requireUnactivatedOracleProvider(address _caller) {
+        require(
+            !oracleProviderRole.isActivatedOracleProvider(_caller),
+            "oracle provider is already activated"
         );
         _;
     }
@@ -516,22 +555,33 @@ contract FlightSuretyApp is Ownable, Pausable {
 
     function registerInsuranceProvider(address account)
         external
-        payable
         onlyOperational
         onlyActivatedInsuranceProvider(msg.sender)
-        requireMembershipFee
     {
         insuranceProviderRole.addInsuranceProvider(account);
-        uint256 registeredInsuranceProviderCount = insuranceProviderRole
-            .getRegisteredInsuranceProvidersCount();
-        if (registeredInsuranceProviderCount < 5) {
-            insuranceProviderRole.activateInsuranceProvider(account);
+        emit RegisteredInsuranceProvider(account);
+    }
+
+    // fund an insurance provider aka airline
+    function fundInsuranceProvider()
+        external
+        payable
+        onlyRegisteredInsuranceProvider(msg.sender)
+        requireMembershipFee
+    {
+        uint256 _currentMembershipFee = membershipFeeAmendmentProposal
+            .getCurrentMembershipFee();
+        insuranceProviderRole.fundInsuranceProvider(
+            msg.sender,
+            _currentMembershipFee
+        );
+        uint256 activatedAccountCount = insuranceProviderRole
+            .getActivatedInsuranceProvidersCount();
+        if (activatedAccountCount < 5) {
+            insuranceProviderRole.activateInsuranceProvider(msg.sender);
             uint256 sharesToMint = _calculateSharesToMint();
-            flightSuretyShares.mint(account, sharesToMint);
-            emit RegisteredInsuranceProvider(account);
-            emit ActivatedInsuranceProvider(account);
-        } else {
-            emit RegisteredInsuranceProvider(account);
+            flightSuretyShares.mint(msg.sender, sharesToMint);
+            emit ActivatedInsuranceProvider(msg.sender);
         }
     }
 
@@ -544,9 +594,9 @@ contract FlightSuretyApp is Ownable, Pausable {
         requireMembershipFee
     {
         oracleProviderRole.addOracleProvider(msg.sender);
-        uint256 registeredOracleProviderCount = oracleProviderRole
-            .getRegisteredOracleProvidersCount();
-        if (registeredOracleProviderCount < 5) {
+        uint256 activatedOracleProviderCount = oracleProviderRole
+            .getActivatedOracleProvidersCount();
+        if (activatedOracleProviderCount < 5) {
             oracleProviderRole.activateOracleProvider(msg.sender);
             uint256 sharesToMint = _calculateSharesToMint();
             flightSuretyShares.mint(msg.sender, sharesToMint);
@@ -564,12 +614,14 @@ contract FlightSuretyApp is Ownable, Pausable {
     function voteInsuranceProviderMembership(address _account)
         external
         onlyOperational
+        onlyActivatedInsuranceProvider(msg.sender)
         onlyTokenHolder(msg.sender)
         requireTokenHolderIsOldEnough(msg.sender)
         requireTokenHolderHasNotVotedInsuranceProviderMembership(
             msg.sender,
             _account
         )
+        requireUnactivatedInsuranceProvider(_account)
     {
         insuranceProviderRole.voteInsuranceProviderMembership(
             msg.sender,
@@ -580,7 +632,9 @@ contract FlightSuretyApp is Ownable, Pausable {
             .hasReachedConsensusInsuranceProviderMembership(
                 true,
                 _account,
-                _calculateProvidersConsensusTreshold()
+                insuranceProviderRole.getActivatedInsuranceProvidersCount().div(
+                    2
+                )
             );
         if (consensusCheck) {
             insuranceProviderRole.activateInsuranceProvider(_account);
@@ -604,6 +658,7 @@ contract FlightSuretyApp is Ownable, Pausable {
             msg.sender,
             _account
         )
+        requireUnactivatedOracleProvider(_account)
     {
         oracleProviderRole.voteOracleProviderMembership(
             msg.sender,
@@ -764,7 +819,7 @@ contract FlightSuretyApp is Ownable, Pausable {
         onlyOperational
         requireFlightIsLate(_insuranceID)
         onlyInsuranceOwner(_insuranceID)
-        onlyInsuranceIsNotClaimed(_insuranceID)
+        requireInsuranceIsNotClaimed(_insuranceID)
     {
         // fetch the insurance insured value
         (uint256 flightID, uint256 insuredValue, , ) = flightSuretyData
@@ -834,7 +889,8 @@ contract FlightSuretyApp is Ownable, Pausable {
             msg.sender,
             _proposalID
         )
-        requireProposalIsActive(_proposalID)
+        requireMembershipFeeHasNotBeenSet(_proposalID)
+        requireMembershipFeeProposalIsActive(_proposalID)
     {
         membershipFeeAmendmentProposal.voteMembershipFeeAmendmentProposal(
             _proposalID,
@@ -895,7 +951,8 @@ contract FlightSuretyApp is Ownable, Pausable {
             msg.sender,
             _proposalID
         )
-        requireProposalIsActive(_proposalID)
+        requireInsuranceCoverageProposalHasNotBeenSet(_proposalID)
+        requireInsuranceCoverageProposalIsActive(_proposalID)
     {
         insuranceCoverageAmendmentProposal
             .voteInsuranceCoverageAmendmentProposal(

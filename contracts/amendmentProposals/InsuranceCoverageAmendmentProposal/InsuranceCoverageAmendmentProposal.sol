@@ -21,7 +21,9 @@ contract InsuranceCoverageAmendmentProposal is
     }
 
     // constructor setting owner and initial authorized caller address aka appAddress and current insurance coverage ratio
-    constructor(address _appContractAddress, uint256 _currentInsuranceCoverage) Ownable() {
+    constructor(address _appContractAddress, uint256 _currentInsuranceCoverage)
+        Ownable()
+    {
         authorizedCallers[_appContractAddress] = true;
         currentInsuranceCoverage = _currentInsuranceCoverage;
     }
@@ -53,6 +55,16 @@ contract InsuranceCoverageAmendmentProposal is
         _registerProposal(_caller, _proposedValue, _voteWeight);
     }
 
+    // cehck wether a proposal is set
+    function isInsuranceCoverageAmendmentProposalSet(uint256 _proposalID)
+        external
+        view
+        onlyAuthorizedCaller
+        returns (bool _set)
+    {
+        return _isProposalSet(_proposalID);
+    }
+
     // vote an existing insurance coverage amendment proposal
     function voteInsuranceCoverageAmendmentProposal(
         uint256 _proposalID,
@@ -69,6 +81,7 @@ contract InsuranceCoverageAmendmentProposal is
         onlyAuthorizedCaller
     {
         _activateInsuranceCoverageAmendmentProposal(_proposalID);
+        _setProposal(_proposalID, true);
     }
 
     // check wether a voter as already voted for a specific proposal
@@ -117,7 +130,7 @@ contract InsuranceCoverageAmendmentProposal is
         return _getInsuranceCoverageAmendmentCurrentProposalID();
     }
 
-     // fetch a proposal createdAt attribute referencing the block number
+    // fetch a proposal createdAt attribute referencing the block number
     function getProposalCreatedAt(uint256 _proposalID)
         external
         view

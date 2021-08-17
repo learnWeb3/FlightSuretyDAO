@@ -29,6 +29,12 @@ interface IMembershipFeeAmendmentProposal {
     function activateMembershipFeeAmendmentProposal(uint256 _proposalID)
         external;
 
+    // cehck wether a proposal is set
+    function isMembershipFeeAmendmentProposalSet(uint256 _proposalID)
+        external
+        view
+        returns (bool set);
+
     // check wether a voter as already voted for a specific proposal
     function hasVotedMembershipFeeAmendmentProposal(
         address _caller,

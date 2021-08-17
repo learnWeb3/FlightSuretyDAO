@@ -30,6 +30,12 @@ interface IInsuranceCoverageAmendmentProposal {
     function activateInsuranceCoverageAmendmentProposal(uint256 _proposalID)
         external;
 
+    // cehck wether a proposal is set
+    function isInsuranceCoverageAmendmentProposalSet(uint256 _proposalID)
+        external
+        view
+        returns (bool set);
+
     // check wether a voter as already voted for a specific proposal
     function hasVotedInsuranceCoverageAmendmentProposal(
         address _caller,

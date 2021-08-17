@@ -46,15 +46,14 @@ const MembershipFeeAmendmentProposal = artifacts.require(
 contract(FlightSuretyApp, async (accounts) => {
   // accounts and contracts variables
   const owner = accounts[0];
-  const activatedInsuranceProviderOne = accounts[1];
-  const activatedInsuranceProviderTwo = accounts[2];
-  const activatedInsuranceProviderThree = accounts[3];
-  const registeredInsuranceProviderOne = accounts[4];
-  const registeredInsuranceProviderTwo = accounts[5];
-  const activatedOracleProviderOne = accounts[6];
-  const activatedOracleProviderTwo = accounts[7];
-  const activatedOracleProviderThree = accounts[8];
-  const registeredOracleProviderOne = accounts[9];
+  const userOne = accounts[1];
+  const userTwo = accounts[2];
+  const userThree = accounts[3];
+  const userFour = accounts[4];
+  const userFive = accounts[5];
+  const userSix = accounts[6];
+  const userSeven = accounts[7];
+  const userEight = accounts[8];
   const authorizedCaller = accounts[6];
   const unauthorizedCaller = accounts[9];
   let flightSuretyDataAddress;
@@ -151,7 +150,7 @@ contract(FlightSuretyApp, async (accounts) => {
         insuranceProviderRoleAddress,
         oracleProviderRoleAddress,
         flightSuretySharesAddress,
-        { from: activatedInsuranceProviderOne }
+        { from: userOne }
       );
       assert.fail();
     } catch (error) {
@@ -390,17 +389,10 @@ contract(FlightSuretyApp, async (accounts) => {
   it("should register an insurance provider providing the correct fee and activate it according specific rules", async () => {
     const contract = await FlightSuretyApp.deployed();
     await Promise.all(
-      [
-        activatedInsuranceProviderOne,
-        activatedInsuranceProviderTwo,
-        activatedInsuranceProviderThree,
-        registeredInsuranceProviderOne,
-        registeredInsuranceProviderTwo,
-      ].map(
+      [userOne, userTwo, userThree, userFour, userFive].map(
         async (user) =>
           await contract.registerInsuranceProvider(user, {
             from: owner,
-            value: web3.utils.toWei("10"),
           })
       )
     );
@@ -408,80 +400,122 @@ contract(FlightSuretyApp, async (accounts) => {
       "RegisteredInsuranceProvider",
       {
         fromBlock: 0,
-        filter: { insuranceProvider: activatedInsuranceProviderOne },
+        filter: { insuranceProvider: userOne },
       }
     );
-    const eventLogsActivatedUserOne = await contract.getPastEvents(
-      "ActivatedInsuranceProvider",
+
+    const eventLogsRegisteredUserTwo = await contract.getPastEvents(
+      "RegisteredInsuranceProvider",
       {
         fromBlock: 0,
-        filter: { insuranceProvider: activatedInsuranceProviderOne },
+        filter: { insuranceProvider: userTwo },
+      }
+    );
+
+    const eventLogsRegisteredUserThree = await contract.getPastEvents(
+      "RegisteredInsuranceProvider",
+      {
+        fromBlock: 0,
+        filter: { insuranceProvider: userThree },
+      }
+    );
+    const eventLogsRegisteredUserFour = await contract.getPastEvents(
+      "RegisteredInsuranceProvider",
+      {
+        fromBlock: 0,
+        filter: { insuranceProvider: userFour },
       }
     );
     const eventLogsRegisteredUserFive = await contract.getPastEvents(
       "RegisteredInsuranceProvider",
       {
         fromBlock: 0,
-        filter: { insuranceProvider: registeredInsuranceProviderTwo },
-      }
-    );
-    const eventLogsActivatedUserFive = await contract.getPastEvents(
-      "ActivatedInsuranceProvider",
-      {
-        fromBlock: 0,
-        filter: { insuranceProvider: registeredInsuranceProviderTwo },
+        filter: { insuranceProvider: userFive },
       }
     );
     assert.equal(eventLogsRegisteredUserOne.length, 1);
-    assert.equal(eventLogsActivatedUserOne.length, 1);
+    assert.equal(eventLogsRegisteredUserTwo.length, 1);
+    assert.equal(eventLogsRegisteredUserThree.length, 1);
+    assert.equal(eventLogsRegisteredUserFour.length, 1);
     assert.equal(eventLogsRegisteredUserFive.length, 1);
-    assert.equal(eventLogsActivatedUserFive.length, 0);
   });
 
   it("should fail to register an insurance provider calling contract with any other account than a registered inusrance provider", async () => {
     const contract = await FlightSuretyApp.deployed();
     try {
-      await contract.registerInsuranceProvider(registeredInsuranceProviderOne, {
-        from: registeredInsuranceProviderOne,
-        value: web3.utils.toWei("1"),
-      });
-    } catch (error) {
-      assert.equal(error.reason, "caller must be activated insurance provider");
-    }
-
-    try {
-      await contract.registerInsuranceProvider(registeredOracleProviderOne, {
-        from: registeredOracleProviderOne,
-        value: web3.utils.toWei("1"),
-      });
-    } catch (error) {
-      assert.equal(error.reason, "caller must be activated insurance provider");
-    }
-
-    try {
-      await contract.registerInsuranceProvider(activatedInsuranceProviderOne, {
-        from: registeredInsuranceProviderTwo,
-        value: web3.utils.toWei("1"),
-      });
-    } catch (error) {
-      assert.equal(error.reason, "caller must be activated insurance provider");
-    }
-
-    try {
-      await contract.registerInsuranceProvider(unauthorizedCaller, {
+      await contract.registerInsuranceProvider(userFour, {
         from: unauthorizedCaller,
-        value: web3.utils.toWei("1"),
       });
     } catch (error) {
       assert.equal(error.reason, "caller must be activated insurance provider");
     }
   });
 
-  it("should fail to register an insurance provider providing the incorrect fee", async () => {
+  it("should fund an insurance provider providing the correct fee and activate it according specific rules", async () => {
+    const contract = await FlightSuretyApp.deployed();
+    await Promise.all(
+      [userOne, userTwo, userThree, userFour, userFive].map(
+        async (user) =>
+          await contract.fundInsuranceProvider({
+            from: user,
+            value: web3.utils.toWei("10", "ether"),
+          })
+      )
+    );
+
+    const eventLogsRegisteredUserOne = await contract.getPastEvents(
+      "ActivatedInsuranceProvider",
+      {
+        fromBlock: 0,
+        filter: { insuranceProvider: userOne },
+      }
+    );
+    assert.equal(eventLogsRegisteredUserOne.length, 1);
+
+    const eventLogsRegisteredUserTwo = await contract.getPastEvents(
+      "ActivatedInsuranceProvider",
+      {
+        fromBlock: 0,
+        filter: { insuranceProvider: userTwo },
+      }
+    );
+    assert.equal(eventLogsRegisteredUserTwo.length, 1);
+
+    const eventLogsRegisteredUserThree = await contract.getPastEvents(
+      "ActivatedInsuranceProvider",
+      {
+        fromBlock: 0,
+        filter: { insuranceProvider: userThree },
+      }
+    );
+    assert.equal(eventLogsRegisteredUserThree.length, 1);
+
+    const eventLogsRegisteredUserFour = await contract.getPastEvents(
+      "ActivatedInsuranceProvider",
+      {
+        fromBlock: 0,
+        filter: { insuranceProvider: userFour },
+      }
+    );
+    assert.equal(eventLogsRegisteredUserFour.length, 1);
+
+    const eventLogsRegisteredUserFive = await contract.getPastEvents(
+      "ActivatedInsuranceProvider",
+      {
+        fromBlock: 0,
+        filter: { insuranceProvider: userFive },
+      }
+    );
+    assert.equal(eventLogsRegisteredUserFive.length, 0);
+  });
+
+  // oracle providers
+
+  it("should fail to register an oracle provider providing the incorrect fee", async () => {
     const contract = await FlightSuretyApp.deployed();
     try {
-      await contract.registerInsuranceProvider(authorizedCaller,{
-        from: activatedInsuranceProviderOne,
+      await contract.registerOracleProvider({
+        from: userSix,
         value: web3.utils.toWei("1"),
       });
     } catch (error) {
@@ -489,17 +523,10 @@ contract(FlightSuretyApp, async (accounts) => {
     }
   });
 
-  // oracle providers
   it("should register an oracle provider providing the correct fee and activate it according specific rules", async () => {
     const contract = await FlightSuretyApp.deployed();
     await Promise.all(
-      [
-        registeredInsuranceProviderTwo,
-        activatedOracleProviderOne,
-        activatedOracleProviderTwo,
-        activatedOracleProviderThree,
-        registeredOracleProviderOne,
-      ].map(
+      [userThree, userFour, userFive, userSix, userSeven, userEight].map(
         async (user) =>
           await contract.registerOracleProvider({
             from: user,
@@ -507,37 +534,72 @@ contract(FlightSuretyApp, async (accounts) => {
           })
       )
     );
+
+    const eventLogsRegisteredUserThree = await contract.getPastEvents(
+      "RegisteredOracleProvider",
+      { fromBlock: 0, filter: { oracleProvider: userThree } }
+    );
+    const eventLogsActivatedUserThree = await contract.getPastEvents(
+      "ActivatedOracleProvider",
+      { fromBlock: 0, filter: { oracleProvider: userThree } }
+    );
+    assert.equal(eventLogsRegisteredUserThree.length, 1);
+    assert.equal(eventLogsActivatedUserThree.length, 1);
+
+    const eventLogsRegisteredUserFour = await contract.getPastEvents(
+      "RegisteredOracleProvider",
+      { fromBlock: 0, filter: { oracleProvider: userFour } }
+    );
+    const eventLogsActivatedUserFour = await contract.getPastEvents(
+      "ActivatedOracleProvider",
+      { fromBlock: 0, filter: { oracleProvider: userFour } }
+    );
+    assert.equal(eventLogsRegisteredUserFour.length, 1);
+    assert.equal(eventLogsActivatedUserFour.length, 1);
+
+    const eventLogsRegisteredUserFive = await contract.getPastEvents(
+      "RegisteredOracleProvider",
+      { fromBlock: 0, filter: { oracleProvider: userFive } }
+    );
+    const eventLogsActivatedUserFive = await contract.getPastEvents(
+      "ActivatedOracleProvider",
+      { fromBlock: 0, filter: { oracleProvider: userFive } }
+    );
+    assert.equal(eventLogsRegisteredUserFive.length, 1);
+    assert.equal(eventLogsActivatedUserFive.length, 1);
+
     const eventLogsRegisteredUserSix = await contract.getPastEvents(
       "RegisteredOracleProvider",
-      { fromBlock: 0, filter: { oracleProvider: activatedOracleProviderOne } }
+      { fromBlock: 0, filter: { oracleProvider: userSix } }
     );
     const eventLogsActivatedUserSix = await contract.getPastEvents(
       "ActivatedOracleProvider",
-      { fromBlock: 0, filter: { oracleProvider: activatedOracleProviderOne } }
-    );
-    const eventLogsRegisteredUserNine = await contract.getPastEvents(
-      "RegisteredOracleProvider",
-      { fromBlock: 0, filter: { oracleProvider: registeredOracleProviderOne } }
-    );
-    const eventLogsActivatedUserNine = await contract.getPastEvents(
-      "ActivatedOracleProvider",
-      { fromBlock: 0, filter: { oracleProvider: registeredOracleProviderOne } }
+      { fromBlock: 0, filter: { oracleProvider: userSix } }
     );
     assert.equal(eventLogsRegisteredUserSix.length, 1);
     assert.equal(eventLogsActivatedUserSix.length, 1);
-    assert.equal(eventLogsRegisteredUserNine.length, 1);
-    assert.equal(eventLogsActivatedUserNine.length, 0);
-  });
-  it("should fail to register an oracle provider providing the incorrect fee", async () => {
-    const contract = await FlightSuretyApp.deployed();
-    try {
-      await contract.registerOracleProvider({
-        from: activatedOracleProviderOne,
-        value: web3.utils.toWei("1"),
-      });
-    } catch (error) {
-      assert.equal(error.reason, "incorrect fee sent to contract");
-    }
+
+    const eventLogsRegisteredUserSeven = await contract.getPastEvents(
+      "RegisteredOracleProvider",
+      { fromBlock: 0, filter: { oracleProvider: userSeven } }
+    );
+    const eventLogsActivatedUserSeven = await contract.getPastEvents(
+      "ActivatedOracleProvider",
+      { fromBlock: 0, filter: { oracleProvider: userSeven } }
+    );
+    assert.equal(eventLogsRegisteredUserSeven.length, 1);
+    assert.equal(eventLogsActivatedUserSeven.length, 1);
+
+    const eventLogsRegisteredUserEight = await contract.getPastEvents(
+      "RegisteredOracleProvider",
+      { fromBlock: 0, filter: { oracleProvider: userEight } }
+    );
+    const eventLogsActivatedUserEight = await contract.getPastEvents(
+      "ActivatedOracleProvider",
+      { fromBlock: 0, filter: { oracleProvider: userEight } }
+    );
+    assert.equal(eventLogsRegisteredUserEight.length, 1);
+    assert.equal(eventLogsActivatedUserEight.length, 0);
   });
 
   /* votes providers */
@@ -547,57 +609,55 @@ contract(FlightSuretyApp, async (accounts) => {
   it("should vote an insurance provider membership and activate votee account if consensus has been reached", async () => {
     const contract = await FlightSuretyApp.deployed();
     await Promise.all(
-      [
-        activatedInsuranceProviderOne,
-        activatedInsuranceProviderTwo,
-        activatedInsuranceProviderThree,
-      ].map(async (voter) => {
-        await contract.voteInsuranceProviderMembership(
-          registeredInsuranceProviderTwo,
-          {
-            from: voter,
-          }
-        );
+      [userOne, userTwo].map(async (voter) => {
+        await contract.voteInsuranceProviderMembership(userFive, {
+          from: voter,
+        });
       })
     );
     const eventLogsVote = await contract.getPastEvents(
       "NewVoteInsuranceProvider",
-      { fromBlock: 0, filter: { votee: registeredInsuranceProviderTwo } }
+      { fromBlock: 0, filter: { votee: userFive } }
     );
     const eventLogsActivatedUserFive = await contract.getPastEvents(
       "ActivatedInsuranceProvider",
       {
         fromBlock: 0,
-        filter: { insuranceProvider: registeredInsuranceProviderTwo },
+        filter: { insuranceProvider: userFive },
       }
     );
-    assert.equal(eventLogsVote.length, 3);
+    assert.equal(eventLogsVote.length, 2);
     assert.equal(eventLogsActivatedUserFive.length, 1);
   });
 
   it("should fail to vote an insurance provider membership if caller has already voted", async () => {
     const contract = await FlightSuretyApp.deployed();
     try {
-      await contract.voteInsuranceProviderMembership(
-        registeredInsuranceProviderTwo,
-        {
-          from: activatedInsuranceProviderOne,
-        }
-      );
+      await contract.voteInsuranceProviderMembership(userFive, {
+        from: userOne,
+      });
     } catch (error) {
       assert.equal(error.reason, "caller has already voted");
+    }
+  });
+
+  it("should fail to vote an insurance provider membership if account is already activated", async () => {
+    const contract = await FlightSuretyApp.deployed();
+    try {
+      await contract.voteInsuranceProviderMembership(userFive, {
+        from: userFour,
+      });
+    } catch (error) {
+      assert.equal(error.reason, "insurance provider is already activated");
     }
   });
 
   it("should fail to vote an insurance provider membership if caller is not token holder", async () => {
     const contract = await FlightSuretyApp.deployed();
     try {
-      await contract.voteInsuranceProviderMembership(
-        registeredInsuranceProviderTwo,
-        {
-          from: registeredInsuranceProviderOne,
-        }
-      );
+      await contract.voteInsuranceProviderMembership(unauthorizedCaller, {
+        from: userFour,
+      });
     } catch (error) {
       assert.equal(error.reason, "caller must be token holder");
     }
@@ -608,43 +668,33 @@ contract(FlightSuretyApp, async (accounts) => {
   it("should vote an oracle provider membership and activate votee account if consensus has been reached", async () => {
     const contract = await FlightSuretyApp.deployed();
     await Promise.all(
-      [
-        activatedOracleProviderOne,
-        activatedOracleProviderTwo,
-        activatedOracleProviderThree,
-      ].map(async (voter) => {
-        await contract.voteOracleProviderMembership(
-          registeredInsuranceProviderTwo,
-          {
-            from: voter,
-          }
-        );
+      [userThree, userFour, userFive].map(async (voter) => {
+        await contract.voteOracleProviderMembership(userEight, {
+          from: voter,
+        });
       })
     );
     const eventLogsVote = await contract.getPastEvents(
       "NewVoteOracleProvider",
-      { fromBlock: 0, filter: { votee: registeredInsuranceProviderTwo } }
+      { fromBlock: 0, filter: { votee: userEight } }
     );
-    const eventLogsActivatedUserFive = await contract.getPastEvents(
+    const eventLogsActivatedUserEight = await contract.getPastEvents(
       "ActivatedOracleProvider",
       {
         fromBlock: 0,
-        filter: { oracleProvider: registeredInsuranceProviderTwo },
+        filter: { oracleProvider: userEight },
       }
     );
     assert.equal(eventLogsVote.length, 3);
-    assert.equal(eventLogsActivatedUserFive.length, 1);
+    assert.equal(eventLogsActivatedUserEight.length, 1);
   });
 
   it("should fail to vote an oracle provider membership if caller has already voted", async () => {
     const contract = await FlightSuretyApp.deployed();
     try {
-      await contract.voteOracleProviderMembership(
-        registeredInsuranceProviderTwo,
-        {
-          from: activatedInsuranceProviderOne,
-        }
-      );
+      await contract.voteOracleProviderMembership(userEight, {
+        from: userThree,
+      });
     } catch (error) {
       assert.equal(error.reason, "caller has already voted");
     }
@@ -653,12 +703,9 @@ contract(FlightSuretyApp, async (accounts) => {
   it("should fail to vote an oracle provider membership if caller is not token holder", async () => {
     const contract = await FlightSuretyApp.deployed();
     try {
-      await contract.voteOracleProviderMembership(
-        registeredInsuranceProviderTwo,
-        {
-          from: registeredOracleProviderOne,
-        }
-      );
+      await contract.voteOracleProviderMembership(userFive, {
+        from: unauthorizedCaller,
+      });
     } catch (error) {
       assert.equal(error.reason, "caller must be token holder");
     }
@@ -674,13 +721,13 @@ contract(FlightSuretyApp, async (accounts) => {
       estimatedArrival,
       rate,
       {
-        from: activatedInsuranceProviderOne,
+        from: userOne,
       }
     );
 
     const eventLogs = await contract.getPastEvents("NewFlight", {
       fromBlock: 0,
-      filter: { insuranceProvider: activatedInsuranceProviderOne },
+      filter: { insuranceProvider: userOne },
     });
     assert.equal(eventLogs.length, 1);
   });
@@ -694,7 +741,7 @@ contract(FlightSuretyApp, async (accounts) => {
         estimatedArrival,
         rate,
         {
-          from: registeredInsuranceProviderOne,
+          from: userFour,
         }
       );
     } catch (error) {
@@ -711,7 +758,7 @@ contract(FlightSuretyApp, async (accounts) => {
         invalidEstimatedArrival,
         rate,
         {
-          from: activatedInsuranceProviderOne,
+          from: userOne,
         }
       );
     } catch (error) {
@@ -728,7 +775,7 @@ contract(FlightSuretyApp, async (accounts) => {
         invalidEstimatedArrival,
         rate,
         {
-          from: activatedInsuranceProviderOne,
+          from: userOne,
         }
       );
     } catch (error) {
@@ -745,7 +792,7 @@ contract(FlightSuretyApp, async (accounts) => {
         parseInt((Date.now() - 3600 * 24 * 1000).toString().slice(0, -3)),
         rate,
         {
-          from: activatedInsuranceProviderOne,
+          from: userOne,
         }
       );
     } catch (error) {
@@ -757,13 +804,13 @@ contract(FlightSuretyApp, async (accounts) => {
   it("should register a new insurance", async () => {
     const contract = await FlightSuretyApp.deployed();
     await contract.registerInsurance(flightID, {
-      from: activatedInsuranceProviderOne,
+      from: userOne,
       value: rate,
     });
 
     const eventLogs = await contract.getPastEvents("NewInsurance", {
       fromBlock: 0,
-      filter: { passenger: activatedInsuranceProviderOne },
+      filter: { passenger: userOne },
     });
     assert.equal(eventLogs.length, 1);
   });
@@ -772,7 +819,7 @@ contract(FlightSuretyApp, async (accounts) => {
     const contract = await FlightSuretyApp.deployed();
     try {
       await contract.registerInsurance(flightID, {
-        from: activatedInsuranceProviderOne,
+        from: userOne,
         value: rate - 1,
       });
     } catch (error) {
@@ -788,7 +835,7 @@ contract(FlightSuretyApp, async (accounts) => {
     await flightSuretyData.setTotalInsuredValue(0, { from: authorizedCaller });
     try {
       await contract.registerInsurance(flightID, {
-        from: activatedInsuranceProviderOne,
+        from: userOne,
         value: rate,
       });
     } catch (error) {
@@ -810,7 +857,7 @@ contract(FlightSuretyApp, async (accounts) => {
     });
     // registering a flight in the past
     await flightSuretyData.registerFlight(
-      activatedInsuranceProviderOne,
+      userOne,
       flightRef,
       (Date.now() - 3600 * 24 * 10 * 1000).toString().slice(0, -3),
       (Date.now() - 3600 * 24 * 9 * 1000).toString().slice(0, -3),
@@ -821,7 +868,8 @@ contract(FlightSuretyApp, async (accounts) => {
     );
     try {
       await contract.registerInsurance(2, {
-        from: activatedInsuranceProviderOne,
+        from: userOne,
+        value: rate,
       });
     } catch (error) {
       assert.equal(error.reason, "flight departure must be future");
@@ -842,7 +890,7 @@ contract(FlightSuretyApp, async (accounts) => {
       { from: authorizedCaller }
     );
     try {
-      await contract.claimInsurance(1, { from: activatedOracleProviderOne });
+      await contract.claimInsurance(1, { from: userSix });
     } catch (error) {
       assert.equal(error.reason, "caller must be insurance owner");
     }
@@ -862,7 +910,7 @@ contract(FlightSuretyApp, async (accounts) => {
       { from: authorizedCaller }
     );
     try {
-      await contract.claimInsurance(1, { from: activatedInsuranceProviderOne });
+      await contract.claimInsurance(1, { from: userOne });
     } catch (error) {
       assert.equal(error.reason, "flight must be late");
     }
@@ -881,16 +929,12 @@ contract(FlightSuretyApp, async (accounts) => {
       true,
       { from: authorizedCaller }
     );
-    const beforeClaimBalance = await web3.eth.getBalance(
-      activatedInsuranceProviderOne
-    );
-    await contract.claimInsurance(1, { from: activatedInsuranceProviderOne });
-    const afterClaimBalance = await web3.eth.getBalance(
-      activatedInsuranceProviderOne
-    );
+    const beforeClaimBalance = await web3.eth.getBalance(userOne);
+    await contract.claimInsurance(1, { from: userOne });
+    const afterClaimBalance = await web3.eth.getBalance(userOne);
     const eventLogs = await contract.getPastEvents("NewPayout", {
       fromBlock: 0,
-      filter: { flightID: flightID, owner: activatedInsuranceProviderOne },
+      filter: { flightID: flightID, owner: userOne },
     });
     assert.equal(eventLogs.length, 1);
     assert.equal(
@@ -904,7 +948,7 @@ contract(FlightSuretyApp, async (accounts) => {
   it("should fail to claim the insurance of a given user if insurance has already been claimed", async () => {
     const contract = await FlightSuretyApp.deployed();
     try {
-      await contract.claimInsurance(1, { from: activatedInsuranceProviderOne });
+      await contract.claimInsurance(1, { from: userOne });
     } catch (error) {
       assert.equal(error.reason, "insurance must not have been claimed");
     }
@@ -926,11 +970,11 @@ contract(FlightSuretyApp, async (accounts) => {
     const contract = await FlightSuretyApp.deployed();
     await contract.registerMembershipFeeAmendmentProposal(
       web3.utils.toWei("15"),
-      { from: activatedInsuranceProviderOne }
+      { from: userOne }
     );
     await contract.registerMembershipFeeAmendmentProposal(
       web3.utils.toWei("20"),
-      { from: activatedOracleProviderOne }
+      { from: userSix }
     );
 
     const eventLogsProposalOne = await contract.getPastEvents(
@@ -950,17 +994,7 @@ contract(FlightSuretyApp, async (accounts) => {
     try {
       await contract.registerMembershipFeeAmendmentProposal(
         web3.utils.toWei("15"),
-        { from: registeredInsuranceProviderOne }
-      );
-      assert.fail();
-    } catch (error) {
-      assert.equal(error.reason, "caller must be token holder");
-    }
-
-    try {
-      await contract.registerMembershipFeeAmendmentProposal(
-        web3.utils.toWei("15"),
-        { from: registeredOracleProviderOne }
+        { from: unauthorizedCaller }
       );
       assert.fail();
     } catch (error) {
@@ -971,38 +1005,20 @@ contract(FlightSuretyApp, async (accounts) => {
   it("As a token holder vote an existing membership fee amendment proposal", async () => {
     const contract = await FlightSuretyApp.deployed();
     await contract.voteMembershipFeeAmendmentProposal(1, {
-      from: activatedInsuranceProviderTwo,
+      from: userTwo,
     });
-    await contract.voteMembershipFeeAmendmentProposal(2, {
-      from: activatedOracleProviderTwo,
-    });
-
     const eventLogsVoteOne = await contract.getPastEvents(
       "NewVoteMembershipFeeAmendmentProposal",
       { fromBlock: 0, filter: { proposalID: 1 } }
     );
-    const eventLogsVoteTwo = await contract.getPastEvents(
-      "NewVoteMembershipFeeAmendmentProposal",
-      { fromBlock: 0, filter: { proposalID: 2 } }
-    );
     assert.equal(eventLogsVoteOne.length, 2);
-    assert.equal(eventLogsVoteTwo.length, 2);
   });
 
   it("As a non token holder should fail to vote an existing membership fee amendment proposal", async () => {
     const contract = await FlightSuretyApp.deployed();
     try {
       await contract.voteMembershipFeeAmendmentProposal(1, {
-        from: registeredOracleProviderOne,
-      });
-      assert.fail();
-    } catch (error) {
-      assert.equal(error.reason, "caller must be token holder");
-    }
-
-    try {
-      await contract.voteMembershipFeeAmendmentProposal(1, {
-        from: registeredInsuranceProviderOne,
+        from: "0x",
       });
       assert.fail();
     } catch (error) {
@@ -1023,10 +1039,10 @@ contract(FlightSuretyApp, async (accounts) => {
   it("As a token holder register a new membership amendment proposal", async () => {
     const contract = await FlightSuretyApp.deployed();
     await contract.registerInsuranceCoverageAmendmentProposal(200, {
-      from: activatedInsuranceProviderOne,
+      from: userOne,
     });
     await contract.registerInsuranceCoverageAmendmentProposal(200, {
-      from: activatedOracleProviderOne,
+      from: userSix,
     });
     const eventLogsProposalOne = await contract.getPastEvents(
       "NewInsuranceCoverageAmendmentProposal",
@@ -1044,15 +1060,7 @@ contract(FlightSuretyApp, async (accounts) => {
     const contract = await FlightSuretyApp.deployed();
     try {
       await contract.registerInsuranceCoverageAmendmentProposal(200, {
-        from: registeredInsuranceProviderOne,
-      });
-      assert.fail();
-    } catch (error) {
-      assert.equal(error.reason, "caller must be token holder");
-    }
-    try {
-      await contract.registerInsuranceCoverageAmendmentProposal(200, {
-        from: registeredOracleProviderOne,
+        from: unauthorizedCaller,
       });
       assert.fail();
     } catch (error) {
@@ -1063,10 +1071,10 @@ contract(FlightSuretyApp, async (accounts) => {
   it("As a token holder vote an existing insurance coverage amendement proposal", async () => {
     const contract = await FlightSuretyApp.deployed();
     await contract.voteInsuranceCoverageAmendmentProposal(1, {
-      from: activatedInsuranceProviderTwo,
+      from: userTwo,
     });
     await contract.voteInsuranceCoverageAmendmentProposal(2, {
-      from: activatedOracleProviderTwo,
+      from: userSeven,
     });
 
     const eventLogsVoteOne = await contract.getPastEvents(
@@ -1085,15 +1093,7 @@ contract(FlightSuretyApp, async (accounts) => {
     const contract = await FlightSuretyApp.deployed();
     try {
       await contract.voteInsuranceCoverageAmendmentProposal(1, {
-        from: registeredInsuranceProviderOne,
-      });
-      assert.fail();
-    } catch (error) {
-      assert.equal(error.reason, "caller must be token holder");
-    }
-    try {
-      await contract.voteInsuranceCoverageAmendmentProposal(1, {
-        from: registeredOracleProviderOne,
+        from: unauthorizedCaller,
       });
       assert.fail();
     } catch (error) {

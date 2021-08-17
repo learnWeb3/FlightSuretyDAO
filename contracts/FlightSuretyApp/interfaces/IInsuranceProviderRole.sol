@@ -14,12 +14,20 @@ interface IInsuranceProviderRole {
 
     // check if an insurance provider aka airline is registered
     function isRegisteredInsuranceProvider(address _caller)
-        external view
+        external
+        view
+        returns (bool);
+
+    // check if an insurance provider aka airline is funded
+    function isFundedInsuranceProvider(address _account)
+        external
+        view
         returns (bool);
 
     // check if an insurance provider aka airline is activated
     function isActivatedInsuranceProvider(address _caller)
-        external view
+        external
+        view
         returns (bool);
 
     // check if a given caller has voted for the insurance provider membership of an other address
@@ -60,6 +68,9 @@ interface IInsuranceProviderRole {
         address _account,
         uint256 _voteWeight
     ) external;
+
+    // fund an insurance provider aka airline
+    function fundInsuranceProvider(address _account, uint256 _amount) external;
 
     // activate an insurance provider aka airline
     function activateInsuranceProvider(address _account) external;

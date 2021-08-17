@@ -152,7 +152,6 @@ const PageContent = ({ state, setState }) => {
         provider to participate in the DAO
       </MuiAlert>
 
-
       {formattedCurrentMembershipApplications?.oracleProvidersApplications
         .length > 0 ? (
         <Grid container>
@@ -170,7 +169,7 @@ const PageContent = ({ state, setState }) => {
       )}
 
       {formattedCurrentMembershipApplications?.insuranceProviderApplications
-        .length > 0 ? (
+        .length > 0 && registration?.isActivatedInsuranceProvider ? (
         <Grid container>
           <MyDataGrid
             handleClick={handleClickInsuranceProvidersDataGrid}
@@ -186,7 +185,7 @@ const PageContent = ({ state, setState }) => {
       )}
     </Container>
   ) : state.status === "error" ? (
-    <ErrorPage code={state.code} height="100%"  message={state.message}/>
+    <ErrorPage code={state.code} height="100%" message={state.message} />
   ) : (
     state.status === "loading" && <LoadingAnimation />
   );

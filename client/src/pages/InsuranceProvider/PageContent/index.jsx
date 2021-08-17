@@ -9,6 +9,7 @@ import LoadingAnimation from "../../../components/LoadingAnimation/index";
 import NoContent from "../../../components/icons/NoContent";
 import PieChart from "../../../components/PieChart/index";
 import { makeStyles } from "@material-ui/core/styles";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles(() => ({
   pageContainer: {
@@ -28,6 +29,8 @@ const PageContent = ({ state, setState }) => {
     insuranceProvidersProfits,
     insuranceProvidersFlights,
   } = useContext(Context);
+
+  const history = useHistory();
 
   useEffect(() => {
     registration &&
@@ -55,7 +58,19 @@ const PageContent = ({ state, setState }) => {
           </Typography>
         </Grid>
         <Hidden mdDown>
-          <Grid item lg={3}></Grid>
+          <Grid item lg={3}>
+            {registration?.isActivatedInsuranceProvider && (
+              <Button
+                variant="contained"
+                color="primary"
+                variant="contained"
+                onClick={() => history.push("/register")}
+                fullWidth
+              >
+                REGISTER A NEW PROVIDER
+              </Button>
+            )}
+          </Grid>
         </Hidden>
         <Grid item xs={12} lg={3}>
           {registration?.isActivatedInsuranceProvider && (
@@ -136,11 +151,16 @@ const PageContent = ({ state, setState }) => {
                 label="payout ratio"
                 values={[
                   {
-                    value: Math.round(fundsIndicators.totalInsuranceDefaultRate *100) / 100,
+                    value:
+                      Math.round(
+                        fundsIndicators.totalInsuranceDefaultRate * 100
+                      ) / 100,
                     label: "total",
                   },
                   {
-                    value: Math.round(fundsIndicators.myInsuranceDefaultRate*100) / 100,
+                    value:
+                      Math.round(fundsIndicators.myInsuranceDefaultRate * 100) /
+                      100,
                     label: "me",
                   },
                 ]}

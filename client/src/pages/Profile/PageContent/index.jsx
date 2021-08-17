@@ -31,7 +31,6 @@ const PageContent = ({ state, setState }) => {
     // data
     userTx,
     userInsuranceContracts,
-    registration,
     // filters
     isFilterFlightToActive,
     // modal
@@ -39,32 +38,19 @@ const PageContent = ({ state, setState }) => {
   } = useContext(Context);
 
   useEffect(() => {
-    if (
-      registration?.isActivatedInsuranceProvider ||
-      registration?.isActivatedOracleProvider ||
-      registration?.isTokenHolder
-    ) {
-      if (userTx && userInsuranceContracts) {
-        if (userTx.length > 0) {
-          const _formattedUserdTx = userTx.map((tx) => ({
-            ...tx,
-            timestamp: moment(tx.timestamp * 1000)
-              .format("MMMM Do YYYY h:mm:ss a")
-              .toString(),
-          }));
-          setFormattedUserTx(_formattedUserdTx);
-          setState({ status: "loaded", code: null });
-        } else {
-          setState({ status: "loaded", code: null });
-        }
+    if (userTx && userInsuranceContracts) {
+      if (userTx.length > 0) {
+        const _formattedUserdTx = userTx.map((tx) => ({
+          ...tx,
+          timestamp: moment(tx.timestamp * 1000)
+            .format("MMMM Do YYYY h:mm:ss a")
+            .toString(),
+        }));
+        setFormattedUserTx(_formattedUserdTx);
+        setState({ status: "loaded", code: null });
+      } else {
+        setState({ status: "loaded", code: null });
       }
-    } else {
-      setState({
-        status: "error",
-        code: 403,
-        message:
-          "You have to be a registred provider or a token holder to access this ressource",
-      });
     }
   }, [userTx, userInsuranceContracts]);
 
@@ -156,7 +142,7 @@ const PageContent = ({ state, setState }) => {
           In this section you will find all the insurances contracts you have
           subscribed to and their respective status
         </MuiAlert>
-        
+
         <FiltersArea />
         <Grid container className={classes.flightContainer}>
           {userInsuranceContracts ? (
@@ -179,7 +165,7 @@ const PageContent = ({ state, setState }) => {
                     realArrival,
                     realDeparture,
                     settled,
-                    insuranceID
+                    insuranceID,
                   },
                   index
                 ) => (

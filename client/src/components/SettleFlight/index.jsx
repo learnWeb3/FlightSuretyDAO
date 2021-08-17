@@ -356,7 +356,7 @@ const SettleFlight = () => {
                   )}
               </Paper>
             </Grid>
-            {!isVoted && selectedFlight?.settled && (
+            {!isVoted && !selectedFlight?.settled && (
               <Grid item xs={12}>
                 <Typography
                   variant="h5"

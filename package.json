@@ -22,7 +22,7 @@
     "test": "truffle test",
     "server-dev": "cd ./server && npm run dev",
     "server": "cd ./server && npm run start",
-    "app": "cd ./client && npm run start"
+    "dapp": "cd ./client && npm run start"
   },
   "author": "",
   "license": "ISC"

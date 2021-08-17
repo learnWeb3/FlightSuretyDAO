@@ -12,8 +12,10 @@
   "dependencies": {
     "dotenv": "^10.0.0",
     "node-cron": "^3.0.0",
-    "nodemon": "^2.0.12",
     "truffle-hdwallet-provider": "^1.0.17",
     "web3": "^1.5.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
   }
 }

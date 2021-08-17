@@ -13,7 +13,7 @@ import { ErrorPage } from "../../../components/Error";
 import LoadingAnimation from "../../../components/LoadingAnimation";
 import NoContent from "../../../components/icons/NoContent/index";
 import { useHistory } from "react-router-dom";
-
+import InsuranceProviderRegistration from "../../../components/InsuranceProviderRegistration/index.jsx/index";
 
 const useStyles = makeStyles(() => ({
   flex: {
@@ -36,7 +36,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const PageContent = ({ state, setState }) => {
-  const history = useHistory()
+  const history = useHistory();
   const classes = useStyles();
   const {
     // current Address
@@ -45,7 +45,10 @@ const PageContent = ({ state, setState }) => {
     appContract,
     // alert
     setAlert,
+    // data
     registration,
+    // modal
+    setModal,
     // data refresh
     refreshCounter,
     setRefreshCounter,
@@ -53,10 +56,7 @@ const PageContent = ({ state, setState }) => {
 
   useEffect(() => {
     if (appContract && registration) {
-      if (
-        registration.isRegisteredInsuranceProvider ||
-        registration.isOracleProvider
-      ) {
+      if (registration.isOracleProvider) {
         setState({
           status: "error",
           code: 403,
@@ -81,7 +81,7 @@ const PageContent = ({ state, setState }) => {
         type: "success",
       });
       setRefreshCounter(refreshCounter + 1);
-      history.push('/oracle-provider');
+      history.push("/oracle-provider");
     } catch (error) {
       console.log(error);
       setAlert({
@@ -94,28 +94,7 @@ const PageContent = ({ state, setState }) => {
   };
 
   const handleInsuranceProviderRegistration = async () => {
-    try {
-      const value = await fetchCurrentMembershipFee(
-        appContract,
-        selectedAddress
-      );
-      await registerInsuranceProvider(appContract, selectedAddress, value);
-      setAlert({
-        displayed: true,
-        message: "Your transaction has been processed successfully",
-        type: "success",
-      });
-      setRefreshCounter(refreshCounter + 1);
-      history.push('/insurance-provider');
-    } catch (error) {
-      console.log(error);
-      setAlert({
-        displayed: true,
-        message:
-          "Sorry we were unable to process your transaction please try again or contact the support team",
-        type: "error",
-      });
-    }
+    setModal({ displayed: true, content: InsuranceProviderRegistration });
   };
 
   return state.status === "loaded" ? (
@@ -141,22 +120,43 @@ const PageContent = ({ state, setState }) => {
           Welcome to The FlighSurety DAO !
         </Typography>
         <SignUp width="50%" />
-        <Button
-          onClick={handleInsuranceProviderRegistration}
-          className={classes.button}
-          variant="contained"
-          color="primary"
-        >
-          INSURANCE PROVIDER
-        </Button>
-        <Button
-          onClick={handleOracleProviderRegistration}
-          className={classes.button}
-          variant="contained"
-          color="primary"
-        >
-          ORACLE PROVIDER
-        </Button>
+        {registration.isActivatedInsuranceProvider && (
+          <Button
+            onClick={handleInsuranceProviderRegistration}
+            className={classes.button}
+            variant="contained"
+            color="primary"
+          >
+            REGISTER A NEW INSURANCE PROVIDER
+          </Button>
+        )}
+
+        {
+          console.log(registration)
+        }
+
+      {registration.isRegisteredInsuranceProvider && !registration.isActivatedInsuranceProvider && (
+          <Button
+            onClick={handleInsuranceProviderRegistration}
+            className={classes.button}
+            variant="contained"
+            color="primary"
+          >
+            ACTIVATE MY ACCOUNT
+          </Button>
+        )}
+
+        {!registration.isRegisteredInsuranceProvider &&
+          !registration.isRegisteredOracleProvider && (
+            <Button
+              onClick={handleOracleProviderRegistration}
+              className={classes.button}
+              variant="contained"
+              color="primary"
+            >
+              ORACLE PROVIDER
+            </Button>
+          )}
       </Grid>
       <Hidden mdDown={true}>
         <Grid item lg={3}></Grid>

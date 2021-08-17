@@ -71,6 +71,17 @@ contract MembershipFeeAmendmentProposal is
         onlyAuthorizedCaller
     {
         _activateMembershipFeeAmendmentProposal(_proposalID);
+        _setProposal(_proposalID, true);
+    }
+
+    // cehck wether a proposal is set
+    function isMembershipFeeAmendmentProposalSet(uint256 _proposalID)
+        external
+        view
+        onlyAuthorizedCaller
+        returns (bool set)
+    {
+        return _isProposalSet(_proposalID);
     }
 
     // check wether a voter as already voted for a specific proposal

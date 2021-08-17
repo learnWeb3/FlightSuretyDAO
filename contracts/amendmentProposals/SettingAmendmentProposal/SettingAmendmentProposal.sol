@@ -8,6 +8,7 @@ contract SettingAmendmentProposal {
     struct Proposal {
         uint256 proposedValue;
         uint256 createdAt;
+        bool set;
     }
     uint256 currentProposalID;
     mapping(uint256 => Votable.ResultVote) proposalVotes;
@@ -20,7 +21,8 @@ contract SettingAmendmentProposal {
     ) internal {
         Proposal memory _proposal = Proposal({
             proposedValue: _proposedValue,
-            createdAt: block.number
+            createdAt: block.number,
+            set: false
         });
 
         currentProposalID++;
@@ -44,6 +46,21 @@ contract SettingAmendmentProposal {
     {
         return proposalVotes[_proposalID].hasVotedResult(_caller);
     }
+
+     function _isProposalSet(uint256 _proposalID)
+        internal
+        view
+        returns (bool _set)
+    {
+        return proposals[_proposalID].set;
+    }
+
+    function _setProposal(uint256 _proposalID, bool _set)
+        internal
+    {
+        proposals[_proposalID].set = _set;
+    }
+
 
     function _getVoteCount(uint256 _proposalID, bool _side)
         internal

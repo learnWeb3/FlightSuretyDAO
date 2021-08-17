@@ -9,8 +9,6 @@ The user story is the following :
 - As an activated insurance provider i can register new flights
 - As an activated oracle provider i can settle flights.
 
-[UML SCHEMES](url)
-
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 In order to interact with the platform you will need 10 different addresses funded with tests ethers on the ethereum Rinkeby network.
@@ -20,36 +18,36 @@ You can fund these addresses from an ethereum [faucet](https://faucet.rinkeby.io
 ## Contract deployement workflow
 
 1. deploy FlightSuretyApp
-. uint256 \_tokenHolderMinBlockRequirement
-. uint256 \_proposalValidBlockNum
+   . uint256 \_tokenHolderMinBlockRequirement
+   . uint256 \_proposalValidBlockNum
 2. deploy FlightSuretyOracle
-. uint64 \_authorizedFlightDelay
+   . uint64 \_authorizedFlightDelay
 3. deploy FlightSuretyData authorizing callers :
-. address \_appContractAddress
-. address \_oracleContractAddress
+   . address \_appContractAddress
+   . address \_oracleContractAddress
 4. deploy OracleProviderRole authorizing callers :
-. address \_appContractAddress
-. address \_oracleContractAddress
+   . address \_appContractAddress
+   . address \_oracleContractAddress
 5. deploy InsuranceProviderRole authorizing callers :
-. address \_appContractAddress
+   . address \_appContractAddress
 6. deploy FlightSuretyShares authorizing callers :
-. address \_appContractAddress
+   . address \_appContractAddress
 7. deploy InsuranceCoverageAmendmentProposal authroizing caller :
-. address \_appContractAddress
-. uint256 \_currentInsuranceCoverage
+   . address \_appContractAddress
+   . uint256 \_currentInsuranceCoverage
 8. deploy MembershipFeeAmendmentProposal authorizing caller :
-. address \_appContractAddress
-. uint256 \_currentMembershipfee
-7. initialize FlightSuretyApp referencing external contracts addresses :
-. address \_flightSuretyData
-. address \_insuranceCoverageAmendmentProposal
-. address \_membershipFeeAmendmentProposal
-. address \_insuranceProviderRole
-. address \_oracleProviderRole
-. address \_flighSuretyShares
-8. initialize FlightSuretyOracle referencing external contracts addresses :
-. address \_flightSuretyData
-. address \_oracleProviderRole
+   . address \_appContractAddress
+   . uint256 \_currentMembershipfee
+9. initialize FlightSuretyApp referencing external contracts addresses :
+   . address \_flightSuretyData
+   . address \_insuranceCoverageAmendmentProposal
+   . address \_membershipFeeAmendmentProposal
+   . address \_insuranceProviderRole
+   . address \_oracleProviderRole
+   . address \_flighSuretyShares
+10. initialize FlightSuretyOracle referencing external contracts addresses :
+    . address \_flightSuretyData
+    . address \_oracleProviderRole
 
 ## Config the app
 
@@ -58,11 +56,6 @@ In order to run the application you will need to create environnement files to r
 ```bash
 # creating general environement file
 echo -e "MNEMONIC=<YOUR MNEMONIC> PROVIDER_URL=<YOUR PROVIDER URL> SERVER_PORT=<SERVER PORT>" >> .env
-```
-
-```json
-// replace network key in your contract abi when compiled
-
 ```
 
 ## Quickstart (DEV ENVIRONNEMENT)
@@ -102,10 +95,17 @@ npm run test
 npm run migrate-dev
 ```
 
+### Lauch Ganache client
+
+```bash
+# lauch Ganache client
+ganache-cli --accounts=20
+```
+
 ### Seed the smart contracts
 
 ```bash
-# register the default 10 addresses provided by ganache as default configuration (account 1 as insurance provider and all accounts as oracle provider)
+# register the default 20 addresses provided by ganache as default configuration (account 1 as insurance provider and all accounts as oracle provider)
 node ./seed/index.js
 ```
 
@@ -114,13 +114,13 @@ node ./seed/index.js
 ```bash
 # running the client app in dev environement (hot reloading enabled)
 cd ./client
-npm run start
+npm run dapp
 ```
 
 ```bash
 # running the server app in dev environement (hot reloading enabled)
 cd ./server
-npm run dev
+npm run server
 ```
 
 ## Deployment (PROD ENVIRONNEMENT)
@@ -171,7 +171,7 @@ Please double check and do not hesitate to run the migration command tw times.
 
 ### Client
 
-  // material ui
+// material ui
 
 - "@date-io/date-fns": "^1.3.13",
 - "date-fns": "^2.23.0",
@@ -212,6 +212,36 @@ Please double check and do not hesitate to run the migration command tw times.
 - "web3": "^1.3.6"
 
 ### Server
+
+
+
+### Project requirement
+
+[x] Smart Contract code is separated into multiple contracts:
+[x] A Dapp client has been created and is used for triggering contract calls. Client can be launched with “npm run dapp” and is available at http://localhost:8000
+[x] A server app has been created for simulating oracle behavior. Server can be launched with “npm run server”
+[x] Students has implemented operational status control.
+[x] Contract functions “fail fast” by having a majority of “require()” calls at the beginning of function body
+[x] First airline is registered when contract is deployed.
+[x] Only existing airline may register a new airline until there are at least four airlines registered
+Demonstrated either with Truffle test or by making call from client Dapp
+[x] Registration of fifth and subsequent airlines requires multi-party consensus of 50% of registered airlines
+Demonstrated either with Truffle test or by making call from client Dapp
+[x] Airline can be registered, but does not participate in contract until it submits funding of 10 ether
+Demonstrated either with Truffle test or by making call from client Dapp
+[x] Passengers can choose from a fixed list of flight numbers and departure that are defined in the Dapp client
+[x] Passengers may pay up to 1 ether for purchasing flight insurance.
+[x] If flight is delayed due to airline fault, passenger receives credit of 1.5X the amount they paid
+[x] Passenger can withdraw any funds owed to them as a result of receiving credit for insurance payout
+[x] Insurance payouts are not sent directly to passenger’s wallet
+[x] Oracle functionality is implemented in the server app.
+[ ] Upon startup, 20+ oracles are registered and their assigned indexes are persisted in memory
+[x] Upon startup, 20 oracles are registered
+[ ] Update flight status requests from client Dapp result in OracleRequest event emitted by Smart Contract that is captured by server (displays on console and handled in code)
+[x] Update flight status requests from client Dapp result in NewResponse event emitted
+[ ] Server will loop through all registered oracles, identify those oracles for which the OracleRequest event applies, and respond by calling into FlightSuretyApp contract with random status code of Unknown (0), On Time (10) or Late Airline (20), Late Weather (30), Late Technical (40), or Late Other (50)
+(replaced to be closer to a real scenario);
+[x] Server will loop through all created flights and make a call to the oracle contract authorizing randomly selected oracle providers through their index to provide flight settlement data through the user interface
 
 ## Built With
 

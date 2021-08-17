@@ -8,6 +8,7 @@ import { ErrorPage } from "../../../components/Error";
 import LoadingAnimation from "../../../components/LoadingAnimation/index";
 import NoContent from "../../../components/icons/NoContent";
 import PieChart from "../../../components/PieChart/index";
+import { useHistory } from "react-router-dom";
 
 const PageContent = ({ state, setState }) => {
   const {
@@ -19,6 +20,8 @@ const PageContent = ({ state, setState }) => {
     insuranceProvidersProfits,
     insuranceProvidersFlights,
   } = useContext(Context);
+
+  const history = useHistory();
 
   useEffect(() => {
     fundsIndicators &&
@@ -41,7 +44,17 @@ const PageContent = ({ state, setState }) => {
           </Typography>
         </Grid>
         <Hidden mdDown>
-          <Grid item lg={3}></Grid>
+          <Grid item lg={3}>
+            <Button
+              variant="contained"
+              color="primary"
+              variant="contained"
+              onClick={() => history.push("/register")}
+              fullWidth
+            >
+              REGISTER A NEW PROVIDER
+            </Button>
+          </Grid>
         </Hidden>
         <Grid item xs={12} lg={3}>
           <Button

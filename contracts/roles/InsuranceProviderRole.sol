@@ -11,6 +11,7 @@ contract InsuranceProviderRole is Ownable, CallerAuditable {
     Rolable.Role insuranceProviders;
     using Votable for Votable.MembershipVote;
     Votable.MembershipVote insuranceProvidersVote;
+    mapping(address => uint256) insuranceProvidersFunding;
 
     modifier onlyOwnerOrAuthorizedCaller() {
         require(
@@ -143,6 +144,28 @@ contract InsuranceProviderRole is Ownable, CallerAuditable {
             _account,
             _voteWeight
         );
+    }
+
+    // fund an insurance provider aka airline
+    function fundInsuranceProvider(address _account, uint256 _amount)
+        external
+        onlyAuthorizedCaller
+    {
+        insuranceProvidersFunding[_account] = _amount;
+    }
+
+    // check if a given account is funded
+    function isFundedInsuranceProvider(address _account)
+        external
+        view
+        onlyAuthorizedCaller
+        returns (bool isFunded)
+    {
+        if (insuranceProvidersFunding[_account] > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // activate an insurance provider aka airline
