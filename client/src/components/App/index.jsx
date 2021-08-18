@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from "react-router-dom";
 import Admin from "../../pages/Admin/index";
 import { ErrorPage } from "../Error/index";
 import Context from "../../context/index";
@@ -320,6 +325,19 @@ const App = ({ state, setState }) => {
           </Route>
           <Route exact path="/register">
             <ComponentState component={Registration} />
+          </Route>
+          <Route path="/">
+            {registration?.isOwner && <Redirect to="/admin" />}
+            {registration?.isActivatedInsuranceProvider &&
+              !registration?.isOwner && <Redirect to="/insurance-provider" />}
+            {registration?.isActivatedOracleProvider &&
+              !registration?.isOwner && <Redirect to="/oracle-provider" />}
+            {(registration?.isRegisteredInsuranceProvider &&
+              !registration?.isFundedInsuranceProvider) ||
+              (!registration?.isActivatedInsuranceProvider &&
+                !registration?.isActivatedOracleProvider && (
+                  <Redirect to="/register" />
+                ))}
           </Route>
           <Route path="*">
             <ErrorPage code={404} height="100vh" />
