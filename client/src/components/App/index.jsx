@@ -73,6 +73,9 @@ const App = ({ state, setState }) => {
   /** filters **/
   const [isFilterFlightToActive, setFilterFlightToActive] = useState(true);
 
+  /** menu left **/
+  const [menuLeftIsOpen, setMenuLeftIsOpen] = useState(false);
+
   /** modal **/
   const [modal, setModal] = useState({
     displayed: false,
@@ -87,26 +90,46 @@ const App = ({ state, setState }) => {
   });
 
   useEffect(() => {
+    const initWSSEvents = (appContract, oracleContract) => {
+      appContract.events
+        .allEvents({}, () => {})
+        .on("connected", () =>
+          console.log("listening for FlightSuretyApp contract events...")
+        )
+        .on("data", () => setRefreshCounter(refreshCounter + 1))
+        .on("error", () => initWSSEvents());
+      oracleContract.events
+        .allEvents({}, () => {})
+        .on("connected", () =>
+          console.log("listening for FlightSuretyOracle contract events...")
+        )
+        .on("data", () => setRefreshCounter(refreshCounter + 1))
+        .on("error", () => initWSSEvents());
+    };
     const initializeContracts = async (provider) => {
       const networkID = await provider.eth.net.getId();
-
+      const _appContract = web3Contract(
+        provider,
+        FlightSuretyApp.networks[networkID].address,
+        FlightSuretyApp.abi
+      );
+      const _oracleContract = web3Contract(
+        provider,
+        FlightSuretyOracle.networks[networkID].address,
+        FlightSuretyOracle.abi
+      );
+      const _tokenContract = web3Contract(
+        provider,
+        FlightSuretyShares.networks[networkID].address,
+        FlightSuretyShares.abi
+      );
       setContracts({
-        appContract: web3Contract(
-          provider,
-          FlightSuretyApp.networks[networkID].address,
-          FlightSuretyApp.abi
-        ),
-        oracleContract: web3Contract(
-          provider,
-          FlightSuretyOracle.networks[networkID].address,
-          FlightSuretyOracle.abi
-        ),
-        tokenContract: web3Contract(
-          provider,
-          FlightSuretyShares.networks[networkID].address,
-          FlightSuretyShares.abi
-        ),
+        appContract: _appContract,
+        oracleContract: _oracleContract,
+        tokenContract: _tokenContract,
       });
+
+      initWSSEvents(_appContract, _oracleContract);
     };
 
     if (provider && selectedAddress) {
@@ -228,6 +251,9 @@ const App = ({ state, setState }) => {
         // filters
         isFilterFlightToActive,
         setFilterFlightToActive,
+        //menu left
+        menuLeftIsOpen,
+        setMenuLeftIsOpen,
         // modal
         modal,
         setModal,

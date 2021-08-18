@@ -171,7 +171,7 @@ const FlightData = ({
             icon={ScheduleRoundedIcon}
           />
           <Typography variant="body2" gutterBottom>
-            Flight duration : ≈ {formattedFlightDuration} hours
+            Flight duration : ≈ {formattedFlightDuration.toString().slice(0,4)} hours
           </Typography>
           {rate && (
             <Typography variant="body2" gutterBottom>

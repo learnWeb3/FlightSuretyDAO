@@ -90,6 +90,7 @@ const FlightRegistration = () => {
       const estimatedArrivalSeconds =
         Math.floor(parseInt(estimatedArrival.toString().slice(0, -3)) / 60) *
         60;
+
       await registerFlight(appContract, selectedAddress, {
         flightRef,
         estimatedDeparture: estimatedDepartureSeconds,

@@ -17,7 +17,7 @@
     "dotenv": "^10.0.0"
   },
   "scripts": {
-    "migrate-dev": "truffle compile && truffle networks --clean && truffle migrate --reset && node ./config/index.js",
+    "migrate-dev": "truffle compile && truffle networks --clean && truffle migrate --reset && node ./config/index.js && node ./seed/index.js",
     "migrate": "truffle compile && truffle networks --clean && truffle migrate --network=rinkeby --reset && node ./config/index.js",
     "test": "truffle test",
     "server-dev": "cd ./server && npm run dev",

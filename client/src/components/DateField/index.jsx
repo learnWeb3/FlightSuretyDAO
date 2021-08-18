@@ -17,7 +17,7 @@ const DateField = ({
   handleChange,
   required,
   error,
-  minDate = Date.now()
+  minDate = Date.now(),
 }) => {
   const classes = useStyles();
   return (
@@ -30,7 +30,7 @@ const DateField = ({
         format="MM/dd/yyyy"
         value={selectedDate}
         onChange={handleChange}
-        KeyboardButtonProps={{
+        keyboardbuttonprops={{
           "aria-label": "change date",
         }}
         className={classes.fullWidth}
