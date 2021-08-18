@@ -4,18 +4,12 @@ import Context from "../../../context/index";
 import { makeStyles } from "@material-ui/core/styles";
 import MyDataGrid from "../../../components/MyDataGrid";
 import LoadingAnimation from "../../../components/LoadingAnimation";
-import NoContent from "../../../components/icons/NoContent";
 import { ErrorPage } from "../../../components/Error";
 import VoteMembership from "../../../components/VoteMembership/index.jsx/index";
 import moment from "moment";
 import MuiAlert from "@material-ui/lab/Alert";
 
-const useStyles = makeStyles(() => ({
-  alert: {
-    marginBottom: 24,
-    marginTop: 24,
-  },
-}));
+const useStyles = makeStyles(() => ({}));
 
 const PageContent = ({ state, setState }) => {
   const classes = useStyles();
@@ -136,53 +130,54 @@ const PageContent = ({ state, setState }) => {
 
   return state.status === "loaded" ? (
     <Container>
-      <Typography variant="h5" component="h1">
-        Membership application
-      </Typography>
-
-      <MuiAlert
-        className={classes.alert}
-        elevation={6}
-        variant="filled"
-        severity="info"
-      >
-        In this section you will find all the current membership applications
-        aka providers who are not yet activated. A fifty percent multiparty
-        consensus needs to be achieved among token holders in order for a new
-        provider to participate in the DAO
-      </MuiAlert>
-
-      {formattedCurrentMembershipApplications?.oracleProvidersApplications
-        .length > 0 ? (
-        <Grid container>
-          <MyDataGrid
-            handleClick={handleClickOracleProvidersDataGrid}
-            header="Oracle provider applications"
-            rows={
-              formattedCurrentMembershipApplications.oracleProvidersApplications
-            }
-            columns={columns}
-          />
+      <Grid container spacing={4}>
+        <Grid item xs={12}>
+          <Typography variant="h5" component="h1">
+            Membership application
+          </Typography>
         </Grid>
-      ) : (
-        <NoContent fontSize="6rem" message="Nothing just yet ..." />
-      )}
-
-      {formattedCurrentMembershipApplications?.insuranceProviderApplications
-        .length > 0 && registration?.isActivatedInsuranceProvider ? (
-        <Grid container>
-          <MyDataGrid
-            handleClick={handleClickInsuranceProvidersDataGrid}
-            header="Insurance provider applications"
-            rows={
-              formattedCurrentMembershipApplications.insuranceProviderApplications
-            }
-            columns={columns}
-          />
+        <Grid item xs={12}>
+          <MuiAlert elevation={6} variant="filled" severity="info">
+            In this section you will find all the current membership
+            applications aka providers who are not yet activated. A fifty
+            percent multiparty consensus needs to be achieved among token
+            holders in order for a new provider to participate in the DAO
+          </MuiAlert>
         </Grid>
-      ) : (
-        <NoContent fontSize="6rem" message="Nothing just yet ..." />
-      )}
+
+        {formattedCurrentMembershipApplications?.oracleProvidersApplications
+          .length > 0 && (
+          <Grid item xs={12}>
+            <Grid container>
+              <MyDataGrid
+                handleClick={handleClickOracleProvidersDataGrid}
+                header="Oracle provider applications"
+                rows={
+                  formattedCurrentMembershipApplications.oracleProvidersApplications
+                }
+                columns={columns}
+              />
+            </Grid>
+          </Grid>
+        )}
+
+        {formattedCurrentMembershipApplications?.insuranceProviderApplications
+          .length > 0 &&
+          registration?.isActivatedInsuranceProvider && (
+            <Grid item xs={12}>
+              <Grid container>
+                <MyDataGrid
+                  handleClick={handleClickInsuranceProvidersDataGrid}
+                  header="Insurance provider applications"
+                  rows={
+                    formattedCurrentMembershipApplications.insuranceProviderApplications
+                  }
+                  columns={columns}
+                />
+              </Grid>
+            </Grid>
+          )}
+      </Grid>
     </Container>
   ) : state.status === "error" ? (
     <ErrorPage code={state.code} height="100%" message={state.message} />

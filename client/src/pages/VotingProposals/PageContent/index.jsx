@@ -3,7 +3,6 @@ import { Button, Container, Grid, Typography, Fab } from "@material-ui/core";
 import Context from "../../../context/index";
 import MyDataGrid from "../../../components/MyDataGrid";
 import LoadingAnimation from "../../../components/LoadingAnimation";
-import NoContent from "../../../components/icons/NoContent";
 import { ErrorPage } from "../../../components/Error";
 import ProposalVote from "../../../components/ProposalVote/index.jsx/index";
 import ProposalRegistration from "../../../components/ProposalRegistration/index";
@@ -180,41 +179,41 @@ const PageContent = ({ state, setState }) => {
             </Fab>
           </Grid>
         )}
+
+        {formattedSettingsAmendmentProposal?.membershipFeeAmendmentProposals
+          .length > 0 && (
+          <Grid item xs={12}>
+            <Grid container>
+              <MyDataGrid
+                handleClick={handleClickMembershipFeeAmendmentProposalsDataGrid}
+                header="Membership fee amendment proposals"
+                rows={
+                  formattedSettingsAmendmentProposal.membershipFeeAmendmentProposals
+                }
+                columns={columns}
+              />
+            </Grid>
+          </Grid>
+        )}
+
+        {formattedSettingsAmendmentProposal?.insuranceCoverageAmendmentProposals
+          .length > 0 && (
+          <Grid item xs={12}>
+            <Grid container>
+              <MyDataGrid
+                handleClick={
+                  handleClickInsuranceCoverageRatioAmendmentProposalsDataGrid
+                }
+                header="Insurance coverage amendement proposals"
+                rows={
+                  formattedSettingsAmendmentProposal.insuranceCoverageAmendmentProposals
+                }
+                columns={columns}
+              />
+            </Grid>
+          </Grid>
+        )}
       </Grid>
-
-      {formattedSettingsAmendmentProposal?.membershipFeeAmendmentProposals
-        .length > 0 ? (
-        <Grid container>
-          <MyDataGrid
-            handleClick={handleClickMembershipFeeAmendmentProposalsDataGrid}
-            header="Membership fee amendment proposals"
-            rows={
-              formattedSettingsAmendmentProposal.membershipFeeAmendmentProposals
-            }
-            columns={columns}
-          />
-        </Grid>
-      ) : (
-        <NoContent fontSize="6rem" message="Nothing just yet ..." />
-      )}
-
-      {formattedSettingsAmendmentProposal?.insuranceCoverageAmendmentProposals
-        .length > 0 ? (
-        <Grid container>
-          <MyDataGrid
-            handleClick={
-              handleClickInsuranceCoverageRatioAmendmentProposalsDataGrid
-            }
-            header="Insurance coverage amendement proposals"
-            rows={
-              formattedSettingsAmendmentProposal.insuranceCoverageAmendmentProposals
-            }
-            columns={columns}
-          />
-        </Grid>
-      ) : (
-        <NoContent fontSize="6rem" message="Nothing just yet ..." />
-      )}
     </Container>
   ) : state.status === "error" ? (
     <ErrorPage code={state.code} height="100%" message={state.message} />

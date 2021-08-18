@@ -17,10 +17,6 @@ const useStyles = makeStyles(() => ({
     marginBottom: 24,
     marginTop: 24,
   },
-  alert: {
-    marginBottom: 24,
-    marginTop: 24,
-  },
 }));
 
 const PageContent = ({ state, setState }) => {
@@ -94,114 +90,113 @@ const PageContent = ({ state, setState }) => {
   };
 
   return state.status === "loaded" ? (
-    <>
-      <Container >
-        <Typography variant="h5" component="h1" gutterBottom>
-          My Activity
-        </Typography>
-      </Container>
-      <Container className={classes.container}>
-        <Typography variant="h6" component="h1">
-          Transaction history
-        </Typography>
-
-        <MuiAlert
-          className={classes.alert}
-          elevation={6}
-          variant="filled"
-          severity="info"
-        >
-          In this section you will find all your transactions related to your
-          activity on The FlightSurety DAO, transactions status and hash. At any
-          time you can click on the table row showing your transaction details
-          to get more insights on the Etherscan block explorer
-        </MuiAlert>
+    <Container>
+      <Grid container spacing={4}>
+        <Grid item xs={12}>
+          <Typography variant="h5" component="h1" gutterBottom>
+            My Activity
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant="h6" component="h1">
+            Transaction history
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <MuiAlert elevation={6} variant="filled" severity="info">
+            In this section you will find all your transactions related to your
+            activity on The FlightSurety DAO, transactions status and hash. At
+            any time you can click on the table row showing your transaction
+            details to get more insights on the Etherscan block explorer
+          </MuiAlert>
+        </Grid>
 
         {formattedUserTx?.length > 0 && (
-          <Grid container>
-            <MyDataGrid
-              handleClick={handleClickUserTxDataGrid}
-              header="Your transactions"
-              rows={formattedUserTx}
-              columns={columns}
-            />
+          <Grid item xs={12}>
+            <Grid container>
+              <MyDataGrid
+                handleClick={handleClickUserTxDataGrid}
+                header="Your transactions"
+                rows={formattedUserTx}
+                columns={columns}
+              />
+            </Grid>
           </Grid>
         )}
-      </Container>
-      <Container className={classes.container}>
-        <Typography variant="h6" component="h1">
-          My insurances contract
-        </Typography>
-
-        <MuiAlert
-          className={classes.alert}
-          elevation={6}
-          variant="filled"
-          severity="info"
-        >
-          In this section you will find all the insurances contracts you have
-          subscribed to and their respective status
-        </MuiAlert>
-
-        <FiltersArea />
-        <Grid container className={classes.flightContainer}>
-          {userInsuranceContracts ? (
-            userInsuranceContracts
-              ?.filter(
-                (flight) =>
-                  flight.estimatedDeparture * 1000 >= Date.now() ===
-                  isFilterFlightToActive
-              )
-              .map(
-                (
-                  {
-                    flightID,
-                    flightRef,
-                    estimatedDeparture,
-                    estimatedArrival,
-                    insuranceProvider,
-                    rate,
-                    isLate,
-                    realArrival,
-                    realDeparture,
-                    settled,
-                    insuranceID,
-                  },
-                  index
-                ) => (
-                  <FlightCard
-                    key={flightID + index}
-                    cardID={flightID + index}
-                    flightID={flightID}
-                    flightRef={flightRef}
-                    estimatedDeparture={estimatedDeparture}
-                    estimatedArrival={estimatedArrival}
-                    insuranceProvider={insuranceProvider}
-                    rate={rate}
-                    isLate={isLate}
-                    realArrival={realArrival}
-                    realDeparture={realDeparture}
-                    settled={settled}
-                    btnClaimInsuranceDisabled={false}
-                    btnSubscribeInsuranceDisabled={true}
-                    insuranceID={insuranceID}
-                  />
-                )
-              )
-          ) : (
-            <LoadingAnimation />
-          )}
-
-          {userInsuranceContracts?.filter(
-            (flight) =>
-              flight.estimatedDeparture * 1000 >= Date.now() ===
-              isFilterFlightToActive
-          ).length === 0 && (
-            <NoContent width="100%" message="Nothing just yet ..." />
-          )}
+        <Grid item xs={12}>
+          <Typography variant="h6" component="h1">
+            My insurances contract
+          </Typography>
         </Grid>
-      </Container>
-    </>
+        <Grid item xs={12}>
+          <MuiAlert elevation={6} variant="filled" severity="info">
+            In this section you will find all the insurances contracts you have
+            subscribed to and their respective status
+          </MuiAlert>
+        </Grid>
+        <Grid item xs={12}>
+          <FiltersArea />
+        </Grid>
+        <Grid item xs={12}>
+          <Grid container className={classes.flightContainer}>
+            {userInsuranceContracts ? (
+              userInsuranceContracts
+                ?.filter(
+                  (flight) =>
+                    flight.estimatedDeparture * 1000 >= Date.now() ===
+                    isFilterFlightToActive
+                )
+                .map(
+                  (
+                    {
+                      flightID,
+                      flightRef,
+                      estimatedDeparture,
+                      estimatedArrival,
+                      insuranceProvider,
+                      rate,
+                      isLate,
+                      realArrival,
+                      realDeparture,
+                      settled,
+                      insuranceID,
+                    },
+                    index
+                  ) => (
+                    <FlightCard
+                      key={flightID + index}
+                      cardID={flightID + index}
+                      flightID={flightID}
+                      flightRef={flightRef}
+                      estimatedDeparture={estimatedDeparture}
+                      estimatedArrival={estimatedArrival}
+                      insuranceProvider={insuranceProvider}
+                      rate={rate}
+                      isLate={isLate}
+                      realArrival={realArrival}
+                      realDeparture={realDeparture}
+                      settled={settled}
+                      btnClaimInsuranceDisabled={false}
+                      btnSubscribeInsuranceDisabled={true}
+                      insuranceID={insuranceID}
+                    />
+                  )
+                )
+            ) : (
+              <LoadingAnimation />
+            )}
+
+            {userInsuranceContracts?.filter(
+              (flight) =>
+                flight.estimatedDeparture * 1000 >= Date.now() ===
+                isFilterFlightToActive
+            ).length === 0 && (
+              <NoContent width="100%" message="Nothing just yet ..." />
+            )}
+          </Grid>
+        </Grid>
+      </Grid>
+    </Container>
   ) : state.status === "error" ? (
     <ErrorPage code={state.code} height="100%" message={state.message} />
   ) : state.status === "loading" ? (

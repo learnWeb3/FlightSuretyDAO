@@ -14,10 +14,6 @@ const useStyles = makeStyles(() => ({
     height: "90%",
   },
   flightContainer: { display: "flex", justifyContent: "center" },
-  alert: {
-    marginBottom: 24,
-    marginTop: 24,
-  },
 }));
 
 const PageContent = ({ state, setState }) => {
@@ -37,79 +33,84 @@ const PageContent = ({ state, setState }) => {
 
   return (
     <Container className={classes.pageContainer}>
-      <Typography variant="h5" component="h1">
-        Insure my flight
-      </Typography>
-      {state.status === "loaded" ? (
-        <>
-          <MuiAlert
-            className={classes.alert}
-            elevation={6}
-            variant="filled"
-            severity="info"
-          >
-            In this section you will find all the available flights registered
-            on our smart contracts and secured by the ethereum network
-          </MuiAlert>
+      <Grid container spacing={4}>
+        <Grid item xs={12}>
+          <Typography variant="h5" component="h1">
+            Insure my flight
+          </Typography>
+        </Grid>
+        {state.status === "loaded" ? (
+          <>
+            <Grid item xs={12}>
+              <MuiAlert elevation={6} variant="filled" severity="info">
+                In this section you will find all the available flights
+                registered on our smart contracts and secured by the ethereum
+                network
+              </MuiAlert>
+            </Grid>
+            <Grid item xs={12}>
+              <FiltersArea />
+            </Grid>
+            <Grid item xs={12}>
+              <Grid container className={classes.flightContainer}>
+                {flights ? (
+                  flights
+                    ?.filter(
+                      (flight) =>
+                        flight.estimatedDeparture * 1000 >= Date.now() ===
+                        isFilterFlightToActive
+                    )
+                    .map(
+                      (
+                        {
+                          flightID,
+                          flightRef,
+                          estimatedDeparture,
+                          estimatedArrival,
+                          insuranceProvider,
+                          rate,
+                          insuredValue,
+                        },
+                        index
+                      ) => (
+                        <FlightCard
+                          key={flightID + index}
+                          cardID={flightID + index}
+                          flightID={flightID}
+                          flightRef={flightRef}
+                          estimatedDeparture={estimatedDeparture}
+                          estimatedArrival={estimatedArrival}
+                          insuranceProvider={insuranceProvider}
+                          rate={rate}
+                          insuredValue={insuredValue}
+                          btnClaimInsuranceDisabled={true}
+                        />
+                      )
+                    )
+                ) : (
+                  <LoadingAnimation />
+                )}
 
-          <FiltersArea />
-          <Grid container className={classes.flightContainer}>
-            {flights ? (
-              flights
-                ?.filter(
+                {flights?.filter(
                   (flight) =>
                     flight.estimatedDeparture * 1000 >= Date.now() ===
                     isFilterFlightToActive
-                )
-                .map(
-                  (
-                    {
-                      flightID,
-                      flightRef,
-                      estimatedDeparture,
-                      estimatedArrival,
-                      insuranceProvider,
-                      rate,
-                      insuredValue,
-                    },
-                    index
-                  ) => (
-                    <FlightCard
-                      key={flightID + index}
-                      cardID={flightID + index}
-                      flightID={flightID}
-                      flightRef={flightRef}
-                      estimatedDeparture={estimatedDeparture}
-                      estimatedArrival={estimatedArrival}
-                      insuranceProvider={insuranceProvider}
-                      rate={rate}
-                      insuredValue={insuredValue}
-                      btnClaimInsuranceDisabled={true}
-                    />
-                  )
-                )
-            ) : (
-              <LoadingAnimation />
-            )}
-
-            {flights?.filter(
-              (flight) =>
-                flight.estimatedDeparture * 1000 >= Date.now() ===
-                isFilterFlightToActive
-            ).length === 0 && (
-              <NoContent width="100%" message="Nothing just yet ..." />
-            )}
-          </Grid>
-        </>
-      ) : state.status === "error" ? (
-        <ErrorPage code={state.code} height="100%" message={state.message} />
-      ) : state.status === "loading" ? (
-        <LoadingAnimation />
-      ) : (
-        state.status === "nocontent" && (
-          <NoContent fontSize="6rem" message="Nothing just yet ..." />
-        )
-      )}
+                ).length === 0 && (
+                  <NoContent width="100%" message="Nothing just yet ..." />
+                )}
+              </Grid>
+            </Grid>
+          </>
+        ) : state.status === "error" ? (
+          <ErrorPage code={state.code} height="100%" message={state.message} />
+        ) : state.status === "loading" ? (
+          <LoadingAnimation />
+        ) : (
+          state.status === "nocontent" && (
+            <NoContent fontSize="6rem" message="Nothing just yet ..." />
+          )
+        )}
+      </Grid>
     </Container>
   );
 };

@@ -10,7 +10,6 @@ import NoContent from "../../../components/icons/NoContent";
 import PieChart from "../../../components/PieChart/index";
 import { useHistory } from "react-router-dom";
 
-
 const PageContent = ({ state, setState }) => {
   const {
     // modal
@@ -60,171 +59,176 @@ const PageContent = ({ state, setState }) => {
             REGISTER A NEW FLIGHT
           </Fab>
         </Grid>
-      </Grid>
-      <Grid container spacing={4}>
-        {fundsIndicators ? (
-          <>
-            <IndicatorPanel
-              label="token supply"
-              value={fundsIndicators.tokenSupply}
-            />
-            <IndicatorPanel
-              label="days before token redeem"
-              value={fundsIndicators.daysBeforeTokenRedeem}
-            />
 
-            <MultiIndicatorPanel
-              label="registered flights"
-              values={[
-                {
-                  value: fundsIndicators.totalRegisteredFlightsCount,
-                  label: "total",
-                },
-                {
-                  value: fundsIndicators.myRegisteredFlightsCount,
-                  label: "me",
-                },
-              ]}
-            />
-            <MultiIndicatorPanel
-              label="registered insurance"
-              values={[
-                {
-                  value: fundsIndicators.totalRegisteredInsuranceCount,
-                  label: "total",
-                },
-                {
-                  value: fundsIndicators.myRegisteredInsuranceCount,
-                  label: "me",
-                },
-              ]}
-            />
-            <MultiIndicatorPanel
-              label="cumulated profits"
-              values={[
-                {
-                  value: fundsIndicators.totalCumulatedProfits,
-                  label: "total",
-                },
-                {
-                  value: fundsIndicators.myCumulatedProfits,
-                  label: "me",
-                },
-              ]}
-            />
-            <MultiIndicatorPanel
-              label="payout ratio"
-              values={[
-                {
-                  value:
-                    Math.round(
-                      fundsIndicators.totalInsuranceDefaultRate * 100
-                    ) / 100,
-                  label: "total",
-                },
-                {
-                  value:
-                    Math.round(fundsIndicators.myInsuranceDefaultRate * 100) /
-                    100,
-                  label: "me",
-                },
-              ]}
-            />
-          </>
-        ) : (
-          <LoadingAnimation />
-        )}
+        <Grid item xs={12}>
+          <Grid container spacing={4}>
+            {fundsIndicators ? (
+              <>
+                <IndicatorPanel
+                  label="token supply"
+                  value={fundsIndicators.tokenSupply}
+                />
+                <IndicatorPanel
+                  label="days before token redeem"
+                  value={fundsIndicators.daysBeforeTokenRedeem}
+                />
 
-        {insuranceProvidersProfits && (
-          <PieChart
-            data={insuranceProvidersProfits}
-            label="Profits / Insurance provider"
-          />
-        )}
-        {insuranceProvidersFlights && (
-          <PieChart
-            data={insuranceProvidersFlights}
-            label="Flights count / Insurance provider"
-          />
-        )}
+                <MultiIndicatorPanel
+                  label="registered flights"
+                  values={[
+                    {
+                      value: fundsIndicators.totalRegisteredFlightsCount,
+                      label: "total",
+                    },
+                    {
+                      value: fundsIndicators.myRegisteredFlightsCount,
+                      label: "me",
+                    },
+                  ]}
+                />
+                <MultiIndicatorPanel
+                  label="registered insurance"
+                  values={[
+                    {
+                      value: fundsIndicators.totalRegisteredInsuranceCount,
+                      label: "total",
+                    },
+                    {
+                      value: fundsIndicators.myRegisteredInsuranceCount,
+                      label: "me",
+                    },
+                  ]}
+                />
+                <MultiIndicatorPanel
+                  label="cumulated profits"
+                  values={[
+                    {
+                      value: fundsIndicators.totalCumulatedProfits,
+                      label: "total",
+                    },
+                    {
+                      value: fundsIndicators.myCumulatedProfits,
+                      label: "me",
+                    },
+                  ]}
+                />
+                <MultiIndicatorPanel
+                  label="payout ratio"
+                  values={[
+                    {
+                      value:
+                        Math.round(
+                          fundsIndicators.totalInsuranceDefaultRate * 100
+                        ) / 100,
+                      label: "total",
+                    },
+                    {
+                      value:
+                        Math.round(
+                          fundsIndicators.myInsuranceDefaultRate * 100
+                        ) / 100,
+                      label: "me",
+                    },
+                  ]}
+                />
+              </>
+            ) : (
+              <LoadingAnimation />
+            )}
 
-        {daoIndicators ? (
-          <>
-            <IndicatorPanel
-              label="token supply"
-              value={daoIndicators.tokenSupply}
-            />
-            <IndicatorPanel
-              label="days before token redeem"
-              value={daoIndicators.daysBeforeTokenRedeem}
-            />
-            <IndicatorPanel
-              label="current membership fee"
-              value={daoIndicators.currentMembershipFee}
-            />
-            <IndicatorPanel
-              label="insurance coverage ratio"
-              value={daoIndicators.currentInsuranceCoverageRatio}
-            />
-            <IndicatorPanel
-              label="Proposal validity duration (block number)"
-              value={daoIndicators.proposalValidityDuration}
-            />
-            <IndicatorPanel
-              label="Minimum same answers before flight data update"
-              value={daoIndicators.acceptedAnswerTreshold}
-            />
-            <IndicatorPanel
-              label="Minimum holding duration before vote (block number)"
-              value={daoIndicators.tokenHoldingMinimumBlock}
-            />
-            <IndicatorPanel
-              label="Authorized flight delay (seconds)"
-              value={daoIndicators.authorizedFlightDelay}
-            />
-            <MultiIndicatorPanel
-              label="oracle providers"
-              values={[
-                {
-                  value: daoIndicators.oracleRegisteredProvidersCount,
-                  label: "registered",
-                },
-                {
-                  value: daoIndicators.oracleActivatedProvidersCount,
-                  label: "activated",
-                },
-              ]}
-            />
-            <MultiIndicatorPanel
-              label="insurance providers"
-              values={[
-                {
-                  value: daoIndicators.insuranceRegisteredProvidersCount,
-                  label: "registered",
-                },
-                {
-                  value: daoIndicators.insuranceActivatedProvidersCount,
-                  label: "activated",
-                },
-              ]}
-            />
-            <MultiIndicatorPanel
-              label="settings amendment proposals"
-              values={[
-                {
-                  value: daoIndicators.feeSettingsAmendmentProposalCount,
-                  label: "fee",
-                },
-                {
-                  value: daoIndicators.coverageSettingsAmendmentProposalCount,
-                  label: "me",
-                },
-              ]}
-            />
-          </>
-        ) : (
-          <LoadingAnimation />
-        )}
+            {insuranceProvidersProfits && (
+              <PieChart
+                data={insuranceProvidersProfits}
+                label="Profits / Insurance provider"
+              />
+            )}
+            {insuranceProvidersFlights && (
+              <PieChart
+                data={insuranceProvidersFlights}
+                label="Flights count / Insurance provider"
+              />
+            )}
+
+            {daoIndicators ? (
+              <>
+                <IndicatorPanel
+                  label="token supply"
+                  value={daoIndicators.tokenSupply}
+                />
+                <IndicatorPanel
+                  label="days before token redeem"
+                  value={daoIndicators.daysBeforeTokenRedeem}
+                />
+                <IndicatorPanel
+                  label="current membership fee"
+                  value={daoIndicators.currentMembershipFee}
+                />
+                <IndicatorPanel
+                  label="insurance coverage ratio"
+                  value={daoIndicators.currentInsuranceCoverageRatio}
+                />
+                <IndicatorPanel
+                  label="Proposal validity duration (block number)"
+                  value={daoIndicators.proposalValidityDuration}
+                />
+                <IndicatorPanel
+                  label="Minimum same answers before flight data update"
+                  value={daoIndicators.acceptedAnswerTreshold}
+                />
+                <IndicatorPanel
+                  label="Minimum holding duration before vote (block number)"
+                  value={daoIndicators.tokenHoldingMinimumBlock}
+                />
+                <IndicatorPanel
+                  label="Authorized flight delay (seconds)"
+                  value={daoIndicators.authorizedFlightDelay}
+                />
+                <MultiIndicatorPanel
+                  label="oracle providers"
+                  values={[
+                    {
+                      value: daoIndicators.oracleRegisteredProvidersCount,
+                      label: "registered",
+                    },
+                    {
+                      value: daoIndicators.oracleActivatedProvidersCount,
+                      label: "activated",
+                    },
+                  ]}
+                />
+                <MultiIndicatorPanel
+                  label="insurance providers"
+                  values={[
+                    {
+                      value: daoIndicators.insuranceRegisteredProvidersCount,
+                      label: "registered",
+                    },
+                    {
+                      value: daoIndicators.insuranceActivatedProvidersCount,
+                      label: "activated",
+                    },
+                  ]}
+                />
+                <MultiIndicatorPanel
+                  label="settings amendment proposals"
+                  values={[
+                    {
+                      value: daoIndicators.feeSettingsAmendmentProposalCount,
+                      label: "fee",
+                    },
+                    {
+                      value:
+                        daoIndicators.coverageSettingsAmendmentProposalCount,
+                      label: "me",
+                    },
+                  ]}
+                />
+              </>
+            ) : (
+              <LoadingAnimation />
+            )}
+          </Grid>
+        </Grid>
       </Grid>
     </Container>
   ) : state.status === "error" ? (

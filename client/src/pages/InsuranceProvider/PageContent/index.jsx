@@ -11,7 +11,6 @@ import PieChart from "../../../components/PieChart/index";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 
-
 const useStyles = makeStyles(() => ({
   pageContainer: {
     height: "90%",
@@ -78,109 +77,112 @@ const PageContent = ({ state, setState }) => {
             </Fab>
           </Grid>
         )}
+
+        {state.status === "loaded" ? (
+          <Grid item xs={12}>
+            <Grid container spacing={4}>
+              {fundsIndicators &&
+              daoIndicators &&
+              insuranceProvidersProfits &&
+              insuranceProvidersFlights ? (
+                <>
+                  <IndicatorPanel
+                    label="token supply"
+                    value={fundsIndicators.tokenSupply}
+                  />
+                  <IndicatorPanel
+                    label="days before token redeem"
+                    value={fundsIndicators.daysBeforeTokenRedeem}
+                  />
+
+                  <IndicatorPanel
+                    label="Authorized flight delay (seconds)"
+                    value={daoIndicators.authorizedFlightDelay}
+                  />
+
+                  <MultiIndicatorPanel
+                    label="registered flights"
+                    values={[
+                      {
+                        value: fundsIndicators.totalRegisteredFlightsCount,
+                        label: "total",
+                      },
+                      {
+                        value: fundsIndicators.myRegisteredFlightsCount,
+                        label: "me",
+                      },
+                    ]}
+                  />
+                  <MultiIndicatorPanel
+                    label="registered insurance"
+                    values={[
+                      {
+                        value: fundsIndicators.totalRegisteredInsuranceCount,
+                        label: "total",
+                      },
+                      {
+                        value: fundsIndicators.myRegisteredInsuranceCount,
+                        label: "me",
+                      },
+                    ]}
+                  />
+                  <MultiIndicatorPanel
+                    label="cumulated profits"
+                    values={[
+                      {
+                        value: fundsIndicators.totalCumulatedProfits,
+                        label: "total",
+                      },
+                      {
+                        value: fundsIndicators.myCumulatedProfits,
+                        label: "me",
+                      },
+                    ]}
+                  />
+                  <MultiIndicatorPanel
+                    label="payout ratio"
+                    values={[
+                      {
+                        value:
+                          Math.round(
+                            fundsIndicators.totalInsuranceDefaultRate * 100
+                          ) / 100,
+                        label: "total",
+                      },
+                      {
+                        value:
+                          Math.round(
+                            fundsIndicators.myInsuranceDefaultRate * 100
+                          ) / 100,
+                        label: "me",
+                      },
+                    ]}
+                  />
+
+                  <PieChart
+                    data={insuranceProvidersProfits}
+                    label="Profits / Insurance provider"
+                  />
+                  <PieChart
+                    data={insuranceProvidersFlights}
+                    label="Flights count / Insurance provider"
+                  />
+                </>
+              ) : (
+                <LoadingAnimation />
+              )}
+            </Grid>
+          </Grid>
+        ) : state.status === "error" ? (
+          <ErrorPage code={state.code} height="100%" message={state.message} />
+        ) : state.status === "loading" ? (
+          <LoadingAnimation />
+        ) : (
+          state.status === "nocontent" && (
+            <NoContent fontSize="6rem" message="Nothing just yet ..." />
+          )
+        )}
       </Grid>
-
-      {state.status === "loaded" ? (
-        <Grid container spacing={4}>
-          {fundsIndicators &&
-          daoIndicators &&
-          insuranceProvidersProfits &&
-          insuranceProvidersFlights ? (
-            <>
-              <IndicatorPanel
-                label="token supply"
-                value={fundsIndicators.tokenSupply}
-              />
-              <IndicatorPanel
-                label="days before token redeem"
-                value={fundsIndicators.daysBeforeTokenRedeem}
-              />
-
-              <IndicatorPanel
-                label="Authorized flight delay (seconds)"
-                value={daoIndicators.authorizedFlightDelay}
-              />
-
-              <MultiIndicatorPanel
-                label="registered flights"
-                values={[
-                  {
-                    value: fundsIndicators.totalRegisteredFlightsCount,
-                    label: "total",
-                  },
-                  {
-                    value: fundsIndicators.myRegisteredFlightsCount,
-                    label: "me",
-                  },
-                ]}
-              />
-              <MultiIndicatorPanel
-                label="registered insurance"
-                values={[
-                  {
-                    value: fundsIndicators.totalRegisteredInsuranceCount,
-                    label: "total",
-                  },
-                  {
-                    value: fundsIndicators.myRegisteredInsuranceCount,
-                    label: "me",
-                  },
-                ]}
-              />
-              <MultiIndicatorPanel
-                label="cumulated profits"
-                values={[
-                  {
-                    value: fundsIndicators.totalCumulatedProfits,
-                    label: "total",
-                  },
-                  {
-                    value: fundsIndicators.myCumulatedProfits,
-                    label: "me",
-                  },
-                ]}
-              />
-              <MultiIndicatorPanel
-                label="payout ratio"
-                values={[
-                  {
-                    value:
-                      Math.round(
-                        fundsIndicators.totalInsuranceDefaultRate * 100
-                      ) / 100,
-                    label: "total",
-                  },
-                  {
-                    value:
-                      Math.round(fundsIndicators.myInsuranceDefaultRate * 100) /
-                      100,
-                    label: "me",
-                  },
-                ]}
-              />
-
-              <PieChart
-                data={insuranceProvidersProfits}
-                label="Profits / Insurance provider"
-              />
-              <PieChart
-                data={insuranceProvidersFlights}
-                label="Flights count / Insurance provider"
-              />
-            </>
-          ) : (
-            <LoadingAnimation />
-          )}
-        </Grid>
-      ) : state.status === "error" ? (
-        <ErrorPage code={state.code} height="100%" message={state.message} />
-      ) : state.status === "loading" ? (
-        <LoadingAnimation />
-      ) : (
-        state.status === "nocontent" && (
-          <NoContent fontSize="6rem" message="Nothing just yet ..." />
-        )
-      )}
     </Container>
   );
 };
