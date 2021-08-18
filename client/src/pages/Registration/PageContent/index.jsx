@@ -56,11 +56,17 @@ const PageContent = ({ state, setState }) => {
 
   useEffect(() => {
     if (appContract && registration) {
-      if (registration.isOracleProvider) {
+      if (
+        (registration.isRegisteredOracleProvider &&
+          !registration.isActivatedInsuranceProvider) ||
+        (registration.isFundedInsuranceProvider &&
+          !registration.isActivatedInsuranceProvider)
+      ) {
         setState({
           status: "error",
           code: 403,
-          message: "Your address is already registered",
+          message:
+            "Your address is already registered, please wait for your approval by the community",
         });
       } else {
         setState({ status: "loaded", code: null });
@@ -97,78 +103,101 @@ const PageContent = ({ state, setState }) => {
     setModal({ displayed: true, content: InsuranceProviderRegistration });
   };
 
-  return state.status === "loaded" ? (
+  return (
     <Container>
       <Grid container spacing={4}>
-        <Hidden mdDown={true}>
-          <Grid item lg={3}></Grid>
-        </Hidden>
-        <Grid xs={12} item lg={6} className={classes.flex}>
-          <MuiAlert elevation={6} variant="filled" severity="info">
-            Registering as a service provider for the flight surety funds
-            require to lock up a membership fee, in exchange for your
-            participation in the mutualised fund you will be rewarded with the
-            FSS token giving you direct rights on the profits made by the
-            community and gives you the opportunity to vote on various community
-            driven proposals on a 1 token equal 1 vote basis
-          </MuiAlert>
-          <Typography
-            variant="h4"
-            component="h1"
-            gutterBottom
-            className={classes.header}
-          >
-            Welcome to The FlighSurety DAO !
-          </Typography>
-          <SignUp width="50%" />
-          {registration.isActivatedInsuranceProvider && (
-            <Button
-              onClick={handleInsuranceProviderRegistration}
-              className={classes.button}
-              variant="contained"
-              color="primary"
-            >
-              REGISTER A NEW INSURANCE PROVIDER
-            </Button>
-          )}
-
-          {registration.isRegisteredInsuranceProvider &&
-            !registration.isActivatedInsuranceProvider && (
-              <Button
-                onClick={handleInsuranceProviderRegistration}
-                className={classes.button}
-                variant="contained"
-                color="primary"
+        {state.status === "loaded" && (
+          <>
+            <Hidden mdDown={true}>
+              <Grid item lg={3}></Grid>
+            </Hidden>
+            <Grid xs={12} item lg={6} className={classes.flex}>
+              <MuiAlert elevation={6} variant="filled" severity="info">
+                Registering as a service provider for the flight surety funds
+                require to lock up a membership fee, in exchange for your
+                participation in the mutualised fund you will be rewarded with
+                the FSS token giving you direct rights on the profits made by
+                the community and gives you the opportunity to vote on various
+                community driven proposals on a 1 token equal 1 vote basis
+              </MuiAlert>
+              <Typography
+                variant="h4"
+                component="h1"
+                gutterBottom
+                className={classes.header}
               >
-                ACTIVATE MY ACCOUNT
-              </Button>
-            )}
+                Welcome to The FlighSurety DAO !
+              </Typography>
+              <SignUp width="50%" />
+              {registration.isActivatedInsuranceProvider && (
+                <Button
+                  onClick={handleInsuranceProviderRegistration}
+                  className={classes.button}
+                  variant="contained"
+                  color="primary"
+                >
+                  REGISTER A NEW INSURANCE PROVIDER
+                </Button>
+              )}
 
-          {!registration.isRegisteredInsuranceProvider &&
-            !registration.isRegisteredOracleProvider && (
-              <Button
-                onClick={handleOracleProviderRegistration}
-                className={classes.button}
-                variant="contained"
-                color="primary"
-              >
-                ORACLE PROVIDER
-              </Button>
-            )}
-        </Grid>
-        <Hidden mdDown={true}>
-          <Grid item lg={3}></Grid>
-        </Hidden>
+              {registration.isRegisteredInsuranceProvider &&
+                !registration.isActivatedInsuranceProvider &&
+                !registration.isFundedInsuranceProvider && (
+                  <Button
+                    onClick={handleInsuranceProviderRegistration}
+                    className={classes.button}
+                    variant="contained"
+                    color="primary"
+                  >
+                    ACTIVATE MY ACCOUNT
+                  </Button>
+                )}
+
+              {registration.isRegisteredInsuranceProvider &&
+                !registration.isActivatedInsuranceProvider &&
+                registration.isFundedInsuranceProvider && (
+                  <MuiAlert elevation={6} variant="filled" severity="info">
+                    Thanks for the funding of your account, please wait your
+                    approval from the community before registering your flights
+                  </MuiAlert>
+                )}
+
+              {!registration.isRegisteredInsuranceProvider &&
+                !registration.isRegisteredOracleProvider && (
+                  <Button
+                    onClick={handleOracleProviderRegistration}
+                    className={classes.button}
+                    variant="contained"
+                    color="primary"
+                  >
+                    ORACLE PROVIDER
+                  </Button>
+                )}
+            </Grid>
+            <Hidden mdDown={true}>
+              <Grid item lg={3}></Grid>
+            </Hidden>
+          </>
+        )}
+
+        {state.status === "error" && (
+          <Grid item xs={12}>
+            <ErrorPage code={state.code} height="100%" message={state.message} />
+          </Grid>
+        )}
+
+        {state.status === "loading" && (
+          <Grid item xs={12}>
+            <LoadingAnimation />
+          </Grid>
+        )}
+        {state.status === "nocontent" && (
+          <Grid item xs={12}>
+            <NoContent fontSize="6rem" message="Nothing just yet ..." />
+          </Grid>
+        )}
       </Grid>
     </Container>
-  ) : state.status === "error" ? (
-    <ErrorPage code={state.code} height="100%" message={state.message} />
-  ) : state.status === "loading" ? (
-    <LoadingAnimation />
-  ) : (
-    state.status === "nocontent" && (
-      <NoContent fontSize="6rem" message="Nothing just yet ..." />
-    )
   );
 };
 

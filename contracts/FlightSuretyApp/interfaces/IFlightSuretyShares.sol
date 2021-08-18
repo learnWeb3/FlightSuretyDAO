@@ -24,4 +24,10 @@ interface IFlightSuretyShares {
 
     // burning token
     function burn(address account, uint256 amount) external;
+
+    // is ERC20 : fetch minimum block number from wich a token can be redeemed
+    function blockNumBeforeRedeem(address account)
+        external
+        view
+        returns (uint256);
 }

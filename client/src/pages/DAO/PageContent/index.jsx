@@ -25,21 +25,17 @@ const PageContent = ({ state, setState }) => {
     daoIndicators && setState({ status: "loaded", code: null });
   }, [daoIndicators]);
 
-  return state.status === "loaded" ? (
+  return (
     <Container>
       <Typography variant="h5" component="h1" className={classes.header}>
         FlightSurety DAO dashboard
       </Typography>
       <Grid container spacing={4}>
-        {daoIndicators ? (
+        {state.status === "loaded" && daoIndicators ? (
           <>
             <IndicatorPanel
               label="token supply"
               value={daoIndicators.tokenSupply}
-            />
-            <IndicatorPanel
-              label="days before token redeem"
-              value={daoIndicators.daysBeforeTokenRedeem}
             />
             <IndicatorPanel
               label="current membership fee"
@@ -107,18 +103,33 @@ const PageContent = ({ state, setState }) => {
             />
           </>
         ) : (
-          <LoadingAnimation />
+          <Grid item xs={12}>
+            <LoadingAnimation />
+          </Grid>
+        )}
+
+        {state.status === "error" && (
+          <Grid item xs={12}>
+            <ErrorPage
+              code={state.code}
+              height="100%"
+              message={state.message}
+            />
+          </Grid>
+        )}
+
+        {state.status === "loading" && (
+          <Grid item xs={12}>
+            <LoadingAnimation />
+          </Grid>
+        )}
+        {state.status === "nocontent" && (
+          <Grid item xs={12}>
+            <NoContent fontSize="6rem" message="Nothing just yet ..." />
+          </Grid>
         )}
       </Grid>
     </Container>
-  ) : state.status === "error" ? (
-    <ErrorPage code={state.code} height="100%" message={state.message} />
-  ) : state.status === "loading" ? (
-    <LoadingAnimation />
-  ) : (
-    state.status === "nocontent" && (
-      <NoContent fontSize="6rem" message="Nothing just yet ..." />
-    )
   );
 };
 

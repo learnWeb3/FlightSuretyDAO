@@ -213,13 +213,25 @@ const PageContent = ({ state, setState }) => {
         )}
 
         {state.status === "error" && (
-          <ErrorPage code={state.code} height="100%" message={state.message} />
+          <Grid item xs={12}>
+            <ErrorPage
+              code={state.code}
+              height="100%"
+              message={state.message}
+            />
+          </Grid>
         )}
 
-        {state.status === "loading" && <LoadingAnimation />}
+        {state.status === "loading" && (
+          <Grid item xs={12}>
+            <LoadingAnimation />
+          </Grid>
+        )}
 
         {state.status === "nocontent" && (
-          <NoContent fontSize="6rem" message="Nothing just yet ..." />
+          <Grid item xs={12}>
+            <NoContent fontSize="6rem" message="Nothing just yet ..." />
+          </Grid>
         )}
       </Grid>
     </Container>

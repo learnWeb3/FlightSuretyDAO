@@ -33,13 +33,14 @@ import "@openzeppelin/contracts/utils/Context.sol";
 contract ERC20 is Context, IERC20, IERC20Metadata {
     mapping(address => uint256) private _balances;
     mapping(address => uint256) private _ownershipBlockNum;
-
+    mapping(address => uint256) private _blockNumBeforeRedeem;
     mapping(address => mapping(address => uint256)) private _allowances;
 
     uint256 private _totalSupply;
 
     string private _name;
     string private _symbol;
+    uint256 private _defaultBlockNumBeforeRedeem;
 
     /**
      * @dev Sets the values for {name} and {symbol}.
@@ -50,16 +51,32 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      * All two of these values are immutable: they can only be set once during
      * construction.
      */
-    constructor(string memory name_, string memory symbol_) {
+    constructor(
+        string memory name_,
+        string memory symbol_,
+        uint256 defaultblockNumBeforeRedeem
+    ) {
         _name = name_;
         _symbol = symbol_;
+        _defaultBlockNumBeforeRedeem = defaultblockNumBeforeRedeem;
     }
 
     /**
-     * @dev Returns the name of the token.
+     * @dev Returns the block number at wich the token have been aquired/owned
      */
     function ownershipBlockNum(address account) public view returns (uint256) {
         return _ownershipBlockNum[account];
+    }
+
+    /**
+     * @dev Returns the block number starting at wich the token can be redeem
+     */
+    function blockNumBeforeRedeem(address account)
+        public
+        view
+        returns (uint256)
+    {
+        return _blockNumBeforeRedeem[account];
     }
 
     /**
@@ -75,6 +92,14 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      */
     function symbol() public view virtual override returns (string memory) {
         return _symbol;
+    }
+
+    /**
+     * @dev Returns the default number of block for a token to be redeemed
+     * name.
+     */
+    function defaultBlockNumBeforeRedeem() public view returns (uint256) {
+        return _defaultBlockNumBeforeRedeem;
     }
 
     /**
@@ -284,6 +309,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         }
         _setOwnershipDate(sender, 0);
         _setOwnershipDate(recipient, block.number);
+        _setBlockNumBeforeRedeem(recipient, _defaultBlockNumBeforeRedeem);
         _balances[recipient] += amount;
 
         emit Transfer(sender, recipient, amount);
@@ -307,6 +333,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
 
         _totalSupply += amount;
         _setOwnershipDate(account, block.number);
+        _setBlockNumBeforeRedeem(account, _defaultBlockNumBeforeRedeem);
         _balances[account] += amount;
         emit Transfer(address(0), account, amount);
 
@@ -407,10 +434,18 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         uint256 amount
     ) internal virtual {}
 
+    // set the block number at witch a token has been owned
     function _setOwnershipDate(address account, uint256 blockNumber)
         internal
         virtual
     {
         _ownershipBlockNum[account] = blockNumber;
+    }
+
+    // set the min block number before wich the token can be redeem
+    function _setBlockNumBeforeRedeem(address _account, uint256 _minBlockNumber)
+        internal
+    {
+        _blockNumBeforeRedeem[_account] = block.number + _minBlockNumber;
     }
 }

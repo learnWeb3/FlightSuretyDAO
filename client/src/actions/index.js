@@ -169,6 +169,11 @@ const checkRegistration = async (
   const activatedOracleProviders = await fetchActivatedOracleProviders(
     appContract
   );
+  const fundedInsuranceProviders = await getPastEvents(
+    appContract,
+    "FundedInsuranceProvider",
+    { insuranceProvider: selectedAddress }
+  );
   const tokenBalance = await tokenContract.methods
     .balanceOf(selectedAddress)
     .call({ from: selectedAddress });
@@ -187,22 +192,29 @@ const checkRegistration = async (
     .call({ from: selectedAddress });
   return {
     isRegisteredInsuranceProvider: registeredInsuranceProviders.find(
-      (provider) => provider.insuranceProvider.toLowerCase() === selectedAddress.toLowerCase()
+      (provider) =>
+        provider.insuranceProvider.toLowerCase() ===
+        selectedAddress.toLowerCase()
     )
       ? true
       : false,
     isRegisteredOracleProvider: registeredOracleProviders.find(
-      (provider) => provider.oracleProvider.toLowerCase() === selectedAddress.toLowerCase()
+      (provider) =>
+        provider.oracleProvider.toLowerCase() === selectedAddress.toLowerCase()
     )
       ? true
       : false,
+    isFundedInsuranceProvider: fundedInsuranceProviders.length > 0,
     isActivatedInsuranceProvider: activatedInsuranceProviders.find(
-      (provider) => provider.insuranceProvider.toLowerCase() === selectedAddress.toLowerCase()
+      (provider) =>
+        provider.insuranceProvider.toLowerCase() ===
+        selectedAddress.toLowerCase()
     )
       ? true
       : false,
     isActivatedOracleProvider: activatedOracleProviders.find(
-      (provider) => provider.oracleProvider.toLowerCase() === selectedAddress.toLowerCase()
+      (provider) =>
+        provider.oracleProvider.toLowerCase() === selectedAddress.toLowerCase()
     )
       ? true
       : false,
@@ -342,7 +354,6 @@ const fetchFundsIndicators = async (
   const tokenSupply = await tokenContract.methods
     .totalSupply()
     .call({ from: insuranceProvider });
-  const daysBeforeTokenRedeem = 365;
   // flights metrics
   const totalRegisteredFlightsCount = await fetchFlights(appContract).then(
     (flights) => flights.length
@@ -375,7 +386,6 @@ const fetchFundsIndicators = async (
     );
   return {
     tokenSupply,
-    daysBeforeTokenRedeem,
     totalRegisteredFlightsCount,
     totalRegisteredInsuranceCount,
     myRegisteredFlightsCount,
@@ -397,7 +407,6 @@ const fetchDAOIndicators = async (
   const tokenSupply = await tokenContract.methods
     .totalSupply()
     .call({ from: selectedAddress });
-  const daysBeforeTokenRedeem = 365;
   // settings metrics
   const currentMembershipFee = await appContract.methods
     .currentMembershipFee()
@@ -456,9 +465,19 @@ const fetchDAOIndicators = async (
   const authorizedFlightDelay = await oracleContract.methods
     .authorizedFlightDelay()
     .call({ from: selectedAddress });
+
+  // block number before token redeem if user has token
+  const blockNumberBeforeTokenRedeem = await tokenContract.methods
+    .blockNumBeforeRedeem(selectedAddress)
+    .call({ from: selectedAddress })
+    .then(async (blockNum) => {
+      const currentBlockNum = await tokenContract.eth
+        .getBlock()
+        .then((block) => block.number);
+      return parseInt(blockNum) - parseInt(currentBlockNum);
+    });
   return {
     tokenSupply,
-    daysBeforeTokenRedeem,
     currentMembershipFee,
     currentInsuranceCoverageRatio,
     oracleRegisteredProvidersCount,
@@ -471,6 +490,7 @@ const fetchDAOIndicators = async (
     proposalValidityDuration,
     acceptedAnswerTreshold,
     authorizedFlightDelay,
+    blockNumberBeforeTokenRedeem,
   };
 };
 
@@ -483,7 +503,9 @@ const fetchUserTransactions = async (
   selectedAddress
 ) => {
   const appContractMappingEventNameToIndexedKey = {
-    RegisteredInsuranceProvider: "insuranceProvider",
+    RegisteredInsuranceProvider: "caller",
+    FundedInsuranceProvider: "insuranceProvider",
+    ActivatedInsuranceProvider: "insuranceProvider",
     RegisteredOracleProvider: "oracleProvider",
     NewVoteInsuranceProvider: "voter",
     NewVoteOracleProvider: "voter",

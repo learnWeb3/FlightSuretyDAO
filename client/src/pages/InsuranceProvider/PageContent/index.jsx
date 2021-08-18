@@ -90,10 +90,6 @@ const PageContent = ({ state, setState }) => {
                     label="token supply"
                     value={fundsIndicators.tokenSupply}
                   />
-                  <IndicatorPanel
-                    label="days before token redeem"
-                    value={fundsIndicators.daysBeforeTokenRedeem}
-                  />
 
                   <IndicatorPanel
                     label="Authorized flight delay (seconds)"
@@ -174,12 +170,22 @@ const PageContent = ({ state, setState }) => {
             </Grid>
           </Grid>
         ) : state.status === "error" ? (
-          <ErrorPage code={state.code} height="100%" message={state.message} />
+          <Grid item xs={12}>
+            <ErrorPage
+              code={state.code}
+              height="100%"
+              message={state.message}
+            />
+          </Grid>
         ) : state.status === "loading" ? (
-          <LoadingAnimation />
+          <Grid item xs={12}>
+            <LoadingAnimation />
+          </Grid>
         ) : (
           state.status === "nocontent" && (
-            <NoContent fontSize="6rem" message="Nothing just yet ..." />
+            <Grid item xs={12}>
+              <NoContent fontSize="6rem" message="Nothing just yet ..." />
+            </Grid>
           )
         )}
       </Grid>

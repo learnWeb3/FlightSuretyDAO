@@ -15,7 +15,14 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 contract FlightSuretyApp is Ownable, Pausable {
     using SafeMath for uint256;
     // insurance providers related events
-    event RegisteredInsuranceProvider(address indexed insuranceProvider);
+    event RegisteredInsuranceProvider(
+        address indexed insuranceProvider,
+        address indexed caller
+    );
+    event FundedInsuranceProvider(
+        address indexed insuranceProvider,
+        uint256 amount
+    );
     event ActivatedInsuranceProvider(address indexed insuranceProvider);
     event RemovedInsuranceProvider(address indexed insuranceProvider);
     event NewVoteInsuranceProvider(
@@ -101,6 +108,13 @@ contract FlightSuretyApp is Ownable, Pausable {
         address contractAddress
     );
 
+    // token related event
+    event RedeemedToken(
+        address indexed account,
+        uint256 tokenAmount,
+        uint256 tokenValue
+    );
+
     // public contract settings to set constraint to user vote in general
     uint256 public tokenHolderMinBlockRequirement;
     // public contract setting to set constraint on user proposal vote
@@ -112,6 +126,15 @@ contract FlightSuretyApp is Ownable, Pausable {
     IInsuranceProviderRole insuranceProviderRole;
     IOracleProviderRole oracleProviderRole;
     IFlightSuretyShares flightSuretyShares;
+
+    // redeem checks
+    modifier requireBlockNumBeforeRedeemReached(address _caller) {
+        require(
+            block.number >= flightSuretyShares.blockNumBeforeRedeem(_caller),
+            "block limit must have been reached"
+        );
+        _;
+    }
 
     // settings amendment proposals related checks
 
@@ -319,6 +342,14 @@ contract FlightSuretyApp is Ownable, Pausable {
         _;
     }
 
+    modifier requireUnfundedInsuranceProvider(address _caller) {
+        require(
+            !insuranceProviderRole.isFundedInsuranceProvider(_caller),
+            "account has already been funded"
+        );
+        _;
+    }
+
     modifier requireTokenHolderHasNotVotedInsuranceProviderMembership(
         address _caller,
         address _account
@@ -407,7 +438,7 @@ contract FlightSuretyApp is Ownable, Pausable {
         insuranceProviderRole.addInsuranceProvider(msg.sender);
         // make the contract owner an activated insurance provider
         insuranceProviderRole.activateInsuranceProvider(msg.sender);
-        emit RegisteredInsuranceProvider(msg.sender);
+        emit RegisteredInsuranceProvider(msg.sender, msg.sender);
         emit ActivatedInsuranceProvider(msg.sender);
     }
 
@@ -559,7 +590,7 @@ contract FlightSuretyApp is Ownable, Pausable {
         onlyActivatedInsuranceProvider(msg.sender)
     {
         insuranceProviderRole.addInsuranceProvider(account);
-        emit RegisteredInsuranceProvider(account);
+        emit RegisteredInsuranceProvider(account, msg.sender);
     }
 
     // fund an insurance provider aka airline
@@ -567,6 +598,7 @@ contract FlightSuretyApp is Ownable, Pausable {
         external
         payable
         onlyRegisteredInsuranceProvider(msg.sender)
+        requireUnfundedInsuranceProvider(msg.sender)
         requireMembershipFee
     {
         uint256 _currentMembershipFee = membershipFeeAmendmentProposal
@@ -581,7 +613,10 @@ contract FlightSuretyApp is Ownable, Pausable {
             insuranceProviderRole.activateInsuranceProvider(msg.sender);
             uint256 sharesToMint = _calculateSharesToMint();
             flightSuretyShares.mint(msg.sender, sharesToMint);
+            emit FundedInsuranceProvider(msg.sender, _currentMembershipFee);
             emit ActivatedInsuranceProvider(msg.sender);
+        }else{
+            emit FundedInsuranceProvider(msg.sender, _currentMembershipFee);
         }
     }
 
@@ -1005,6 +1040,30 @@ contract FlightSuretyApp is Ownable, Pausable {
         return (index1, index2, index3);
     }
 
+    // redeem all tokens of an account for it's share of the fund's profits
+    function redeemToken()
+        external
+        onlyTokenHolder(msg.sender)
+        requireBlockNumBeforeRedeemReached(msg.sender)
+    {
+        uint256 _totalBalance = address(this).balance;
+        uint256 _totalInsuredValue = flightSuretyData.getTotalInsuredValue();
+        uint256 _tokenSupply = flightSuretyShares.totalSupply();
+        uint256 _callerTokenBalance = flightSuretyShares.balanceOf(msg.sender);
+        uint256 _profitsPerShare = _calculateProfitsPerShare(
+            _totalBalance,
+            _totalInsuredValue,
+            _tokenSupply
+        );
+        uint256 _amountToTransfer = _callerTokenBalance.mul(_profitsPerShare);
+        // burning old token as they hav been redeemed
+        flightSuretyShares.burn(msg.sender, _callerTokenBalance);
+        // re mininting them with renewed rights aka reset coin age and block number before redeem;
+        flightSuretyShares.mint(msg.sender, _callerTokenBalance);
+        payable(msg.sender).transfer(_amountToTransfer);
+        emit RedeemedToken(msg.sender, _callerTokenBalance, _amountToTransfer);
+    }
+
     function _incrementTotalInsuredValue(uint256 _addedValue) internal {
         uint256 currentTotalInsuredValue = flightSuretyData
             .getTotalInsuredValue();
@@ -1037,5 +1096,13 @@ contract FlightSuretyApp is Ownable, Pausable {
         returns (uint256 sharesToMint)
     {
         return 1;
+    }
+
+    function _calculateProfitsPerShare(
+        uint256 totalBalance,
+        uint256 totalInsuredValue,
+        uint256 tokenSupply
+    ) internal pure returns (uint256 amount) {
+        return totalBalance.sub(totalInsuredValue).div(tokenSupply);
     }
 }

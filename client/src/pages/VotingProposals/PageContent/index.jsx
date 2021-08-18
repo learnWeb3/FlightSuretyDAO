@@ -216,9 +216,23 @@ const PageContent = ({ state, setState }) => {
       </Grid>
     </Container>
   ) : state.status === "error" ? (
-    <ErrorPage code={state.code} height="100%" message={state.message} />
+    <Container>
+      <Grid container spacing={4}>
+        <Grid item xs={12}>
+          <ErrorPage code={state.code} height="100%" message={state.message} />
+        </Grid>
+      </Grid>
+    </Container>
   ) : (
-    state.status === "loading" && <LoadingAnimation />
+    state.status === "loading" && (
+      <Container>
+        <Grid container spacing={4}>
+          <Grid item xs={12}>
+            <LoadingAnimation />
+          </Grid>
+        </Grid>
+      </Container>
+    )
   );
 };
 

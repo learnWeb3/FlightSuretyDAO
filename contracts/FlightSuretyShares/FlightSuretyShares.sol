@@ -15,10 +15,10 @@ contract FlightSuretyShares is ERC20, Ownable, CallerAuditable {
         _;
     }
 
-    // constructor setting owner and initial authorized caller address aka appAddress
+    // constructor setting owner and initial authorized caller address aka appAddress and making contract a special kind of ERC20
     constructor(address _appContractAddress)
         Ownable()
-        ERC20("FlightSuretyShares", "FSS")
+        ERC20("FlightSuretyShares", "FSS", 2500000)
     {
         authorizedCallers[_appContractAddress] = true;
     }

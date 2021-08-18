@@ -59,10 +59,7 @@ const Menu = () => {
             to: "/me",
             label: "My activity",
             order: 0,
-            display:
-              registration.isActivatedInsuranceProvider ||
-              registration.isActivatedOracleProvider ||
-              registration.isTokenHolder,
+            display: true,
           },
           {
             to: "/passenger",
@@ -93,7 +90,7 @@ const Menu = () => {
             to: "/membership",
             label: "Current membership applications",
             order: 6,
-            display: registration.isTokenHolder,
+            display: true,
           },
           {
             to: "/proposals",
@@ -104,10 +101,14 @@ const Menu = () => {
           {
             to: "/register",
             label: "Register as a service provider",
-            order: 7,
+            order: 8,
             display:
-              !registration.isActivatedInsuranceProvider &&
-              !registration.isActivatedOracleProvider,
+              (registration.isRegisteredOracleProvider &&
+                !registration.isActivatedInsuranceProvider) ||
+              (registration.isFundedInsuranceProvider &&
+                !registration.isActivatedInsuranceProvider)
+                ? false
+                : true,
           },
         ].sort((a, b) => a.order - b.order)
       );
@@ -136,13 +137,7 @@ const Menu = () => {
 
       {links?.map(
         ({ order, to, label, display }) =>
-          display && (
-            <MenuLink
-              key={order}
-              to={to}
-              label={label}
-            />
-          )
+          display && <MenuLink key={order} to={to} label={label} />
       )}
     </Grid>
   );
