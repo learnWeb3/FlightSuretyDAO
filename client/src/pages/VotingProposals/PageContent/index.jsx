@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Button, Container, Grid, Typography } from "@material-ui/core";
+import { Button, Container, Grid, Typography, Fab } from "@material-ui/core";
 import Context from "../../../context/index";
-import { makeStyles } from "@material-ui/core/styles";
 import MyDataGrid from "../../../components/MyDataGrid";
 import LoadingAnimation from "../../../components/LoadingAnimation";
 import NoContent from "../../../components/icons/NoContent";
@@ -10,14 +9,7 @@ import ProposalVote from "../../../components/ProposalVote/index.jsx/index";
 import ProposalRegistration from "../../../components/ProposalRegistration/index";
 import moment from "moment";
 
-const useStyles = makeStyles(() => ({
-  header: {
-    marginBottom: 32,
-  },
-}));
-
 const PageContent = ({ state, setState }) => {
-  const classes = useStyles();
   const {
     // data
     registration,
@@ -158,39 +150,36 @@ const PageContent = ({ state, setState }) => {
     <Container>
       <Grid container spacing={4}>
         <Grid item xs={12} lg={6}>
-          <Typography variant="h5" component="h1" className={classes.header}>
+          <Typography variant="h5" component="h1">
             Settings amendment proposals
           </Typography>
         </Grid>
-        <Grid item xs={12} lg={3}>
-          {registration.isTokenHolder && (
-            <Button
+
+        {registration.isTokenHolder && (
+          <Grid item xs={12} lg={3}>
+            <Fab
               id="membershipFeeAmendmentProposal"
-              variant="contained"
+              variant="extended"
               color="primary"
-              size="medium"
               onClick={handleClick}
-              fullWidth
             >
               PROPOSE A NEW FEE
-            </Button>
-          )}
-        </Grid>
+            </Fab>
+          </Grid>
+        )}
 
-        <Grid item xs={12} lg={3}>
-          {registration.isTokenHolder && (
-            <Button
+        {registration.isTokenHolder && (
+          <Grid item xs={12} lg={3}>
+            <Fab
               id="insuranceCoverageRatioAmendmentProposal"
-              variant="contained"
+              variant="extended"
               color="primary"
-              size="medium"
               onClick={handleClick}
-              fullWidth
             >
               PROPOSE A NEW RATIO
-            </Button>
-          )}
-        </Grid>
+            </Fab>
+          </Grid>
+        )}
       </Grid>
 
       {formattedSettingsAmendmentProposal?.membershipFeeAmendmentProposals

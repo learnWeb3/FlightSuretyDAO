@@ -49,7 +49,7 @@ const PageContent = ({ state, setState }) => {
               label="insurance coverage ratio"
               value={daoIndicators.currentInsuranceCoverageRatio}
             />
-               <IndicatorPanel
+            <IndicatorPanel
               label="Proposal validity duration (block number)"
               value={daoIndicators.proposalValidityDuration}
             />
@@ -112,7 +112,7 @@ const PageContent = ({ state, setState }) => {
       </Grid>
     </Container>
   ) : state.status === "error" ? (
-    <ErrorPage code={state.code} height="100%"  message={state.message}/>
+    <ErrorPage code={state.code} height="100%" message={state.message} />
   ) : state.status === "loading" ? (
     <LoadingAnimation />
   ) : (

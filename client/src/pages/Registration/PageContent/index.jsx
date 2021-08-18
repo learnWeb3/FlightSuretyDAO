@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { Button, Grid, Hidden, Typography } from "@material-ui/core";
+import { Button, Container, Grid, Hidden, Typography } from "@material-ui/core";
 import Context from "../../../context/index";
 import { makeStyles } from "@material-ui/core/styles";
 import SignUp from "../../../components/icons/SignUp/index";
@@ -98,70 +98,69 @@ const PageContent = ({ state, setState }) => {
   };
 
   return state.status === "loaded" ? (
-    <Grid container spacing={4}>
-      <Hidden mdDown={true}>
-        <Grid item lg={3}></Grid>
-      </Hidden>
-      <Grid xs={12} item lg={6} className={classes.flex}>
-        <MuiAlert elevation={6} variant="filled" severity="info">
-          Registering as a service provider for the flight surety funds require
-          to lock up a membership fee, in exchange for your participation in the
-          mutualised fund you will be rewarded with the FSS token giving you
-          direct rights on the profits made by the community and gives you the
-          opportunity to vote on various community driven proposals on a 1 token
-          equal 1 vote basis
-        </MuiAlert>
-        <Typography
-          variant="h4"
-          component="h1"
-          gutterBottom
-          className={classes.header}
-        >
-          Welcome to The FlighSurety DAO !
-        </Typography>
-        <SignUp width="50%" />
-        {registration.isActivatedInsuranceProvider && (
-          <Button
-            onClick={handleInsuranceProviderRegistration}
-            className={classes.button}
-            variant="contained"
-            color="primary"
+    <Container>
+      <Grid container spacing={4}>
+        <Hidden mdDown={true}>
+          <Grid item lg={3}></Grid>
+        </Hidden>
+        <Grid xs={12} item lg={6} className={classes.flex}>
+          <MuiAlert elevation={6} variant="filled" severity="info">
+            Registering as a service provider for the flight surety funds
+            require to lock up a membership fee, in exchange for your
+            participation in the mutualised fund you will be rewarded with the
+            FSS token giving you direct rights on the profits made by the
+            community and gives you the opportunity to vote on various community
+            driven proposals on a 1 token equal 1 vote basis
+          </MuiAlert>
+          <Typography
+            variant="h4"
+            component="h1"
+            gutterBottom
+            className={classes.header}
           >
-            REGISTER A NEW INSURANCE PROVIDER
-          </Button>
-        )}
-
-        {
-          console.log(registration)
-        }
-
-      {registration.isRegisteredInsuranceProvider && !registration.isActivatedInsuranceProvider && (
-          <Button
-            onClick={handleInsuranceProviderRegistration}
-            className={classes.button}
-            variant="contained"
-            color="primary"
-          >
-            ACTIVATE MY ACCOUNT
-          </Button>
-        )}
-
-        {!registration.isRegisteredInsuranceProvider &&
-          !registration.isRegisteredOracleProvider && (
+            Welcome to The FlighSurety DAO !
+          </Typography>
+          <SignUp width="50%" />
+          {registration.isActivatedInsuranceProvider && (
             <Button
-              onClick={handleOracleProviderRegistration}
+              onClick={handleInsuranceProviderRegistration}
               className={classes.button}
               variant="contained"
               color="primary"
             >
-              ORACLE PROVIDER
+              REGISTER A NEW INSURANCE PROVIDER
             </Button>
           )}
+
+          {registration.isRegisteredInsuranceProvider &&
+            !registration.isActivatedInsuranceProvider && (
+              <Button
+                onClick={handleInsuranceProviderRegistration}
+                className={classes.button}
+                variant="contained"
+                color="primary"
+              >
+                ACTIVATE MY ACCOUNT
+              </Button>
+            )}
+
+          {!registration.isRegisteredInsuranceProvider &&
+            !registration.isRegisteredOracleProvider && (
+              <Button
+                onClick={handleOracleProviderRegistration}
+                className={classes.button}
+                variant="contained"
+                color="primary"
+              >
+                ORACLE PROVIDER
+              </Button>
+            )}
+        </Grid>
+        <Hidden mdDown={true}>
+          <Grid item lg={3}></Grid>
+        </Hidden>
       </Grid>
-      <Hidden mdDown={true}>
-        <Grid item lg={3}></Grid>
-      </Hidden>
-    </Grid>
+    </Container>
   ) : state.status === "error" ? (
     <ErrorPage code={state.code} height="100%" message={state.message} />
   ) : state.status === "loading" ? (

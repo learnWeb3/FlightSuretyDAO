@@ -21,6 +21,7 @@ import DateField from "../DateField/index";
 import LinearProgressWithLabel from "../LinearProgressWithLabel/index";
 import MuiAlert from "@material-ui/lab/Alert";
 import moment from "moment";
+import NoContent from "../icons/NoContent/index";
 
 const useStyles = makeStyles(() => ({
   flex: {
@@ -263,99 +264,109 @@ const SettleFlight = () => {
               )}
             </Grid>
 
-            <Grid item xs={12}>
-              <Typography
-                variant="h5"
-                component="h2"
-                className={classes.header}
-                gutterBottom
-                color="textSecondary"
-              >
-                Flight settlement responses and consensus progress
-              </Typography>
-              <Paper className={classes.insurance}>
-                <Typography
-                  variant="body1"
-                  component="p"
-                  className={classes.header}
-                  gutterBottom
-                  color="textSecondary"
-                >
-                  Departure
-                </Typography>
-                {flightSettlementResponses &&
-                  flightSettlementResponses[0]?.departureResponses?.map(
-                    (response) => (
-                      <>
-                        <Typography
-                          variant="body1"
-                          component="p"
-                          className={classes.header}
-                          gutterBottom
-                          color="textSecondary"
-                        >
-                          Proposed value :{" "}
-                          {moment(response.value * 1000)
-                            .format("MMMM Do YYYY hh:mm")
-                            .toString()}
-                        </Typography>
+            {flightSettlementResponses &&
+              flightSettlementResponses[0]?.departureResponses.length > 0 &&
+              flightSettlementResponses[0]?.arrivalResponses.length > 0 && (
+                <Grid item xs={12}>
+                  <Typography
+                    variant="h5"
+                    component="h2"
+                    className={classes.header}
+                    gutterBottom
+                    color="textSecondary"
+                  >
+                    Flight settlement responses and consensus progress
+                  </Typography>
 
-                        <Grid item xs={12}>
-                          {daoIndicators && (
-                            <LinearProgressWithLabel
-                              value={Math.ceil(
-                                (response.count * 100) /
-                                  daoIndicators.acceptedAnswerTreshold
-                              )}
-                            />
-                          )}
-                        </Grid>
-                      </>
-                    )
-                  )}
-              </Paper>
+                  {flightSettlementResponses[0]?.departureResponses.length >
+                    0 && (
+                    <Paper className={classes.insurance}>
+                      <Typography
+                        variant="body1"
+                        component="p"
+                        className={classes.header}
+                        gutterBottom
+                        color="textSecondary"
+                      >
+                        Departure
+                      </Typography>
+                      {flightSettlementResponses &&
+                        flightSettlementResponses[0]?.departureResponses?.map(
+                          (response) => (
+                            <>
+                              <Typography
+                                variant="body1"
+                                component="p"
+                                className={classes.header}
+                                gutterBottom
+                                color="textSecondary"
+                              >
+                                Proposed value :{" "}
+                                {moment(response.value * 1000)
+                                  .format("MMMM Do YYYY hh:mm")
+                                  .toString()}
+                              </Typography>
 
-              <Paper className={classes.insurance}>
-                <Typography
-                  variant="body1"
-                  component="p"
-                  className={classes.header}
-                  gutterBottom
-                  color="textSecondary"
-                >
-                  Arrivals
-                </Typography>
-                {flightSettlementResponses &&
-                  flightSettlementResponses[0]?.arrivalResponses?.map(
-                    (response) => (
-                      <>
-                        <Typography
-                          variant="body1"
-                          component="p"
-                          className={classes.header}
-                          gutterBottom
-                          color="textSecondary"
-                        >
-                          Proposed value :{" "}
-                          {moment((response.value + 60) * 1000)
-                            .format("MMMM Do YYYY hh:mm")
-                            .toString()}
-                        </Typography>
-                        <Grid item xs={12}>
-                          {daoIndicators && (
-                            <LinearProgressWithLabel
-                              value={Math.ceil(
-                                (response.count * 100) /
-                                  daoIndicators.acceptedAnswerTreshold
-                              )}
-                            />
-                          )}
-                        </Grid>
-                      </>
-                    )
+                              <Grid item xs={12}>
+                                {daoIndicators && (
+                                  <LinearProgressWithLabel
+                                    value={Math.ceil(
+                                      (response.count * 100) /
+                                        daoIndicators.acceptedAnswerTreshold
+                                    )}
+                                  />
+                                )}
+                              </Grid>
+                            </>
+                          )
+                        )}
+                    </Paper>
                   )}
-              </Paper>
-            </Grid>
+                  {flightSettlementResponses[0]?.arrivalResponses.length >
+                    0 && (
+                    <Paper className={classes.insurance}>
+                      <Typography
+                        variant="body1"
+                        component="p"
+                        className={classes.header}
+                        gutterBottom
+                        color="textSecondary"
+                      >
+                        Arrivals
+                      </Typography>
+                      {flightSettlementResponses &&
+                        flightSettlementResponses[0]?.arrivalResponses?.map(
+                          (response) => (
+                            <>
+                              <Typography
+                                variant="body1"
+                                component="p"
+                                className={classes.header}
+                                gutterBottom
+                                color="textSecondary"
+                              >
+                                Proposed value :{" "}
+                                {moment((response.value + 60) * 1000)
+                                  .format("MMMM Do YYYY hh:mm")
+                                  .toString()}
+                              </Typography>
+                              <Grid item xs={12}>
+                                {daoIndicators && (
+                                  <LinearProgressWithLabel
+                                    value={Math.ceil(
+                                      (response.count * 100) /
+                                        daoIndicators.acceptedAnswerTreshold
+                                    )}
+                                  />
+                                )}
+                              </Grid>
+                            </>
+                          )
+                        )}
+                    </Paper>
+                  )}
+                </Grid>
+              )}
             {!isVoted && !selectedFlight?.settled && (
               <Grid item xs={12}>
                 <Typography

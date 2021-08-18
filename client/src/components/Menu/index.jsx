@@ -1,10 +1,12 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Grid } from "@material-ui/core";
+import { Grid, useMediaQuery, Hidden } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MenuLink from "./MenuLink";
 import Context from "../../context/index";
 import TypoIcon from "../FlightCard/FlightData/TypoIcon/index";
 import FlightRoundedIcon from "@material-ui/icons/FlightRounded";
+import CloseRounded from "@material-ui/icons/CloseRounded/";
+import clsx from "clsx";
 
 const useStyles = makeStyles(() => ({
   navlink: {
@@ -22,16 +24,33 @@ const useStyles = makeStyles(() => ({
     top: 0,
     left: 0,
     height: "100vh",
-    width: "25%",
     padding: 24,
     backgroundColor: "#64A7E7",
+    zIndex: 1,
+  },
+  menuLeftSm: {
+    width: "100%",
+  },
+  menuLeftLg: {
+    width: "25%",
+  },
+  closeMenu: {
+    cursor: "pointer",
+    position: "absolute",
+    top: 16,
+    right: 16,
+    color: "#FFF",
+    fontSize: 32,
   },
 }));
 
 const Menu = () => {
-  const { registration } = useContext(Context);
+  const { registration, setMenuLeftIsOpen } = useContext(Context);
   const classes = useStyles();
   const [links, setLinks] = useState(null);
+  const matches = useMediaQuery("(max-width:600px)");
+
+  const handleMenuClose = () => setMenuLeftIsOpen(false);
   useEffect(() => {
     registration &&
       setLinks(
@@ -94,7 +113,14 @@ const Menu = () => {
       );
   }, [registration]);
   return (
-    <Grid container className={classes.menuLeft}>
+    <Grid
+      container
+      className={
+        matches
+          ? clsx(classes.menuLeft, classes.menuLeftSm)
+          : clsx(classes.menuLeft, classes.menuLeftLg)
+      }
+    >
       <TypoIcon
         text={"FlightSurety DAO"}
         variant={"h5"}
@@ -104,9 +130,19 @@ const Menu = () => {
         marginBottom={32}
         textColor={"#FFF"}
       />
+      <Hidden mdUp>
+        <CloseRounded className={classes.closeMenu} onClick={handleMenuClose} />
+      </Hidden>
+
       {links?.map(
         ({ order, to, label, display }) =>
-          display && <MenuLink key={order} to={to} label={label} />
+          display && (
+            <MenuLink
+              key={order}
+              to={to}
+              label={label}
+            />
+          )
       )}
     </Grid>
   );

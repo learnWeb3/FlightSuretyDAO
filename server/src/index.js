@@ -32,7 +32,13 @@ const getPastEvents = async (contract, event, filter = null) => {
 
 const initWeb3Contracts = async (MNEMONIC, PROVIDER_URL) => {
   // hdwalletprovider to access metamask wallet
-  const httpProvider = new HDWalletProvider(MNEMONIC, PROVIDER_URL);
+  const httpProvider = new HDWalletProvider(
+    MNEMONIC,
+    PROVIDER_URL,
+    0,
+    1,
+    false
+  );
   // websocket provider
   const wSSProviderURL = PROVIDER_URL.replace("ws", "http");
   // web3 instantiation

@@ -132,7 +132,7 @@ const PageContent = ({ state, setState }) => {
         >
           {oracleIndexes && (
             <Chip
-              variant="contained"
+              variant="default"
               color="primary"
               label={`My indexes : ${oracleIndexes?.index1}-${oracleIndexes?.index2}-${oracleIndexes?.index3}`}
             />
@@ -180,7 +180,7 @@ const PageContent = ({ state, setState }) => {
                       settlementRequests,
                       realArrival,
                       realDeparture,
-                      settled
+                      settled,
                     },
                     index
                   ) => (

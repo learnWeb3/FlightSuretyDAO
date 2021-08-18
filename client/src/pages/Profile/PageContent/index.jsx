@@ -95,7 +95,7 @@ const PageContent = ({ state, setState }) => {
 
   return state.status === "loaded" ? (
     <>
-      <Container className={classes.container}>
+      <Container >
         <Typography variant="h5" component="h1" gutterBottom>
           My Activity
         </Typography>

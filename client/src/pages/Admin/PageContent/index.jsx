@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { Container, Grid, Typography, Button, Hidden } from "@material-ui/core";
+import { Container, Grid, Typography, Fab } from "@material-ui/core";
 import Context from "../../../context/index";
 import MultiIndicatorPanel from "../../../components/MultiIndicatorPanel/index";
 import IndicatorPanel from "../../../components/IndicatorPanel/index";
@@ -9,6 +9,7 @@ import LoadingAnimation from "../../../components/LoadingAnimation/index";
 import NoContent from "../../../components/icons/NoContent";
 import PieChart from "../../../components/PieChart/index";
 import { useHistory } from "react-router-dom";
+
 
 const PageContent = ({ state, setState }) => {
   const {
@@ -43,29 +44,21 @@ const PageContent = ({ state, setState }) => {
             Aministrator Dashboard
           </Typography>
         </Grid>
-        <Hidden mdDown>
-          <Grid item lg={3}>
-            <Button
-              variant="contained"
-              color="primary"
-              variant="contained"
-              onClick={() => history.push("/register")}
-              fullWidth
-            >
-              REGISTER A NEW PROVIDER
-            </Button>
-          </Grid>
-        </Hidden>
+
         <Grid item xs={12} lg={3}>
-          <Button
-            variant="contained"
+          <Fab
+            variant="extended"
             color="primary"
-            variant="contained"
-            onClick={handleClick}
-            fullWidth
+            onClick={() => history.push("/register")}
           >
+            REGISTER A NEW PROVIDER
+          </Fab>
+        </Grid>
+
+        <Grid item xs={12} lg={3}>
+          <Fab variant="extended" color="primary" onClick={handleClick}>
             REGISTER A NEW FLIGHT
-          </Button>
+          </Fab>
         </Grid>
       </Grid>
       <Grid container spacing={4}>
