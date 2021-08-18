@@ -16,7 +16,7 @@ const useStyles = makeStyles(() => ({
 const LoadingAnimation = () => {
   const classes = useStyles();
   return (
-    <div className={classes.container}>
+    <div className={classes.container} style={{height: "75vh"}}>
       <Lottie animationData={LottieLoader} />
     </div>
   );

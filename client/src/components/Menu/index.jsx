@@ -48,7 +48,7 @@ const Menu = () => {
   const { registration, setMenuLeftIsOpen } = useContext(Context);
   const classes = useStyles();
   const [links, setLinks] = useState(null);
-  const matches = useMediaQuery("(max-width:600px)");
+  const matches = useMediaQuery("(max-width:1200px)");
 
   const handleMenuClose = () => setMenuLeftIsOpen(false);
   useEffect(() => {

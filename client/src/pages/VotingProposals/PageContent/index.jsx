@@ -219,7 +219,7 @@ const PageContent = ({ state, setState }) => {
     <Container>
       <Grid container spacing={4}>
         <Grid item xs={12}>
-          <ErrorPage code={state.code} height="100%" message={state.message} />
+          <ErrorPage code={state.code} height="95vh" message={state.message} />
         </Grid>
       </Grid>
     </Container>

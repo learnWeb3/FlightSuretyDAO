@@ -106,16 +106,16 @@ const PageContent = ({ state, setState }) => {
               <Grid container spacing={4}>
                 <IndicatorPanel
                   label="token supply"
-                  value={daoIndicators.tokenSupply}
+                  value={daoIndicators?.tokenSupply}
                 />
                 <IndicatorPanel
                   label="current membership fee"
-                  value={daoIndicators.currentMembershipFee}
+                  value={daoIndicators?.currentMembershipFee}
                 />
-                {daoIndicators.blockNumberBeforeTokenRedeem > 0 && (
+                {daoIndicators?.blockNumberBeforeTokenRedeem > 0 && (
                   <IndicatorPanel
                     label="block number before token redeem"
-                    value={daoIndicators.blockNumberBeforeTokenRedeem}
+                    value={daoIndicators?.blockNumberBeforeTokenRedeem}
                   />
                 )}
               </Grid>
@@ -226,7 +226,7 @@ const PageContent = ({ state, setState }) => {
           <Grid item xs={12}>
             <ErrorPage
               code={state.code}
-              height="100%"
+              height="95vh"
               message={state.message}
             />
           </Grid>

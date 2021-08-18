@@ -182,7 +182,7 @@ const PageContent = ({ state, setState }) => {
 
         {state.status === "error" && (
           <Grid item xs={12}>
-            <ErrorPage code={state.code} height="100%" message={state.message} />
+            <ErrorPage code={state.code} height="95vh" message={state.message} />
           </Grid>
         )}
 

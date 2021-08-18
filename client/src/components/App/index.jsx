@@ -340,7 +340,7 @@ const App = ({ state, setState }) => {
                 ))}
           </Route>
           <Route path="*">
-            <ErrorPage code={404} height="100vh" />
+            <ErrorPage code={404} height="95vh" />
           </Route>
         </Switch>
       </Router>
