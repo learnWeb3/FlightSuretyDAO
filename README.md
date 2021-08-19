@@ -1,4 +1,4 @@
-# Supply chain & data auditing
+# Flight Insurance DAO
 
 This repository contains an Ethereum DApp to serve a decentralized autonomous organization to manage a mutualized flight insurance funds.
 
@@ -8,6 +8,8 @@ The user story is the following :
 - As a token holder i can participate in the decentralized orgnisation by ammending settings on the platform and voting up insurance and oracle provider membership and own a share of the funds by the ability to redeem the token for a weighted percentage of the profits.
 - As an activated insurance provider i can register new flights
 - As an activated oracle provider i can settle flights.
+
+Voting in the community is based on the FSS ERC20 token which gives a vote on 1 token equal 1 vote basis.
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
@@ -29,36 +31,36 @@ Multiple internal settings have been set in the project and need to be adjusted 
 ## Contract deployement workflow
 
 1. deploy FlightSuretyApp
-   . uint256 _tokenHolderMinBlockRequirement
-   . uint256 _proposalValidBlockNum
+   - uint256 _tokenHolderMinBlockRequirement
+   - uint256 _proposalValidBlockNum
 2. deploy FlightSuretyOracle
-   . uint64 _authorizedFlightDelay
+   - uint64 _authorizedFlightDelay
 3. deploy FlightSuretyData authorizing callers :
-   . address _appContractAddress
-   . address _oracleContractAddress
+   - address _appContractAddress
+   - address _oracleContractAddress
 4. deploy OracleProviderRole authorizing callers :
-   . address _appContractAddress
-   . address _oracleContractAddress
+   - address _appContractAddress
+   - address _oracleContractAddress
 5. deploy InsuranceProviderRole authorizing callers :
-   . address _appContractAddress
+   - address _appContractAddress
 6. deploy FlightSuretyShares authorizing callers :
-   . address _appContractAddress
+   - address _appContractAddress
 7. deploy InsuranceCoverageAmendmentProposal authroizing caller :
-   . address _appContractAddress
-   . uint256 _currentInsuranceCoverage
+   - address _appContractAddress
+   - uint256 _currentInsuranceCoverage
 8. deploy MembershipFeeAmendmentProposal authorizing caller :
-   . address _appContractAddress
-   . uint256 _currentMembershipfee
+   - address _appContractAddress
+   - uint256 _currentMembershipfee
 9. initialize FlightSuretyApp referencing external contracts addresses :
-   . address _flightSuretyData
-   . address _insuranceCoverageAmendmentProposal
-   . address _membershipFeeAmendmentProposal
-   . address _insuranceProviderRole
-   . address _oracleProviderRole
-   . address _flighSuretyShares
+   - address _flightSuretyData
+   - address _insuranceCoverageAmendmentProposal
+   - address _membershipFeeAmendmentProposal
+   - address _insuranceProviderRole
+   - address _oracleProviderRole
+   - address _flighSuretyShares
 10. initialize FlightSuretyOracle referencing external contracts addresses :
-    . address _flightSuretyData
-    . address _oracleProviderRole
+    - address _flightSuretyData
+    - address _oracleProviderRole
 
 ## Config the app
 
@@ -216,41 +218,41 @@ Please double check and do not hesitate to run the migration command tw times.
 
 ### Project requirement
 
-[x] Smart Contract code is separated into multiple contracts:
-[x] A Dapp client has been created and is used for triggering contract calls. Client can be launched with “npm run dapp” and is available at http://localhost:8000
-[x] A server app has been created for simulating oracle behavior. Server can be launched with “npm run server”
-[x] Students has implemented operational status control.
-[x] Contract functions “fail fast” by having a majority of “require()” calls at the beginning of function body
-[x] First airline is registered when contract is deployed.
-[x] Only existing airline may register a new airline until there are at least four airlines registered
+- [x] Smart Contract code is separated into multiple contracts:
+- [x] A Dapp client has been created and is used for triggering contract calls. Client can be launched with “npm run dapp” and is available at http://localhost:8000
+- [x] A server app has been created for simulating oracle behavior. Server can be launched with “npm run server”
+- [x] Students has implemented operational status control.
+- [x] Contract functions “fail fast” by having a majority of “require()” calls at the beginning of function body
+- [x] First airline is registered when contract is deployed.
+- [x] Only existing airline may register a new airline until there are at least four airlines registered
 Demonstrated either with Truffle test or by making call from client Dapp
-[x] Registration of fifth and subsequent airlines requires multi-party consensus of 50% of registered airlines
+- [x] Registration of fifth and subsequent airlines requires multi-party consensus of 50% of registered airlines
 Demonstrated either with Truffle test or by making call from client Dapp
-[x] Airline can be registered, but does not participate in contract until it submits funding of 10 ether
+- [x] Airline can be registered, but does not participate in contract until it submits funding of 10 ether
 Demonstrated either with Truffle test or by making call from client Dapp
-[x] Passengers can choose from a fixed list of flight numbers and departure that are defined in the Dapp client
-[x] Passengers may pay up to 1 ether for purchasing flight insurance.
-[x] If flight is delayed due to airline fault, passenger receives credit of 1.5X the amount they paid
-[x] Passenger can withdraw any funds owed to them as a result of receiving credit for insurance payout
-[x] Insurance payouts are not sent directly to passenger’s wallet
-[x] Oracle functionality is implemented in the server app.
-[ ] Upon startup, 20+ oracles are registered and their assigned indexes are persisted in memory
-[x] Upon startup, 20 oracles are registered
-[ ] Update flight status requests from client Dapp result in OracleRequest event emitted by Smart Contract that is captured by server (displays on console and handled in code)
-[x] Update flight status requests from client Dapp result in NewResponse event emitted
-[ ] Server will loop through all registered oracles, identify those oracles for which the OracleRequest event applies, and respond by calling into FlightSuretyApp contract with random status code of Unknown (0), On Time (10) or Late Airline (20), Late Weather (30), Late Technical (40), or Late Other (50)
+- [x] Passengers can choose from a fixed list of flight numbers and departure that are defined in the Dapp client
+- [x] Passengers may pay up to 1 ether for purchasing flight insurance.
+- [x] If flight is delayed due to airline fault, passenger receives credit of 1.5X the amount they paid
+- [x] Passenger can withdraw any funds owed to them as a result of receiving credit for insurance payout
+- [x] Insurance payouts are not sent directly to passenger’s wallet
+- [x] Oracle functionality is implemented in the server app.
+- [ ] Upon startup, 20+ oracles are registered and their assigned indexes are persisted in memory
+- [x] Upon startup, 20 oracles are registered
+- [ ] Update flight status requests from client Dapp result in OracleRequest event emitted by Smart Contract that is captured by server (displays on console and handled in code)
+- [x] Update flight status requests from client Dapp result in NewResponse event emitted
+- [ ] Server will loop through all registered oracles, identify those oracles for which the OracleRequest event applies, and respond by calling into FlightSuretyApp contract with random status code of Unknown (0), On Time (10) or Late Airline (20), Late Weather (30), Late Technical (40), or Late Other (50)
 (replaced to be closer to a real scenario);
-[x] Server will loop through all created flights and make a call to the oracle contract authorizing randomly selected oracle providers through their index to provide flight settlement data through the user interface
+- [x] Server will loop through all created flights and make a call to the oracle contract authorizing randomly selected oracle providers through their index to provide flight settlement data through the user interface
 
 ### Project extensions
 
-[ ] Implement administration functions in the frontend (authorized caller management)
-[ ] Implement redeem token function in the frontend
-[ ] Add new proposal types to decentralize the main settings of the contracts through multiparty consensus.
-[ ] Display clearer error message on the frontend
-[ ] Review and extend unit tests
-[ ] Review gas management to a value closer to the one requested
-[ ] Deplay frontend to IPFS network
+- [ ] Implement administration functions in the frontend (authorized caller management)
+- [ ] Implement redeem token function in the frontend
+- [ ] Add new proposal types to decentralize the main settings of the contracts through multiparty consensus.
+- [ ] Display clearer error message on the frontend
+- [ ] Review and extend unit tests
+- [ ] Review gas management to a value closer to the one requested
+- [ ] Deplay frontend to IPFS network
 
 ## Built With
 
