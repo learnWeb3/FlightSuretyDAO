@@ -15,39 +15,50 @@ In order to interact with the platform you will need 10 different addresses fund
 
 You can fund these addresses from an ethereum [faucet](https://faucet.rinkeby.io/):
 
+## Configurations 
+
+Multiple internal settings have been set in the project and need to be adjusted :
+
+- _tokenHolderMinBlockRequirement: default number of block before giving the ability to a token holder to participate in the community decision (default to 2 for testing purposes but should be a month equivalent in block number ) (plays a role to mitigate the risk of an EOA transfering his holding to gain more vote power )
+- _proposalValidBlockNum: default number of block a setting amendment porposal (membership fee or insurance coverage ratio) is valid
+- _defaultBlockNumBeforeRedeem: default number of block before giving the ability to a token holder to redeem it's holding for a cut of the funds profits
+- _currentInsuranceCoverage : current insurance coverage ratio (default to 150 set in InsuranceCoverageAmenedmentProposal contract constructor)
+-  operationnal : operationnal state of the contracts (default to true)
+- _authorizedFlightDelay : default number of time in seconds a flight can be late.
+
 ## Contract deployement workflow
 
 1. deploy FlightSuretyApp
-   . uint256 \_tokenHolderMinBlockRequirement
-   . uint256 \_proposalValidBlockNum
+   . uint256 _tokenHolderMinBlockRequirement
+   . uint256 _proposalValidBlockNum
 2. deploy FlightSuretyOracle
-   . uint64 \_authorizedFlightDelay
+   . uint64 _authorizedFlightDelay
 3. deploy FlightSuretyData authorizing callers :
-   . address \_appContractAddress
-   . address \_oracleContractAddress
+   . address _appContractAddress
+   . address _oracleContractAddress
 4. deploy OracleProviderRole authorizing callers :
-   . address \_appContractAddress
-   . address \_oracleContractAddress
+   . address _appContractAddress
+   . address _oracleContractAddress
 5. deploy InsuranceProviderRole authorizing callers :
-   . address \_appContractAddress
+   . address _appContractAddress
 6. deploy FlightSuretyShares authorizing callers :
-   . address \_appContractAddress
+   . address _appContractAddress
 7. deploy InsuranceCoverageAmendmentProposal authroizing caller :
-   . address \_appContractAddress
-   . uint256 \_currentInsuranceCoverage
+   . address _appContractAddress
+   . uint256 _currentInsuranceCoverage
 8. deploy MembershipFeeAmendmentProposal authorizing caller :
-   . address \_appContractAddress
-   . uint256 \_currentMembershipfee
+   . address _appContractAddress
+   . uint256 _currentMembershipfee
 9. initialize FlightSuretyApp referencing external contracts addresses :
-   . address \_flightSuretyData
-   . address \_insuranceCoverageAmendmentProposal
-   . address \_membershipFeeAmendmentProposal
-   . address \_insuranceProviderRole
-   . address \_oracleProviderRole
-   . address \_flighSuretyShares
+   . address _flightSuretyData
+   . address _insuranceCoverageAmendmentProposal
+   . address _membershipFeeAmendmentProposal
+   . address _insuranceProviderRole
+   . address _oracleProviderRole
+   . address _flighSuretyShares
 10. initialize FlightSuretyOracle referencing external contracts addresses :
-    . address \_flightSuretyData
-    . address \_oracleProviderRole
+    . address _flightSuretyData
+    . address _oracleProviderRole
 
 ## Config the app
 
@@ -242,6 +253,14 @@ Demonstrated either with Truffle test or by making call from client Dapp
 [ ] Server will loop through all registered oracles, identify those oracles for which the OracleRequest event applies, and respond by calling into FlightSuretyApp contract with random status code of Unknown (0), On Time (10) or Late Airline (20), Late Weather (30), Late Technical (40), or Late Other (50)
 (replaced to be closer to a real scenario);
 [x] Server will loop through all created flights and make a call to the oracle contract authorizing randomly selected oracle providers through their index to provide flight settlement data through the user interface
+
+### Project extensions 
+
+[ ] Implement administration functions in the frontend (authorized caller management)
+[ ] Implement redeem token function in the frontend
+[ ] Add new proposal types to decentralize the main settings of the contracts through multiparty consensus.
+[ ] Display clearer error message on the frontend
+[ ] Review and extend unit tests
 
 ## Built With
 
