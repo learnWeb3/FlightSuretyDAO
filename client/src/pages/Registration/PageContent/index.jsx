@@ -126,7 +126,7 @@ const PageContent = ({ state, setState }) => {
                 gutterBottom
                 className={classes.header}
               >
-                Welcome to The FlighSurety DAO !
+                Welcome to The FlightSurety DAO !
               </Typography>
               <SignUp width="50%" />
               {registration.isActivatedInsuranceProvider && (
@@ -136,7 +136,7 @@ const PageContent = ({ state, setState }) => {
                   variant="contained"
                   color="primary"
                 >
-                  REGISTER A NEW INSURANCE PROVIDER
+                  NEW INSURANCE PROVIDER
                 </Button>
               )}
 

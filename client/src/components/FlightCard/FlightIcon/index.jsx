@@ -17,7 +17,7 @@ const FlightIcon = () => {
   return (
     <Hidden mdDown>
       <Grid item xs={12} lg={3} className={classes.flightIcon}>
-        <FlightRoundedIcon fontvariant="contained" />
+        <FlightRoundedIcon fontVariant="contained" />
       </Grid>
     </Hidden>
   );

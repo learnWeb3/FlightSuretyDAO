@@ -171,7 +171,8 @@ const FlightData = ({
             icon={ScheduleRoundedIcon}
           />
           <Typography variant="body2" gutterBottom>
-            Flight duration : ≈ {formattedFlightDuration.toString().slice(0,4)} hours
+            Flight duration : ≈ {formattedFlightDuration.toString().slice(0, 4)}{" "}
+            hours
           </Typography>
           {rate && (
             <Typography variant="body2" gutterBottom>
@@ -186,7 +187,7 @@ const FlightData = ({
               <Button
                 id={"subscribeInsurance" + cardID}
                 color="primary"
-                variant="text"
+                variant="outlined"
                 fullWidth={matches}
                 onClick={handleClick}
               >
@@ -198,7 +199,7 @@ const FlightData = ({
             <Button
               id={"claimInsurance" + cardID}
               color="primary"
-              variant="text"
+              variant="outlined"
               fullWidth={matches}
               onClick={handleClick}
             >
@@ -213,7 +214,7 @@ const FlightData = ({
               <Button
                 id={"requestFlightSettlement" + cardID}
                 color="primary"
-                variant="text"
+                variant="outlined"
                 fullWidth={matches}
                 onClick={handleClick}
               >

@@ -77,7 +77,7 @@ const ErrorComponent = () => {
   const classes = useStyles();
   return (
     <Container maxWidth="lg" className={classes.componentErrorContainer}>
-      <ErrorOutlineRoundedIcon fontvariant="contained" />
+      <ErrorOutlineRoundedIcon fontVariant="contained" />
       <Typography
         variant="body2"
         component="p"
