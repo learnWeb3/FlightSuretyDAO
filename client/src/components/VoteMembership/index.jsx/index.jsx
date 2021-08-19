@@ -84,11 +84,11 @@ const VoteMembership = ({ type, votee }) => {
     setIsVoted(
       userTx?.find((tx) =>
         (tx.eventName === "NewVoteInsuranceProvider" &&
-          tx.voter === selectedAddress &&
-          tx.votee === votee) ||
+          tx.voter.toLowerCase()  === selectedAddress.toLowerCase()  &&
+          tx.votee.toLowerCase()  === votee.toLowerCase() ) ||
         (tx.eventName === "NewVoteOracleProvider" &&
-          tx.voter === selectedAddress &&
-          tx.votee === votee)
+          tx.voter.toLowerCase() === selectedAddress.toLowerCase()  &&
+          tx.votee.toLowerCase()  === votee.toLowerCase() )
           ? true
           : false
       )

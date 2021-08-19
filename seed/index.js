@@ -34,6 +34,8 @@ const SeedContract = async () => {
     })
   );
 
+  console.log(`seed ended with no errors ! ${accounts.length} registered...`);
+
   process.exit();
 };
 

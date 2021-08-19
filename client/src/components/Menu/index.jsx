@@ -107,8 +107,8 @@ const Menu = () => {
                 !registration.isActivatedInsuranceProvider) ||
               (registration.isFundedInsuranceProvider &&
                 !registration.isActivatedInsuranceProvider)
-                ? false
-                : true,
+                ? true
+                : false,
           },
         ].sort((a, b) => a.order - b.order)
       );

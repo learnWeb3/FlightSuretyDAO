@@ -57,10 +57,8 @@ const PageContent = ({ state, setState }) => {
   useEffect(() => {
     if (appContract && registration) {
       if (
-        (registration.isRegisteredOracleProvider &&
-          !registration.isActivatedInsuranceProvider) ||
-        (registration.isFundedInsuranceProvider &&
-          !registration.isActivatedInsuranceProvider)
+        registration.isFundedInsuranceProvider &&
+        !registration.isActivatedInsuranceProvider
       ) {
         setState({
           status: "error",
@@ -182,7 +180,11 @@ const PageContent = ({ state, setState }) => {
 
         {state.status === "error" && (
           <Grid item xs={12}>
-            <ErrorPage code={state.code} height="95vh" message={state.message} />
+            <ErrorPage
+              code={state.code}
+              height="95vh"
+              message={state.message}
+            />
           </Grid>
         )}
 

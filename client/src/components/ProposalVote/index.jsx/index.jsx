@@ -80,10 +80,10 @@ const ProposalVote = ({ type, proposalID, proposedValue }) => {
       setIsVoted(
         userTx?.find((tx) =>
           (tx.eventName === "NewVoteInsuranceCoverageAmendmentProposal" &&
-            tx.voter === selectedAddress &&
-            tx.proposalID === proposalID) ||
+            tx.voter.toLowerCase()  === selectedAddress.toLowerCase()  &&
+            tx.proposalID  === proposalID ) ||
           (tx.eventName === "NewVoteMembershipFeeAmendmentProposal" &&
-            tx.voter === selectedAddress &&
+            tx.voter.toLowerCase()  === selectedAddress.toLowerCase()  &&
             tx.proposalID === proposalID)
             ? true
             : false
