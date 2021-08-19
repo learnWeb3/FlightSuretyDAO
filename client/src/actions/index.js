@@ -305,7 +305,7 @@ const fetchInsuranceProvidersProfits = async (
             insuranceProviderAddress.slice(0, 3) +
             "..." +
             insuranceProviderAddress.slice(-3, -1),
-          value: parseInt(totalCumulatedProfits),
+          value: parseInt(myCumulatedProfits),
         };
       })
     );
