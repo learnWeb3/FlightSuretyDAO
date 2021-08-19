@@ -4,7 +4,7 @@ This repository contains an Ethereum DApp to serve a decentralized autonomous or
 
 The user story is the following :
 
-- As a normal user i can subscribe an insurance on a future existing flight
+- As a normal user i can subscribe an insurance on a future existing flight and ask for insurance payout if flight is late
 - As a token holder i can participate in the decentralized orgnisation by ammending settings on the platform and voting up insurance and oracle provider membership and own a share of the funds by the ability to redeem the token for a weighted percentage of the profits.
 - As an activated insurance provider i can register new flights
 - As an activated oracle provider i can settle flights.
@@ -15,7 +15,7 @@ In order to interact with the platform you will need 10 different addresses fund
 
 You can fund these addresses from an ethereum [faucet](https://faucet.rinkeby.io/):
 
-## Configurations 
+## Configurations
 
 Multiple internal settings have been set in the project and need to be adjusted :
 
@@ -23,7 +23,7 @@ Multiple internal settings have been set in the project and need to be adjusted 
 - _proposalValidBlockNum: default number of block a setting amendment porposal (membership fee or insurance coverage ratio) is valid
 - _defaultBlockNumBeforeRedeem: default number of block before giving the ability to a token holder to redeem it's holding for a cut of the funds profits
 - _currentInsuranceCoverage : current insurance coverage ratio (default to 150 set in InsuranceCoverageAmenedmentProposal contract constructor)
--  operationnal : operationnal state of the contracts (default to true)
+- operationnal : operationnal state of the contracts (default to true)
 - _authorizedFlightDelay : default number of time in seconds a flight can be late.
 
 ## Contract deployement workflow
@@ -102,22 +102,15 @@ npm run test
 ### Deploy the smart contracts
 
 ```bash
-# deploy the contracts to localhost network
+# deploy the contracts to localhost network, exports the contracts abi to the client directory and seed the contract with n oracle providers accounts
 npm run migrate-dev
 ```
 
 ### Lauch Ganache client
 
 ```bash
-# lauch Ganache client
+# lauch Ganache client with the specified amount of accounts
 ganache-cli --accounts=20
-```
-
-### Seed the smart contracts
-
-```bash
-# register the default 20 addresses provided by ganache as default configuration (account 1 as insurance provider and all accounts as oracle provider)
-node ./seed/index.js
 ```
 
 ### Running the app (development)
@@ -137,9 +130,6 @@ npm run server
 ## Deployment (PROD ENVIRONNEMENT)
 
 ### Deploy the contract to ethereum rinkeby network
-
-- Current rinkeby contract address: 0x7Cea407Aa29631256da085d892886E9B14b8bb13
-- [Etherscan link to rinkeby contract](https://rinkeby.etherscan.io/address/0xe635af33AddA68f80c6973a8FAC6144fC3441FCd)
 
 ```bash
 # deploy the contracts to rinkeby network
@@ -224,8 +214,6 @@ Please double check and do not hesitate to run the migration command tw times.
 
 ### Server
 
-
-
 ### Project requirement
 
 [x] Smart Contract code is separated into multiple contracts:
@@ -254,13 +242,15 @@ Demonstrated either with Truffle test or by making call from client Dapp
 (replaced to be closer to a real scenario);
 [x] Server will loop through all created flights and make a call to the oracle contract authorizing randomly selected oracle providers through their index to provide flight settlement data through the user interface
 
-### Project extensions 
+### Project extensions
 
 [ ] Implement administration functions in the frontend (authorized caller management)
 [ ] Implement redeem token function in the frontend
 [ ] Add new proposal types to decentralize the main settings of the contracts through multiparty consensus.
 [ ] Display clearer error message on the frontend
 [ ] Review and extend unit tests
+[ ] Review gas management to a value closer to the one requested
+[ ] Deplay frontend to IPFS network
 
 ## Built With
 
